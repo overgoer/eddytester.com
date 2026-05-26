@@ -1,0 +1,258 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="9622775" data-tilda-page-id="101846156" data-tilda-page-alias="glearning" data-tilda-formskey="12901d9d87b681f2058c7a7f29622775" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1660224611" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!DOCTYPE html> <html lang="ru"> <head> <style>
+    /* --- СТИЛИ (CSS) --- */
+    :root {
+        --c-primary: #007bff;
+        --c-text: #222;
+        --c-bg-gray: #f7f7f7;
+        --c-border: #ddd;
+    }
+    
+    body {
+        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        background: var(--bg-page);
+        color: var(--c-text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Добавим глобальный box-sizing для надежности */
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    .course-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+        background: #fff;
+        /* Защита от переполнения по ширине */
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* --- САЙДБАР (МЕНЮ) --- */
+    .course-sidebar {
+        border-bottom: 1px solid var(--c-border);
+        padding-bottom: 20px;
+        /* Важно для мобильных: не вылезать за ширину */
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .sidebar-doc-link {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 700;
+        color: var(--c-text);
+        text-decoration: none;
+        font-size: 16px;
+        padding: 0 10px;
+    }
+    .sidebar-doc-link:hover { color: var(--c-primary); }
+
+    .lesson-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        background: none;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #555;
+        transition: 0.2s;
+        text-decoration: none;
+        /* Защита текста от переполнения */
+        white-space: normal; 
+        word-wrap: break-word;
+    }
+    .lesson-btn:hover { background: var(--c-bg-gray); }
+    .lesson-btn.active {
+        background: var(--c-primary);
+        color: #fff;
+        font-weight: 600;
+    }
+
+    /* Кнопка открытия меню (видна только на мобильном) */
+    .mobile-menu-toggle {
+        display: none;
+        width: 100%;
+        text-align: left;
+        padding: 12px 16px;
+        background: #f0f4f8;
+        border: 1px solid var(--c-primary);
+        border-radius: 8px;
+        font-weight: 700;
+        color: var(--c-primary);
+        cursor: pointer;
+        margin-bottom: 10px;
+        position: relative;
+        /* Защита от переполнения */
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .mobile-menu-toggle::after {
+        content: '▼';
+        position: absolute;
+        right: 15px;
+        font-size: 12px;
+    }
+
+    /* --- АДАПТИВНОСТЬ --- */
+    
+    /* Десктоп: Две колонки, кнопка меню скрыта */
+    @media (min-width: 960px) {
+        .course-wrapper { flex-direction: row; align-items: flex-start; }
+        .course-sidebar {
+            width: 280px; flex-shrink: 0; border-bottom: none; border-right: 1px solid var(--c-border);
+            padding-right: 20px; max-height: 80vh; overflow-y: auto; position: sticky; top: 20px;
+        }
+        .mobile-menu-toggle { display: none; }
+    }
+
+    /* Мобилка: Аккордеон */
+    @media (max-width: 959px) {
+        .mobile-menu-toggle { display: block; }
+        
+        /* Скрываем уроки по умолчанию */
+        .lesson-btn { display: none; }
+        
+        /* Показываем уроки, если меню открыто (класс expanded) */
+        .course-sidebar.expanded .lesson-btn { display: block; animation: slideDown 0.3s ease; }
+        .course-sidebar.expanded .mobile-menu-toggle::after { content: '▲'; }
+        
+        /* Дополнительная защита ширины на мобильных */
+        .course-sidebar {
+            padding-right: 0; 
+            padding-left: 0;
+        }
+    }
+
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- КОНТЕНТ УРОКА --- */
+    .course-content { flex-grow: 1; min-width: 0; }
+    .lesson-block { display: none; animation: fadeIn 0.3s ease; }
+    .lesson-block.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .lesson-title { font-size: 26px; font-weight: 700; margin-bottom: 10px; line-height: 1.2; }
+    .lesson-desc { color: #666; margin-bottom: 20px; font-size: 16px; }
+
+    .video-responsive {
+        position: relative; padding-bottom: 56.25%; height: 0; background: #000;
+        border-radius: 10px; overflow: hidden; margin-bottom: 15px;
+    }
+    .video-responsive iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    
+    .source-tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    .src-btn {
+        padding: 6px 12px; font-size: 13px; border: 1px solid var(--c-border);
+        background: #fff; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    .src-btn:hover { background: #f9f9f9; }
+    .src-btn.active { background: #333; color: #fff; border-color: #333; }
+    
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-yt { background: #f00; }
+    .dot-vk { background: #0077ff; }
+
+    .block-header {
+        font-size: 18px; font-weight: 700; margin-bottom: 15px;
+        border-left: 4px solid var(--c-primary); padding-left: 10px;
+    }
+    .materials-list, .task-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
+    .materials-list li, .task-list li {
+        margin-bottom: 10px; padding: 10px; background: var(--c-bg-gray); border-radius: 6px; font-size: 15px;
+    }
+    .materials-list a { color: var(--c-primary); font-weight: 600; text-decoration: none; }
+    .materials-list a:hover { text-decoration: underline; }
+    .note { font-size: 13px; color: #888; margin-left: 5px; }
+    
+    /* Стили для кода cURL */
+    .code-block {
+        background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 6px; 
+        font-family: monospace; font-size: 13px; overflow-x: auto; white-space: pre; margin-bottom: 10px;
+    }
+</style> </head> <body> <div class="course-wrapper"> <div class="course-sidebar"> <a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank" class="sidebar-doc-link">
+            &#128218; Документация
+        </a> <button class="mobile-menu-toggle" onclick="toggleSidebar()">Список уроков</button> <button id="btn-l1" class="lesson-btn active" onclick="openLesson('l1')">1. Введение</button> <button id="btn-l2" class="lesson-btn" onclick="openLesson('l2')">2. Установка Postman</button> <button id="btn-l3" class="lesson-btn" onclick="openLesson('l3')">3. План практикума</button> <button id="btn-l4" class="lesson-btn" onclick="openLesson('l4')">4. HTTP Протокол</button> <button id="btn-l5" class="lesson-btn" onclick="openLesson('l5')">5. Что такое API</button> <button id="btn-l6" class="lesson-btn" onclick="openLesson('l6')">6. Классы эквивалентности</button> <button id="btn-l7" class="lesson-btn" onclick="openLesson('l7')">7. Граничные значения</button> <button id="btn-l8" class="lesson-btn" onclick="openLesson('l8')">8. GET: Теория</button> <button id="btn-l9" class="lesson-btn" onclick="openLesson('l9')">9. GET: Практика</button> <button id="btn-l10" class="lesson-btn" onclick="openLesson('l10')">10. Баг-репорт</button> <button id="btn-l11" class="lesson-btn" onclick="openLesson('l11')">11. Bug Fix и V2</button> <button id="btn-l12" class="lesson-btn" onclick="openLesson('l12')">12. GET by ID</button> <button id="btn-l13" class="lesson-btn" onclick="openLesson('l13')">13. POST Запросы</button> <button id="btn-l14" class="lesson-btn" onclick="openLesson('l14')">14. PATCH Запросы</button> <button id="btn-l15" class="lesson-btn" onclick="openLesson('l15')">15. DELETE Запросы</button> <button id="btn-l16" class="lesson-btn" onclick="openLesson('l16')">16. Финал</button> </div> <div class="course-content"> <div id="l1" class="lesson-block active"> <h2 class="lesson-title">1. Введение</h2> <p class="lesson-desc">Старт практикума. Разбираемся, что нас ждет, где брать ключи.</p> <div class="video-responsive"> <iframe id="vid-l1" src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239038&hash=c8a7d6e15c3f6358&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l1', 'https://www.youtube.com/embed/E6vznhJyCio', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l1', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239038&hash=c8a7d6e15c3f6358&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank">Документация API</a></li> <li><a href="https://disk.yandex.com/d/ts51e5Tgh3ciYA" target="_blank">Коллекция Postman (v1)</a> <span class="note">(Скачать JSON)</span></li> <li><a href="https://habr.com/ru/articles/836464/" target="_blank">Статья: Клиент-серверная архитектура</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Найти на почте письмо с API Key.</li> <li>Бегло просмотреть документацию.</li> </ul> </div> <div id="l2" class="lesson-block"> <h2 class="lesson-title">2. Установка Postman</h2> <p class="lesson-desc">Настраиваем главный инструмент тестировщика.</p> <div class="video-responsive"> <iframe id="vid-l2" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239039&hash=29509ec28074d147&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l2', 'https://www.youtube.com/embed/GMqLTM1kTOU', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l2', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239039&hash=29509ec28074d147&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://www.postman.com/downloads/" target="_blank">Скачать Postman (Оф. сайт)</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Установить Postman.</li> <li>Импортировать коллекцию v1.</li> <li>Сделать первый запрос (Create User).</li> </ul> </div> <div id="l3" class="lesson-block"> <h2 class="lesson-title">3. План практикума</h2> <p class="lesson-desc">Как работать с данными и чистить базу за собой.</p> <div class="video-responsive"> <iframe id="vid-l3" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239040&hash=3b2e8819a6f8c2c2&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l3', 'https://www.youtube.com/embed/FzKiwDYJ7B4', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l3', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239040&hash=3b2e8819a6f8c2c2&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <div style="margin-bottom: 15px;"> <p style="font-size:14px; margin-bottom:5px;"><strong>cURL для очистки базы (импорт в Postman):</strong></p> <div class="code-block">curl --location --request DELETE 'https://v0-test-api-ten.vercel.app/v1/api/reset' \
+--header 'accept: application/json' \
+--header 'X-Fix-Bug: 2a040e7a-92a2-4635-940b-64ca05f36392'</div> </div> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Импортировать метод очистки.</li> <li>Выполнить очистку базы (DELETE /reset).</li> </ul> </div> <div id="l4" class="lesson-block"> <h2 class="lesson-title">4. HTTP Протокол</h2> <p class="lesson-desc">База: запросы, ответы, заголовки и методы.</p> <div class="video-responsive"> <iframe id="vid-l4" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239041&hash=83d53ecc278b0454&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l4', 'https://www.youtube.com/embed/geUMhziqMF8', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l4', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239041&hash=83d53ecc278b0454&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://developer.mozilla.org/ru/docs/Web/HTTP/Overview" target="_blank">MDN: Обзор протокола HTTP</a></li> <li><a href="https://datatracker.ietf.org/doc/html/rfc7231" target="_blank">RFC 7231 (Стандарт)</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Изучить структуру HTTP запроса.</li> </ul> </div> <div id="l5" class="lesson-block"> <h2 class="lesson-title">5. Что такое API</h2> <p class="lesson-desc">Разница между HTTP и API. Контракты и REST.</p> <div class="video-responsive"> <iframe id="vid-l5" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239042&hash=2075b39f409d4f74&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l5', 'https://www.youtube.com/embed/SYnvwzqyuiw', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l5', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239042&hash=2075b39f409d4f74&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://www.redhat.com/en/topics/api/what-is-a-rest-api" target="_blank">Что такое REST API (RedHat)</a></li> </ul> </div> <div id="l6" class="lesson-block"> <h2 class="lesson-title">6. Классы эквивалентности</h2> <p class="lesson-desc">Тест-дизайн: как проверять меньше, а находить больше.</p> <div class="video-responsive"> <iframe id="vid-l6" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239043&hash=f694dca925929dd6&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l6', 'https://www.youtube.com/embed/GlW5sYHFCg0', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l6', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239043&hash=f694dca925929dd6&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://habr.com/ru/companies/lanit/articles/913818/" target="_blank">Гайд: Классы эквивалентности (Хабр)</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Выделить классы эквивалентности для поля Age.</li> </ul> </div> <div id="l7" class="lesson-block"> <h2 class="lesson-title">7. Граничные значения</h2> <p class="lesson-desc">Где прячутся самые хитрые баги?</p> <div class="video-responsive"> <iframe id="vid-l7" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239044&hash=9d2af9beec1c34df&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l7', 'https://www.youtube.com/embed/MAlgs4cuZt8', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l7', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239044&hash=9d2af9beec1c34df&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://habr.com/ru/companies/lanit/articles/913818/" target="_blank">Гайд: Граничные значения (Хабр)</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Определить границы для статусов (Minor, Candidate, Retired).</li> </ul> </div> <div id="l8" class="lesson-block"> <h2 class="lesson-title">8. GET: Теория</h2> <p class="lesson-desc">Изучаем метод получения данных.</p> <div class="video-responsive"> <iframe id="vid-l8" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239045&hash=785bb3713e6d2239&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l8', 'https://www.youtube.com/embed/EENoKYuJY-Y', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l8', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239045&hash=785bb3713e6d2239&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://apidocs.bitrix24.ru/api-reference/data-types.html" target="_blank">Справочник: Типы данных (Int, String, Enum)</a></li> <li><a href="https://docs.google.com/document/d/1PtFLzr6geRUYcP4TYhJ5vDFnuH2h4yWPSo5AuLKlmr4/edit?usp=sharing" target="_blank">Шаблон тест-кейса</a></li> </ul> </div> <div id="l9" class="lesson-block"> <h2 class="lesson-title">9. GET: Практика</h2> <p class="lesson-desc">Тестируем ручку получения пользователей.</p> <div class="video-responsive"> <iframe id="vid-l9" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239046&hash=21b2b6d19982ac96&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l9', 'https://www.youtube.com/embed/RhBWQam_TvQ', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l9', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239046&hash=21b2b6d19982ac96&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Протестировать GET /users.</li> <li>Найти баг с Content-Type.</li> </ul> </div> <div id="l10" class="lesson-block"> <h2 class="lesson-title">10. Баг-репорт</h2> <p class="lesson-desc">Как грамотно описать баг.</p> <div class="video-responsive"> <iframe id="vid-l10" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239047&hash=5a92746a3a6f8db0&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l10', 'https://www.youtube.com/embed/2I5WEtFoSiw', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l10', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239047&hash=5a92746a3a6f8db0&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://docs.google.com/document/d/1jqObIhZFw9QXly09jdVrXLSWfeKzhJeCo-FDOVMIBaE/edit?usp=sharing" target="_blank">Пример баг-репорта (Заполненный)</a></li> <li><a href="https://docs.google.com/document/d/1MsL_7cKK6VtkVcGA3-Clu7gNjWSZFgSJ3hrk87hBFR4/edit?usp=sharing" target="_blank">Шаблон баг-репорта (Пустой)</a></li> <li><a href="mailto:eddythetest@gmail.com">Почта для сдачи домашек</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Оформить баг-репорт на неверный Content-Type.</li> <li>Отправить на проверку.</li> </ul> </div> <div id="l11" class="lesson-block"> <h2 class="lesson-title">11. Bug Fix и V2</h2> <p class="lesson-desc">Работа с исправленной версией API.</p> <div class="video-responsive"> <iframe id="vid-l11" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239048&hash=5bb246d60c03c9d3&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l11', 'https://www.youtube.com/embed/pYg_9mfKYGY', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l11', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239048&hash=5bb246d60c03c9d3&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://disk.yandex.com/d/DBajAdlXRfmKoA" target="_blank">Коллекция Postman (v2)</a> <span class="note">Скачать JSON</span></li> <li><a href="https://disk.yandex.com/d/L-C1Dq5X0UXr1w" target="_blank">Список багов API (открывать в браузере)</a> <span class="note">Скачать HTML</span></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Импортировать коллекцию v2.</li> <li>Проверить исправление бага.</li> </ul> </div> <div id="l12" class="lesson-block"> <h2 class="lesson-title">12. GET by ID</h2> <p class="lesson-desc">Тестируем получение конкретного пользователя.</p> <div class="video-responsive"> <iframe id="vid-l12" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239049&hash=bfdfb2d70c39db1c&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l12', 'https://www.youtube.com/embed/70t3vUgk2UE', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l12', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239049&hash=bfdfb2d70c39db1c&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Проверить получение существующего ID.</li> <li>Проверить 404 на несуществующий ID.</li> </ul> </div> <div id="l13" class="lesson-block"> <h2 class="lesson-title">13. POST Запросы</h2> <p class="lesson-desc">Создание данных и фазинг.</p> <div class="video-responsive"> <iframe id="vid-l13" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239050&hash=f27a6577b32a224c&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l13', 'https://www.youtube.com/embed/Dit81BMs0hY', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l13', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239050&hash=f27a6577b32a224c&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://owasp.org/www-community/Fuzzing" target="_blank">Статья: Что такое Фазинг (OWASP)</a></li> <li><a href="https://habr.com/ru/companies/otus/articles/814901/" target="_blank">Статья: Фазинг на Хабре</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Создать юзера с невалидным возрастом.</li> <li>Попробовать фазинг.</li> </ul> </div> <div id="l14" class="lesson-block"> <h2 class="lesson-title">14. PATCH Запросы</h2> <p class="lesson-desc">Изменение данных и цикл жизни.</p> <div class="video-responsive"> <iframe id="vid-l14" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239051&hash=6866db5f4af5a993&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l14', 'https://www.youtube.com/embed/xfdrg_XNC4k', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l14', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239051&hash=6866db5f4af5a993&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://habr.com/ru/articles/868382/" target="_blank">PUT vs PATCH: в чем разница?</a></li> <li><a href="https://developer.mozilla.org/ru/docs/Glossary/Idempotent" target="_blank">Идемпотентность (MDN)</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Найти баг с ID в ответе PATCH.</li> </ul> </div> <div id="l15" class="lesson-block"> <h2 class="lesson-title">15. DELETE Запросы</h2> <p class="lesson-desc">Удаление данных.</p> <div class="video-responsive"> <iframe id="vid-l15" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239052&hash=56fa8d683201269f&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l15', 'https://www.youtube.com/embed/DiXCLeiiPuI', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l15', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239052&hash=56fa8d683201269f&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://www.geeksforgeeks.org/dbms/difference-between-soft-delete-and-hard-delete/" target="_blank">Soft Delete vs Hard Delete</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Удалить пользователя и проверить повторное удаление (404).</li> </ul> </div> <div id="l16" class="lesson-block"> <h2 class="lesson-title">16. Финал</h2> <p class="lesson-desc">Итоги и чек-лист.</p> <div class="video-responsive"> <iframe id="vid-l16" src="about:blank" data-src="https://vkvideo.ru/video_ext.php?oid=805830968&id=456239053&hash=73927c3fbca5daf3&hd=3" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l16', 'https://www.youtube.com/embed/qW5RPB3gCag', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l16', 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239053&hash=73927c3fbca5daf3&hd=3', this)"><span class="dot dot-vk"></span>VK</button> </div> <div class="block-header">&#128218; Материалы</div> <ul class="materials-list"> <li><a href="https://disk.yandex.com/d/FNVJQjxCMb1XRA" target="_blank">Финальный чек-лист</a></li> <li><a href="https://forms.gle/5jFYny1MNbwXdNtq5" target="_blank">Форма обратной связи</a></li> </ul> <div class="block-header">&#9989; Задание</div> <ul class="task-list"> <li>Заполнить форму фидбека.</li> </ul> </div> </div> </div> <script>
+    // ФУНКЦИЯ ДЛЯ УПРАВЛЕНИЯ МОБИЛЬНЫМ МЕНЮ
+    function toggleSidebar() {
+        var sidebar = document.querySelector('.course-sidebar');
+        sidebar.classList.toggle('expanded');
+    }
+
+    function openLesson(lessonId) {
+        var lessons = document.getElementsByClassName('lesson-block');
+        for (var i = 0; i < lessons.length; i++) {
+            lessons[i].classList.remove('active');
+            
+            // Lazy Loading: очищаем src скрытых iframe
+            var oldIframe = lessons[i].querySelector('iframe');
+            if (oldIframe) {
+               if (oldIframe.src && !oldIframe.src.includes('about:blank')) {
+                   oldIframe.setAttribute('data-src', oldIframe.src);
+               }
+               oldIframe.src = "about:blank";
+            }
+        }
+        
+        var target = document.getElementById(lessonId);
+        if (target) {
+            target.classList.add('active');
+            // Lazy Loading: восстанавливаем src
+            var iframe = target.querySelector('iframe');
+            var dataSrc = iframe.getAttribute('data-src');
+            if (iframe && dataSrc) {
+                iframe.src = dataSrc;
+            }
+        }
+
+        var btns = document.getElementsByClassName('lesson-btn');
+        var activeBtnId = 'btn-' + lessonId;
+        
+        for (var j = 0; j < btns.length; j++) {
+            if (btns[j].id === activeBtnId) {
+                btns[j].classList.add('active');
+            } else {
+                btns[j].classList.remove('active');
+            }
+        }
+        
+        // Автоматически закрываем меню на мобильном после выбора урока
+        if (window.innerWidth < 960) {
+            var sidebar = document.querySelector('.course-sidebar');
+            sidebar.classList.remove('expanded');
+        }
+        
+        window.scrollTo(0, 0);
+    }
+
+    function changeSource(lessonId, url, btn) {
+        if (url.includes('ВСТАВИТЬ') || url.includes('ССЫЛКА_НА_ФАЙЛ') || url === '') {
+            alert('Материал загружается...');
+            return;
+        }
+        var frame = document.getElementById('vid-' + lessonId);
+        if (frame) {
+            frame.src = url;
+            frame.setAttribute('data-src', url);
+        }
+        
+        var parent = btn.parentNode;
+        var tabs = parent.getElementsByClassName('src-btn');
+        for (var k = 0; k < tabs.length; k++) {
+            tabs[k].classList.remove('active');
+        }
+        btn.classList.add('active');
+    }
+</script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

@@ -1,0 +1,153 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="9622775" data-tilda-page-id="79978736" data-tilda-page-alias="test_learning_page" data-tilda-formskey="12901d9d87b681f2058c7a7f29622775" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1334278371" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!DOCTYPE html> <html lang="ru"> <head> <meta charset="utf-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>Практикум — Введение</title> <style>
+        :root {
+            --primary: #007bff;
+            --muted: #6c757d;
+            --bg: #ffffff;
+            --text: #111;
+            --link: #007bff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Inter, Roboto, Arial, sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+        .header {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            z-index: 10;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .brand { font-weight: 700; color: var(--primary); font-size: 18px; text-decoration: none; }
+
+        /* убрали .nav */
+.btn {
+    background: var(--primary);
+    color: #fff !important;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    font-weight: 500; /* было 600 — уменьшено для равенства */
+    font-size: 14px;
+    line-height: 1;
+    height: auto;
+}
+.btn:hover { opacity: 0.9; }
+
+        .layout { display: flex; flex-direction: column; padding: 24px 16px; gap: 16px; }
+        @media (min-width: 720px) { .layout { flex-direction: row; } }
+        .sidebar { width: 100%; max-width: 260px; padding-right: 16px; }
+        @media (min-width: 720px) { .sidebar { flex: 0 0 220px; } }
+        .main { flex: 1; }
+
+        .side-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap; }
+        @media (min-width: 720px) { .side-list { flex-direction: column; } }
+        .side-list a {
+            display: block; padding: 8px 10px; border-radius: 8px; color: var(--muted); text-decoration: none; font-weight: 600;
+        }
+        .side-list a.active { background: var(--primary); color: white !important; }
+
+        .lesson { display: none; outline: none !important; }
+        .lesson.active { display: block; outline: none; }
+        .h1 { font-size: 28px; margin: 0 0 12px; }
+        .section { margin-bottom: 18px; }
+
+        .video { position: relative; border-radius: 8px; overflow: hidden; background: #000; color: #fff; height: 0; padding-bottom: 56.25%; }
+        .video iframe, .video img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+        .doc-frame {
+            width: 100%;
+            height: 72vh;
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .doc-frame iframe { width: 100%; height: 100%; border: 0; }
+
+        .materials ol { padding-left: 18px; margin: 0; }
+        a { color: var(--link); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .task-list { padding-left: 18px; margin: 0; }
+        .task-item { margin-bottom: 6px; }
+        .small { color: var(--muted); font-size: 14px; }
+        .footer { padding: 20px 0; color: var(--muted); font-size: 14px; }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .materials a {
+            color: #007bff !important; /* гарантированно синий */
+            font-weight: 700;          /* жирный */
+            text-decoration: none;
+        }
+        .materials a:hover {
+            text-decoration: underline;
+        }
+        .materials strong {
+            font-weight: 700;
+        }
+
+
+    </style> </head> <body> <header class="header"> <div class="container header-inner"> <a href="#" class="brand">ПРАКТИКУМ</a> <div class="header-buttons"> <a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing"
+                   target="_blank" rel="noopener" class="btn">Документация</a> </div> </div> </header> <div class="container layout"> <aside class="sidebar" aria-label="Список уроков"> <ul id="sidebar" class="side-list"></ul> </aside> <main class="main" id="main" tabindex="-1"> <article class="lesson" data-title="Введение" id="lesson-intro" class="active"> <h1 class="h1">Введение</h1> <div class="section"> <h2 class="small">Введение в практикум</h2> <p>Добро пожаловать! В этом практикуме мы сразу перейдём к делу: ты получишь навык тестирования API, который сразу сможешь применить на реальных задачах. Включай видео и приступай к изучению!</p> </div> <div class="section video" aria-hidden="false"> <iframe src="https://www.youtube.com/embed/ССЫЛКА_НА_ВИДЕО" allowfullscreen></iframe> </div> <div class="section materials"> <h3>Полезные материалы</h3> <ol> <li>Скачать Postman: <a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">Postman — Скачать</a></li> <li>Postman Collection: <a href="https://drive.google.com/file/d/1hZm3vl41Gnz5IsGN5dOkRvSfYdwZOS8D/view?usp=drive_link" target="_blank" rel="noopener">Коллекция (Google Drive)</a></li> <li>Почта для любых вопросов: <a href="mailto:eddythetest@gmail.com">eddythetest@gmail.com</a></li> </ol> </div> <div class="section"> <h3>Задание</h3> <ol class="task-list"> <li class="task-item">Скачай и установи Postman для своей ОС.</li> <li class="task-item">Импортируй в Postman коллекцию "API Практикум Эда".</li> <li class="task-item">Найди в своём email ключ авторизации и вставь его в Headers коллекции.</li> </ol> </div> </article> <article class="lesson" data-title="Установка Postman2" id="lesson-setup"> <h1 class="h1">Установка Postman</h1> <div class="section"> <p class="small">Короткая инструкция по установке Postman на Windows/Mac/Linux. Добавь сюда скриншоты и шаги.</p> </div> <div class="section materials"> <h3>Полезные материалы</h3> <ol> <li><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">Скачать Postman</a></li> <li>Postman Collection: <a href="https://drive.google.com/file/d/1hZm3vl41Gnz5IsGN5dOkRvSfYdwZOS8D/view?usp=drive_link" target="_blank" rel="noopener"><strong>скачать с Google Drive</strong></a></li> <li><strong>Почта для вопросов и готовых заданий:</strong> eddythetest@gmail.com</li> </ol> </div> </article> </main> </div> <footer class="container footer"> <div>© API-практикум — короткие уроки, реальные баги</div> </footer> <script>
+        (function(){
+            const sidebar = document.getElementById('sidebar');
+            const lessons = Array.from(document.querySelectorAll('.lesson'));
+
+            lessons.forEach((lesson, idx) => {
+                const title = lesson.dataset.title || lesson.querySelector('h1')?.textContent?.trim() || 'Урок ' + (idx+1);
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#' + lesson.id;
+                a.textContent = title;
+                a.dataset.target = lesson.id;
+                a.addEventListener('click', function(e){
+                    e.preventDefault();
+                    showLesson(lesson.id, a);
+                    history.replaceState(null, '', '#' + lesson.id);
+                });
+                li.appendChild(a);
+                sidebar.appendChild(li);
+            });
+
+            function showLesson(id, linkEl){
+                lessons.forEach(l => l.classList.remove('active'));
+                Array.from(sidebar.querySelectorAll('a')).forEach(a=>a.classList.remove('active'));
+                const sel = document.getElementById(id);
+                if(sel) sel.classList.add('active');
+                if(linkEl) linkEl.classList.add('active');
+                document.getElementById('main').focus();
+                window.scrollTo({top:0,behavior:'smooth'});
+            }
+
+            const initialId = location.hash ? location.hash.replace('#','') : (lessons[0] && lessons[0].id);
+            const initialLink = sidebar.querySelector('a[data-target="'+initialId+'"]');
+            showLesson(initialId, initialLink);
+
+            document.getElementById('writeBtn').addEventListener('click', ()=>{ alert('Связь не настроена — placeholder'); });
+        })();
+    </script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

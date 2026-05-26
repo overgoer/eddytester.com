@@ -1,0 +1,100 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="9622775" data-tilda-page-id="71604261" data-tilda-page-alias="docs2" data-tilda-formskey="12901d9d87b681f2058c7a7f29622775" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1133856706" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <div class="api-docs"> <style>
+    .api-docs {
+      font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .api-docs h1, .api-docs h2, .api-docs h3 {
+      color: #333;
+    }
+    .api-docs pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .api-docs code {
+      font-family: "Fira Code", Consolas, "Courier New", monospace;
+    }
+    .api-docs details {
+      margin: 10px 0;
+    }
+    .api-docs summary {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 5px;
+      background: #e0e0e0;
+      border-radius: 5px;
+    }
+    .api-docs details[open] > summary {
+      background: #d0d0d0;
+    }
+    .api-docs details > *:not(summary) {
+      padding: 10px;
+    }
+    .api-docs ul {
+      padding-left: 20px;
+    }
+    .api-docs a {
+      color: #0056b3;
+      text-decoration: none;
+    }
+    .api-docs a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .api-docs {
+        padding: 10px;
+      }
+      .api-docs pre {
+        font-size: 14px;
+      }
+    }
+  </style> <h1>Документация API для Candidates API</h1> <h2>Оглавление</h2> <ul> <li><a href="#introduction">Введение</a></li> <li><a href="#overview">Обзор</a></li> <li><a href="#quick-start">Быстрый старт</a></li> <li><a href="#endpoints">Эндпоинты API</a></li> <li><a href="#data-format">Формат данных</a></li> <li><a href="#request-requirements">Требования к запросам</a></li> <li><a href="#developer-notes">Примечания для разработчиков</a></li> </ul> <details open> <summary id="introduction">Введение</summary> <p>Добро пожаловать в документацию API сервиса <code>Candidates API</code>! Этот API предоставляет простой и удобный способ управления кандидатами на вакансии. Документация предназначена для разработчиков и тестировщиков, начинающих работу с API, и содержит всю необходимую информацию для интеграции и использования.</p> </details> <details> <summary id="overview">Обзор</summary> <ul> <li><strong>Название API:</strong> Candidates API</li> <li><strong>Версия:</strong> 1.0.0</li> <li><strong>Базовый URL:</strong> <code>https://v0-test-api-ten.vercel.app/</code></li> <li><strong>Формат данных:</strong> JSON</li> <li><strong>Аутентификация:</strong> Требуется API-ключ</li> </ul> <p>API предоставляет CRUD-доступ к записям пользователей по эндпоинтам <code>/v1/api/users</code>. Все запросы отправляются через HTTPS.</p> </details> <details> <summary id="quick-start">Быстрый старт</summary> <h3>Требования</h3> <ul> <li>Postman или любой другой инструмент для HTTP-запросов</li> <li><a href="https://www.postman.com/downloads/">Скачать Postman</a></li> </ul> <h3>Пример запроса (Postman)</h3> <ol> <li>Установите <code>https://v0-test-api-ten.vercel.app/</code> как базовый URL</li> <li>Добавьте заголовок <code>X-Fix-Bug: ВАШ_API_КЛЮЧ</code></li> <li>Отправьте любой из запросов ниже</li> </ol> </details> <details> <summary id="endpoints">Эндпоинты API</summary> <details> <summary>1. Получение списка пользователей</summary> <ul> <li><strong>Метод:</strong> GET</li> <li><strong>URL:</strong> <code>/v1/api/users</code></li> <li><strong>Описание:</strong> Возвращает список всех пользователей. Можно передать необязательный query-параметр <code>status</code>: <code>minor</code>, <code>candidate</code>, <code>retired</code>.</li> <li><strong>Пример запроса:</strong> <pre><code>GET /v1/api/users?status=candidate</code></pre> </li> <li><strong>Пример ответа:</strong> <pre><code>[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "age": 25,
+    "status": "candidate"
+  }
+]</code></pre> </li> </ul> </details> <details> <summary>2. Получение пользователя по ID</summary> <ul> <li><strong>Метод:</strong> GET</li> <li><strong>URL:</strong> <code>/v1/api/users/{id}</code></li> <li><strong>Описание:</strong> Возвращает одного пользователя по ID.</li> <li><strong>Пример запроса:</strong> <pre><code>GET /v1/api/users/1</code></pre> </li> <li><strong>Пример ответа:</strong> <pre><code>{
+  "id": 1,
+  "name": "John Doe",
+  "age": 25,
+  "status": "candidate"
+}</code></pre> </li> </ul> </details> <details> <summary>3. Создание нового пользователя</summary> <ul> <li><strong>Метод:</strong> POST</li> <li><strong>URL:</strong> <code>/v1/api/users</code></li> <li><strong>Описание:</strong> Создает нового пользователя. Обязательные поля:
+          <ul> <li><code>name</code>: строка, только латиница, пробелы, тире</li> <li><code>age</code>: число, ≥ 0</li> </ul> </li> <li><strong>Пример запроса:</strong> <pre><code>{
+  "name": "Jane Smith",
+  "age": 30
+}</code></pre> </li> <li><strong>Пример ответа:</strong> <pre><code>{
+  "id": 2,
+  "name": "Jane Smith",
+  "age": 30,
+  "status": "candidate"
+}</code></pre> </li> </ul> </details> <details> <summary>4. Обновление пользователя</summary> <ul> <li><strong>Метод:</strong> PATCH</li> <li><strong>URL:</strong> <code>/v1/api/users/{id}</code></li> <li><strong>Описание:</strong> Обновляет данные пользователя. Требования к полям:
+          <ul> <li><code>name</code>: строка, латиница, пробелы, тире</li> <li><code>age</code>: число, ≥ 0</li> </ul> </li> <li><strong>Пример запроса:</strong> <pre><code>{
+  "name": "Updated Name",
+  "age": 66
+}</code></pre> </li> <li><strong>Пример ответа:</strong> <pre><code>{
+  "id": 2,
+  "name": "Updated Name",
+  "age": 66,
+  "status": "retired"
+}</code></pre> </li> </ul> </details> <details> <summary>5. Удаление пользователя</summary> <ul> <li><strong>Метод:</strong> DELETE</li> <li><strong>URL:</strong> <code>/v1/api/users/{id}</code></li> <li><strong>Описание:</strong> Удаляет пользователя по ID.</li> <li><strong>Пример запроса:</strong> <pre><code>DELETE /v1/api/users/2</code></pre> </li> <li><strong>Пример ответа:</strong> <pre><code>{
+  "message": "User deleted successfully",
+  "user": {
+    "id": 2,
+    "name": "Updated Name",
+    "age": 66,
+    "status": "retired"
+  }
+}</code></pre> </li> </ul> </details> </details> <details> <summary id="data-format">Формат данных</summary> <p><strong>Пользователь (User):</strong></p> <pre><code>{
+  "id": number,
+  "name": "string",
+  "age": number,
+  "status": "minor" | "candidate" | "retired"
+}</code></pre> <p><strong>Ошибки:</strong></p> <pre><code>{
+  "message": "string"
+}</code></pre> </details> <details> <summary id="request-requirements">Требования к запросам</summary> <ul> <li>Формат: JSON</li> <li>Заголовок <code>X-Fix-Bug</code> обязателен</li> <li>Метод PATCH и POST требуют <code>Content-Type: application/json</code></li> </ul> </details> <details> <summary id="developer-notes">Примечания для разработчиков</summary> <ul> <li>API доступен 24/7</li> <li>Рекомендуется использовать Postman для отладки</li> </ul> </details> </div> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords-->

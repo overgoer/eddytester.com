@@ -1,0 +1,47 @@
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+
+DirectoryIndex page59219523.html
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} /robots.txt
+RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
+RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]
+RewriteRule ^consult$ page59219523.html [NC]
+RewriteRule ^consult/$ page59219523.html [NC]
+
+RewriteRule ^api$ page64392263.html [NC]
+RewriteRule ^api/$ page64392263.html [NC]
+
+RewriteRule ^api_oferta$ page65082509.html [NC]
+RewriteRule ^api_oferta/$ page65082509.html [NC]
+
+RewriteRule ^api_docs$ page65526529.html [NC]
+RewriteRule ^api_docs/$ page65526529.html [NC]
+
+RewriteRule ^test_layout$ page71319435.html [NC]
+RewriteRule ^test_layout/$ page71319435.html [NC]
+
+RewriteRule ^docs2$ page71604261.html [NC]
+RewriteRule ^docs2/$ page71604261.html [NC]
+
+RewriteRule ^oferta_api_eddytester$ page73441323.html [NC]
+RewriteRule ^oferta_api_eddytester/$ page73441323.html [NC]
+
+RewriteRule ^pers_data_policy$ page77510526.html [NC]
+RewriteRule ^pers_data_policy/$ page77510526.html [NC]
+
+RewriteRule ^test_learning_page$ page79978736.html [NC]
+RewriteRule ^test_learning_page/$ page79978736.html [NC]
+
+RewriteRule ^glearning$ page101846156.html [NC]
+RewriteRule ^glearning/$ page101846156.html [NC]
+
+RewriteRule ^api-practicum$ page101918416.html [NC]
+RewriteRule ^api-practicum/$ page101918416.html [NC]
+
+RewriteRule ^designlearning$ page101922726.html [NC]
+RewriteRule ^designlearning/$ page101922726.html [NC]
+
+

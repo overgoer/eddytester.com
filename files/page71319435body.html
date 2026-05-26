@@ -1,0 +1,403 @@
+<!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="9622775" data-tilda-page-id="71319435" data-tilda-page-alias="test_layout" data-tilda-formskey="12901d9d87b681f2058c7a7f29622775" data-tilda-cookie="no" data-tilda-lazy="yes" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1122632201" class="r t-rec" style=" " data-animationappear="off" data-record-type="131"> <!-- T123 --> <div class="t123"> <div class="t-container_100 "> <div class="t-width t-width_100 "> <!-- nominify begin --> <!DOCTYPE html> <html lang="ru"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Практикум - Задача 1</title> <script src="https://cdn.tailwindcss.com/3.4.16"></script> <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#007bff", secondary: "#6c757d" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script> <link rel="preconnect" href="https://fonts.googleapis.com" /> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    /> <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    /> <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      body {
+      font-family: 'Inter', 'Roboto', 'Arial', sans-serif;
+      }
+      .active-task {
+      background-color: #007bff;
+      color: white !important;
+      }
+      .sidebar-link {
+          font-weight: 600;
+      transition: all 0.2s ease-in-out;
+      }
+      .sidebar-link:hover:not(.active-task) {
+      background-color: #f0f9ff;
+      }
+      .video-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      }
+      .video-container::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      }
+      .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 64px;
+      height: 64px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      }
+      .play-button:hover {
+      background-color: rgba(255, 255, 255, 1);
+      }
+      .task-list-item {
+      position: relative;
+      padding-left: 1.5rem;
+      }
+      .task-list-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.5rem;
+      width: 0.5rem;
+      height: 0.5rem;
+      background-color: #007bff;
+      border-radius: 50%;
+      }
+    </style> </head> <body class="bg-white min-h-screen"> <!-- Верхняя навигация --> <header class="sticky top-0 bg-white shadow-sm z-10"> <div
+        class="container mx-auto px-4 py-3 flex items-center justify-between"
+      > <a href="#" class="text-primary text-xl font-bold">ПРАКТИКУМ</a> <nav class="hidden md:flex items-center space-x-8"> <a href="#" class="text-gray-600 hover:text-primary">Сетап</a> <a href="#" class="text-gray-600 hover:text-primary">Уроки</a> <a href="#" class="text-gray-600 hover:text-primary">Документация</a> <a href="#" class="text-gray-600 hover:text-primary">О курсе</a> </nav> <button
+          class="flex items-center bg-primary text-white px-4 py-2 rounded-button whitespace-nowrap"
+        > <span class="w-5 h-5 flex items-center justify-center mr-2"> <i class="ri-edit-line"></i> </span>
+          Написать
+        </button> </div> </header> <div class="container mx-auto px-4 flex flex-col md:flex-row"> <!-- Боковая панель --> <aside class="w-full md:w-64 py-8 md:pr-8"> <nav class="flex flex-col space-y-2"> <a
+            href="#"
+            class="sidebar-link active-task px-4 py-2 rounded-md"
+            data-title="Введение"
+            >Тест-дизайн</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Postman"
+            >Postman</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Задача 1"
+            >Задача 1</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Задача 2"
+            >Задача 2</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Задача 3"
+            >Задача 3</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Задача 4"
+            >Задача 4</a
+          > <a
+            href="#"
+            class="sidebar-link text-gray-700 px-4 py-2 rounded-md"
+            data-title="Задача 5"
+            >Задача 5</a
+          > </nav> </aside> <!-- Основной контент --> <main class="flex-1 py-8"> <h1 class="text-4xl font-bold mb-8">Задача 1</h1> <div class="mb-6"> <div class="mb-2"> <span class="font-medium">Метод:</span> <span class="text-primary">GET</span> </div> <div class="mb-4"> <span class="font-medium">URL:</span> <span class="text-gray-700">xxxxxxxx</span> </div> <p class="text-gray-700 mb-2">Посмотри видео и выполни задания.</p> <p class="text-gray-700 mb-6">
+            Всю необходимую информацию ты найдешь по ссылкам ниже.
+          </p> </div> <!-- Видео контейнер --> <div class="video-container mb-8"> <img
+            src="https://readdy.ai/api/search-image?query=A%20person%20explaining%20API%20testing%20with%20Postman%2C%20showing%20a%20computer%20screen%20with%20code%20and%20Postman%20interface%2C%20professional%20lighting%2C%20educational%20setting%2C%20high%20quality%20tutorial%20video&width=800&height=450&seq=1&orientation=landscape"
+            alt="Видео о тестировании API"
+            class="w-full h-auto object-cover"
+          /> <div class="play-button"> <span class="w-8 h-8 flex items-center justify-center text-primary"> <i class="ri-play-fill ri-2x"></i> </span> </div> </div> <!-- Полезные материалы --> <div class="mb-8"> <h2 class="text-2xl font-bold mb-4">Полезные материалы</h2> <ol class="list-decimal pl-5 space-y-2"> <li> <span>Статья на хабре: </span> <a href="#" class="text-primary hover:underline"
+                >Как тестировать GET</a
+              > </li> <li> <span>Публикация на Github: </span> <a href="#" class="text-primary hover:underline"
+                >Все что нужно знать о GET</a
+              > </li> <li> <span>Видео о Postman: </span> <a href="#" class="text-primary hover:underline">Ловушки GET</a> </li> </ol> </div> <!-- Задание --> <div> <h2 class="text-2xl font-bold mb-4">Задание</h2> <ol class="space-y-3"> <li class="task-list-item">Протестируй метод в Postman</li> <li class="task-list-item">Найди не менее 3 багов</li> <li class="task-list-item">
+              Составь баг-репорты на каждый баг по шаблону
+            </li> <li class="task-list-item">
+              Напиши тест-кейсы по шаблону из документации
+            </li> <li class="task-list-item">
+              Отправь Эду выполненное задание в Телеграм
+            </li> <li class="task-list-item">
+              Если ты все сделал верно - получишь исправленный метод, чтобы
+              протестировать его
+            </li> </ol> </div> </main> </div> <script id="videoPlayerScript">
+      document.addEventListener("DOMContentLoaded", function () {
+        const playButton = document.querySelector(".play-button");
+        if (playButton) {
+          playButton.addEventListener("click", function () {
+            // Здесь можно добавить логику для воспроизведения видео
+            alert("Запуск видео");
+          });
+        }
+      });
+    </script> <script id="navigationScript">
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebarLinks = document.querySelectorAll(".sidebar-link");
+        const mainTitle = document.querySelector("h1");
+        const contentArea = document.querySelector("main");
+        const contents = {
+          "Введение": {
+            description: "Изучите основы тест-дизайна и техники тестирования.",
+            videoQuery:
+              "Professional software tester explaining test design techniques with diagrams and flowcharts on a modern whiteboard, educational setting",
+            materials: [
+              ["Скачать Postman", "postman.com/downloads"],
+              ["Github", "Примеры тест-кейсов"],
+              ["Видео", "Введение в тест-дизайн"],
+            ],
+            tasks: [
+              "Изучите техники тест-дизайна",
+              "Составьте тест-кейсы для калькулятора",
+              "Применить технику попарного тестирования",
+              "Создать диаграмму состояний",
+              "Написать граничные значения",
+              "Отправить работу на проверку",
+            ],
+          },
+          Postman: {
+            method: "POST",
+            url: "api/v1/postman-intro",
+            description: "Освойте основные функции Postman для тестирования API.",
+            videoQuery:
+              "Developer working with Postman API testing tool, showing REST API requests and responses on screen, professional setup",
+            materials: [
+              ["Статья на хабре", "Postman для начинающих"],
+              ["Github", "Коллекция Postman"],
+              ["Видео", "API тестирование"],
+            ],
+            tasks: [
+              "Установить и настроить Postman",
+              "Создать первый запрос",
+              "Написать простой тест",
+              "Создать коллекцию",
+              "Настроить окружение",
+              "Запустить автотесты",
+            ],
+          },
+          "Задача 1": {
+            method: "PUT",
+            url: "api/v1/task1",
+            description: "Выполните практическое задание по работе с методами API.",
+            videoQuery:
+              "Software developer explaining REST API concepts with modern diagrams and code examples, professional teaching environment",
+            materials: [
+              ["Статья на хабре", "REST API основы"],
+              ["Github", "Примеры запросов"],
+              ["Видео", "HTTP методы"],
+            ],
+            tasks: [
+              "Изучить документацию API",
+              "Создать тестовые данные",
+              "Выполнить PUT запрос",
+              "Проверить ответ сервера",
+              "Написать отчет",
+              "Исправить ошибки",
+            ],
+          },
+          "Задача 2": {
+            method: "DELETE",
+            url: "api/v1/task2",
+            description: "Научитесь работать с методом DELETE и обработкой ошибок.",
+            videoQuery:
+              "Professional explaining error handling in API testing with modern diagrams and code examples on screen, educational environment",
+            materials: [
+              ["Статья на хабре", "Обработка ошибок"],
+              ["Github", "Примеры DELETE"],
+              ["Видео", "REST API практика"],
+            ],
+            tasks: [
+              "Подготовить тестовые данные",
+              "Выполнить DELETE запрос",
+              "Проверить статус код",
+              "Написать тест-кейс",
+              "Составить отчет",
+              "Получить обратную связь",
+            ],
+          },
+          "Задача 3": {
+            method: "PATCH",
+            url: "api/v1/task3",
+            description: "Изучите частичное обновление ресурсов через PATCH.",
+            videoQuery:
+              "Developer demonstrating PATCH requests in API testing with modern interface and code examples, professional setup",
+            materials: [
+              ["Статья на хабре", "PATCH vs PUT"],
+              ["Github", "PATCH примеры"],
+              ["Видео", "Частичное обновление"],
+            ],
+            tasks: [
+              "Изучить PATCH запросы",
+              "Создать тестовые данные",
+              "Выполнить обновление",
+              "Проверить результат",
+              "Написать отчет",
+              "Получить фидбек",
+            ],
+          },
+          "Задача 4": {
+            method: "GET",
+            url: "api/v1/task4",
+            description: "Работа с параметрами запроса и фильтрацией данных.",
+            videoQuery:
+              "Expert explaining API query parameters and data filtering with modern diagrams and examples, professional teaching setup",
+            materials: [
+              ["Статья на хабре", "Параметры запроса"],
+              ["Github", "Примеры фильтрации"],
+              ["Видео", "Работа с данными"],
+            ],
+            tasks: [
+              "Изучить параметры запроса",
+              "Создать фильтры",
+              "Проверить результаты",
+              "Написать тест-кейсы",
+              "Оформить отчет",
+              "Отправить на проверку",
+            ],
+          },
+          "Задача 5": {
+            method: "POST",
+            url: "api/v1/task5",
+            description: "Финальное задание по работе с API и документацией.",
+            videoQuery:
+              "Professional teaching API documentation best practices with modern tools and examples, educational environment",
+            materials: [
+              ["Статья на хабре", "Документация API"],
+              ["Github", "Swagger примеры"],
+              ["Видео", "Финальный проект"],
+            ],
+            tasks: [
+              "Изучить документацию",
+              "Создать тестовый план",
+              "Выполнить тестирование",
+              "Написать отчет",
+              "Подготовить презентацию",
+              "Защитить проект",
+            ],
+          },
+        };
+        function updateContent(title) {
+          const content = contents[title];
+          mainTitle.textContent = title;
+          contentArea.innerHTML = `
+      <h1 class="text-4xl font-bold mb-8">${title}</h1> <div class="mb-6"> <div class="mb-2"> <span class="font-medium">Метод:</span> <span class="text-primary">${content.method}</span> </div> <div class="mb-4"> <span class="font-medium">URL:</span> <span class="text-gray-700">${content.url}</span> </div> <p class="text-gray-700 mb-2">${content.description}</p> <p class="text-gray-700 mb-6">Всю необходимую информацию ты найдешь по ссылкам ниже.</p> </div> <div class="video-container mb-8"> <img src="https://readdy.ai/api/search-image?query=$%7BencodeURIComponent%28content.videoQuery%29%7D&width=800&height=450&seq=1&orientation=landscape" alt="Обучающее видео" class="w-full h-auto object-cover"> <div class="play-button"> <span class="w-8 h-8 flex items-center justify-center text-primary"> <i class="ri-play-fill ri-2x"></i> </span> </div> </div> <div class="mb-8"> <h2 class="text-2xl font-bold mb-4">Полезные материалы</h2> <ol class="list-decimal pl-5 space-y-2">
+      ${content.materials
+        .map(
+          ([type, title]) => `
+      <li> <span>${type}: </span> <a href="#" class="text-primary hover:underline">${title}</a> </li>
+      `,
+        )
+        .join("")}
+      </ol> </div> <div> <h2 class="text-2xl font-bold mb-4">Задание</h2> <ol class="space-y-3">
+      ${content.tasks
+        .map(
+          (task) => `
+      <li class="task-list-item">${task}</li>
+      `,
+        )
+        .join("")}
+      </ol> </div>
+      `;
+          const playButton = document.querySelector(".play-button");
+          if (playButton) {
+            playButton.addEventListener("click", function () {
+              alert("Запуск видео");
+            });
+          }
+        }
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            sidebarLinks.forEach((l) => {
+              l.classList.remove("active-task");
+              l.classList.add("text-gray-700");
+            });
+            this.classList.add("active-task");
+            this.classList.remove("text-gray-700");
+            updateContent(this.getAttribute("data-title"));
+          });
+        });
+        updateContent("Введение");
+      });
+    </script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> <div id="rec1122638491" class="r t-rec t-rec_pt_135 t-rec_pb_135" style="padding-top:135px;padding-bottom:135px; " data-animationappear="off" data-record-type="817"> <!-- t817 --> <div class="t817"> <div class="t-container t-align_left"> <div class="t817__col t-col t-col_10 t-prefix_1"> <ul class="t817__wrapper" role="tablist" data-tab-current="1"> <li class="t817__tab"
+role="presentation" data-tab-number="1"> <button
+type="button"
+class="t817__tab-name t-name t-name_xs"
+id="tab1_1122638491"
+role="tab"
+aria-selected="false"
+aria-controls="content-tab1_1122638491"
+tabindex="-1">Literature</button> </li> <li class="t817__tab"
+role="presentation" data-tab-number="2"> <button
+type="button"
+class="t817__tab-name t-name t-name_xs"
+id="tab2_1122638491"
+role="tab"
+aria-selected="false"
+aria-controls="content-tab2_1122638491"
+tabindex="-1">History</button> </li> <li class="t817__tab"
+role="presentation" data-tab-number="3"> <button
+type="button"
+class="t817__tab-name t-name t-name_xs"
+id="tab3_1122638491"
+role="tab"
+aria-selected="false"
+aria-controls="content-tab3_1122638491"
+tabindex="-1">Architecture</button> </li> </ul> <div class="t817__wrapper_mobile"> <div class="t817__firefoxfix" style="top: 1px;bottom: 1px;right: 1px;background-color: #eeeeee;"></div> <select class="t817__select t-name" style="color: #000;border-color: #eeeeee;background-color: #eeeeee;" data-tab-mobile-number="1"> <option class="t817__tab-name_mobile" value="1">Literature</option> <option class="t817__tab-name_mobile" value="2">History</option> <option class="t817__tab-name_mobile" value="3">Architecture</option> </select> </div> <div class="t817__content-row"> <div
+id="content-tab1_1122638491"
+class="t817__content"
+role="tabpanel" data-tab-content-number="1"
+aria-labelledby="tab1_1122638491"
+tabindex="0"
+style=" border-width: 1px;"> <div class="t817__content-col t817__content-col_2"> <img class="t-img"
+src="images/tild3661-6261-4231-a665-356537323830__-__empty__maciej-ostrowski-384.jpg" data-original="images/tild3661-6261-4231-a665-356537323830__maciej-ostrowski-384.jpg"
+imgfield="li_img__8327444515830"
+alt=""> </div> <div class="t817__content-col t817__content-col_2" style="padding-top:20px;padding-bottom:20px;"> <div class="t817__title t-heading t-heading_sm" field="li_title__8327444515830"><strong></strong>Literature course for people who can't live without books</div> <div class="t-text t-text_sm" field="li_text__8327444515830">You will study English Literature, an introduction to key aspects central to the study of English Literature. You will also choose an optional course from another subject area.</div> </div> </div> <div
+id="content-tab2_1122638491"
+class="t817__content"
+role="tabpanel" data-tab-content-number="2"
+aria-labelledby="tab2_1122638491"
+tabindex="0"
+hidden
+style=" border-width: 1px;"> <div class="t817__content-col t817__content-col_2"> <img class="t-img"
+src="images/tild3030-6138-4732-b063-613861626632__-__empty__alexis-brown-82988.jpg" data-original="images/tild3030-6138-4732-b063-613861626632__alexis-brown-82988.jpg"
+imgfield="li_img__8327444515831"
+alt=""> </div> <div class="t817__content-col t817__content-col_2" style="padding-top:20px;padding-bottom:20px;"> <div class="t817__title t-heading t-heading_sm" field="li_title__8327444515831">History course for people who are interested in art</div> <div class="t-text t-text_sm" field="li_text__8327444515831">You will study History of Art, which covers the period from the fall of the Roman Empire until the end of the Counter-Reformation. This will include non-Western material.</div> </div> </div> <div
+id="content-tab3_1122638491"
+class="t817__content"
+role="tabpanel" data-tab-content-number="3"
+aria-labelledby="tab3_1122638491"
+tabindex="0"
+hidden
+style=" border-width: 1px;"> <div class="t817__content-col t817__content-col_1"> <img class="t-img"
+src=""
+imgfield="li_img__8327444515832"
+alt=""> </div> <div class="t817__content-col t817__content-col_1" style=""> <div class="t817__title t-heading t-heading_sm" field="li_title__8327444515832">Architecture course for all curious people</div> <div class="t-text t-text_sm" field="li_text__8327444515832">The history of architecture traces the changes in architecture through various traditions, regions, overarching stylistic trends, and dates. You will study Architectural History, which is a survey from antiquity to the present day. An introduction to key aspects central to the study of Architectural History. You will also choose an optional course from another subject area.</div> </div> </div> </div> </div> </div> </div> <style>#rec1122638491 .t817__tab_active{border:1px solid #eeeeee;border-bottom-width:0;border-top-width:0;background-color:#ffffff;}#rec1122638491 .t817__tab_active:before{background-color:#1f5bff;}#rec1122638491 .t817__tab_active:after{height:1px;bottom:-1px;background-color:#ffffff;}#rec1122638491 .t817__tab_active .t817__tab-name{color:;font-weight:600 !important;}#rec1122638491 .t817__wrapper_mobile:after{border-color:#000 transparent transparent transparent;}#rec1122638491 .t817__tab:not(.t817__tab_active):hover .t817__tab-name{opacity:0.7;}#rec1122638491 .t817__tab-name:focus-visible{opacity:0.7;}</style> <script>t_onReady(function() {t_onFuncLoad('t817_init',function() {t817_init('1122638491');});});</script> <style> #rec1122638491 .t817__tab-name{font-size:14px;font-weight:400;}</style> </div> </div> <!--/allrecords-->
