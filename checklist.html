@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Охота на баги</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 220px;
+      background: #161b22;
+      border-right: 1px solid #30363d;
+      padding: 20px 0;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      padding: 0 16px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+      font-size: 14px;
+    }
+    .nav-item:hover { background: #1c2128; }
+    .nav-item.active {
+      background: #1c2128;
+      border-left-color: #3fb950;
+    }
+    .nav-method {
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .nav-method.post { background: #23863622; color: #3fb950; }
+    .nav-method.get  { background: #1f6feb22; color: #58a6ff; }
+    .nav-method.patch { background: #d2992222; color: #d29922; }
+    .nav-method.delete { background: #da363322; color: #f85149; }
+    .nav-path {
+      font-family: monospace;
+      font-size: 12px;
+      color: #8b949e;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item.active .nav-path { color: #c9d1d9; }
+
+    .main {
+      flex: 1;
+      padding: 32px 40px;
+      max-width: 720px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .subtitle {
+      color: #8b949e;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .endpoint-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    .endpoint-header {
+      background: #1c2128;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #30363d;
+    }
+    .method-badge {
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+    .method-badge.post { background: #23863622; color: #3fb950; }
+    .method-badge.get  { background: #1f6feb22; color: #58a6ff; }
+    .method-badge.patch { background: #d2992222; color: #d29922; }
+    .method-badge.delete { background: #da363322; color: #f85149; }
+    .endpoint-path {
+      font-size: 16px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .bugs-list { padding: 8px 20px 16px; }
+    .bug-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+      border: 1px solid transparent;
+    }
+    .bug-item:first-child { margin-top: 0; }
+    .bug-item:hover { background: #1c2128; }
+    .bug-item.disabled { opacity: 0.6; pointer-events: none; }
+    .bug-item.selected {
+      border-color: #30363d;
+      background: #1c2128;
+    }
+    .bug-item.correct {
+      background: #23863615;
+      border-color: #238636;
+    }
+    .bug-item.correct .bug-name { color: #3fb950; }
+    .bug-item.wrong {
+      background: #da363315;
+      border-color: #da3633;
+    }
+    .bug-item.wrong .bug-name { color: #f85149; }
+
+    .check {
+      width: 22px; height: 22px;
+      border: 2px solid #484f58;
+      border-radius: 5px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: all 0.15s;
+      font-size: 13px;
+    }
+    .bug-item.selected .check {
+      border-color: #58a6ff;
+      background: #58a6ff22;
+    }
+    .bug-item.selected .check::after { content: '✓'; color: #58a6ff; }
+    .bug-item.correct .check {
+      border-color: #3fb950;
+      background: #3fb950;
+    }
+    .bug-item.correct .check::after { content: '✓'; color: #fff; }
+    .bug-item.wrong .check {
+      border-color: #f85149;
+      background: #f8514922;
+    }
+    .bug-item.wrong .check::after { content: '✕'; color: #f85149; }
+    .bug-content { flex: 1; min-width: 0; }
+    .bug-name { font-size: 14px; font-weight: 500; }
+    .bug-hint {
+      font-size: 12px;
+      color: #8b949e;
+      margin-top: 3px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      padding: 0 20px 20px;
+    }
+    .btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: #238636;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #2ea043; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-secondary {
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+    .btn-secondary:hover { background: #30363d; }
+
+    .toast {
+      display: none;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 20px 12px;
+      border-radius: 8px;
+    }
+    .toast.show { display: block; animation: fadeIn 0.3s ease; }
+    .toast.success { background: #23863622; border: 1px solid #238636; color: #3fb950; }
+    .toast.error { background: #da363315; border: 1px solid #da3633; color: #f85149; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .firework {
+      position: fixed;
+      pointer-events: none;
+      font-size: 36px;
+      animation: fireworkAnim 1s ease-out forwards;
+    }
+    @keyframes fireworkAnim {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-180px) scale(0.3); }
+    }
+    .think-emoji {
+      position: fixed;
+      pointer-events: none;
+      font-size: 32px;
+      animation: thinkAnim 1.2s ease-out forwards;
+    }
+    @keyframes thinkAnim {
+      0% { opacity: 1; transform: translateY(0) scale(0.5) rotate(-10deg); }
+      50% { opacity: 1; transform: translateY(-100px) scale(1.2) rotate(10deg); }
+      100% { opacity: 0; transform: translateY(-200px) scale(0.8) rotate(0deg); }
+    }
+
+    /* Auth screen */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0d1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .auth-overlay.hidden { display: none; }
+    .auth-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 40px;
+      width: 400px;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .auth-box h1 {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .auth-box p {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #c9d1d9;
+      font-size: 15px;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .auth-input:focus { border-color: #58a6ff; }
+    .auth-input::placeholder { color: #484f58; }
+    .auth-error {
+      color: #f85149;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+    .auth-error.show { display: block; }
+    .auth-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      background: #238636;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .auth-btn:hover { background: #2ea043; }
+    .auth-key-hint {
+      font-size: 12px;
+      color: #484f58;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-box">
+      <h1>🔍 Охота на баги</h1>
+      <p>Введи свой API-ключ, чтобы начать</p>
+      <input class="auth-input" id="authInput" type="text" placeholder="api-key-..." autofocus>
+      <div class="auth-error" id="authError">Введи API-ключ</div>
+      <button class="auth-btn" id="authBtn">Начать</button>
+      <div class="auth-key-hint">Ключ сохраняется в браузере.<br>Тестовый ключ: <strong>test-key-123</strong></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-title">🔍 Охота на баги</div>
+    <div id="nav"></div>
+  </div>
+
+  <div class="main">
+    <p class="subtitle">Выбери метод, протестируй его и отметь, какие баги ты нашёл.</p>
+
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge" id="methodBadge">POST</span>
+        <span class="endpoint-path" id="endpointPath">/v1/api/users</span>
+      </div>
+      <div class="bugs-list" id="bugsContainer"></div>
+      <div class="toast" id="toast"></div>
+      <div class="actions">
+        <button class="btn btn-primary" id="submitBtn" disabled>Проверить</button>
+        <button class="btn btn-secondary" id="resetBtn">Сбросить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINTS = [
+      {
+        id: 'get-users',
+        method: 'GET',
+        path: '/v1/api/users',
+        bugs: [
+          { id: 'g_status_case',   name: 'Status-фильтр чувствителен к регистру', hint: '?status=MINOR vs ?status=minor' },
+          { id: 'g_pagination',    name: 'Нет пагинации', hint: 'Попробуй ?limit= или ?page=' },
+          { id: 'g_comma',         name: 'Comma-separated статусы игнорируются', hint: '?status=minor,candidate → []' },
+          { id: 'g_sort',          name: 'Параметр sort=name не сортирует', hint: 'GET /v1/api/users?sort=name' },
+          { id: 'g_cache',         name: 'Ответ кэшируется на 3 минуты (public)', hint: 'Cache-Control в заголовках' },
+          { id: 'g_empty_status',  name: 'Пустой статус ?status= — 500 ошибка', hint: 'GET /v1/api/users?status=' },
+          { id: 'g_status_any',    name: 'Любой левый статус — 200 вместо 400', hint: '?status=banana → пустой []' },
+          { id: 'g_total_count',   name: 'Нет заголовка X-Total-Count', hint: 'Посмотри заголовки ответа' },
+          { id: 'g_cache_info',    name: 'X-Cache-Info утекает наружу', hint: 'Посмотри все заголовки ответа' },
+          { id: 'g_encoding',      name: 'Кириллица в имени отображается кракозябрами', hint: 'Создай пользователя с именем "Иван"' },
+          { id: 'g_security',      name: 'Нет X-Content-Type-Options и X-Frame-Options', hint: 'Сравни заголовки V1 и V2' },
+          { id: 'g_content_type',  name: 'Content-Type: text/plain вместо application/json', hint: 'Заголовок Content-Type в ответе' },
+        ],
+        correct: ['g_status_case', 'g_status_any', 'g_comma', 'g_cache', 'g_cache_info', 'g_security', 'g_content_type'],
+      },
+      {
+        id: 'post-users',
+        method: 'POST',
+        path: '/v1/api/users',
+        bugs: [
+          { id: 'p_name_special', name: 'Цифры и спецсимволы в имени проходят', hint: 'name: "123!@#"' },
+          { id: 'p_name_trim',    name: 'Имя не триммится (пробелы сохраняются)', hint: 'Попробуй "  Алиса  "' },
+          { id: 'p_age_17',       name: 'Возраст 17 проходит (граница должна быть 18)', hint: 'Граничное значение снизу' },
+          { id: 'p_empty_body',   name: 'Пустое тело запроса — 200 вместо 400', hint: 'Отправь POST с пустым {}' },
+          { id: 'p_passes',       name: 'Создаёт 2 screening pass вместо 1', hint: 'GET /v1/api/passes' },
+          { id: 'p_name_length',  name: 'Нет ограничения длины имени', hint: 'Попробуй 500 символов' },
+          { id: 'p_age_string',   name: 'Возраст возвращается строкой', hint: 'typeof age в ответе' },
+          { id: 'p_extra_field',  name: 'Лишние поля в теле не игнорируются', hint: 'Добавь role: "admin" в тело' },
+          { id: 'p_age_66',       name: 'Возраст 66+ отклоняется (400)', hint: 'age: 70 — граница сверху' },
+          { id: 'p_status_17',    name: 'Возраст 17 — статус "minor" (должен быть "candidate")', hint: 'Проверь status в ответе' },
+        ],
+        correct: ['p_name_special', 'p_age_17', 'p_age_66', 'p_age_string', 'p_passes'],
+      },
+      {
+        id: 'get-user',
+        method: 'GET',
+        path: '/v1/api/users/:id',
+        bugs: [
+          { id: 'u_id_minus',     name: 'Запрос id=2 возвращает пользователя с id=1', hint: 'Сравни запрошенный id и id в ответе' },
+          { id: 'u_not_found',    name: 'Несуществующий id — 200 {} вместо 404', hint: 'GET /v1/api/users/999' },
+          { id: 'u_cache',        name: 'Ответ кэшируется public на 3 минуты', hint: 'Cache-Control заголовок' },
+          { id: 'u_invalid_key',  name: 'Невалидный api-key — 200 вместо 401', hint: 'X-Fix-Bug: wrong-key' },
+          { id: 'u_cache_info',   name: 'X-Cache-Info утекает', hint: 'Заголовки ответа' },
+          { id: 'u_negative_id',  name: 'id=-1 возвращает первого пользователя', hint: 'GET /v1/api/users/-1' },
+          { id: 'u_security',     name: 'Нет X-Content-Type-Options и X-Frame-Options', hint: 'Сравни с V2' },
+          { id: 'u_string_id',    name: 'Строковый id=abc не даёт 400', hint: 'GET /v1/api/users/abc' },
+          { id: 'u_content_type', name: 'Content-Type: text/plain', hint: 'Заголовок Content-Type' },
+          { id: 'u_empty_body',   name: 'Пустое тело при невалидном id', hint: 'id=NaN или id=-1' },
+        ],
+        correct: ['u_id_minus', 'u_cache', 'u_cache_info', 'u_security', 'u_content_type'],
+      },
+      {
+        id: 'patch-user',
+        method: 'PATCH',
+        path: '/v1/api/users/:id',
+        bugs: [
+          { id: 'h_name_special', name: 'Имя без валидации (цифры и символы проходят)', hint: 'PATCH с name: "123!@#"' },
+          { id: 'h_age_high',     name: 'Age > 65 не отклоняется', hint: 'PATCH age: 70' },
+          { id: 'h_age_negative', name: 'Отрицательный age → 500 с фейковой ошибкой', hint: 'age: -1' },
+          { id: 'h_empty_name',   name: 'Пустое имя в name принимается', hint: 'PATCH с name: ""' },
+          { id: 'h_no_id',        name: 'В ответе отсутствует id', hint: 'Сравни поля ответа V1 vs V2' },
+          { id: 'h_partial_update', name: 'Обновление только name сбрасывает age', hint: 'PATCH только с name' },
+          { id: 'h_age_string',   name: 'Возраст возвращается строкой', hint: 'typeof age в ответе' },
+          { id: 'h_extra_field',  name: 'Лишние поля в теле вызывают 500', hint: 'Добавь поле gender' },
+          { id: 'h_status_gap',   name: 'В ответе может отсутствовать status', hint: 'Сравни с V2' },
+          { id: 'h_empty_body',   name: 'Пустое тело {} — 500 вместо 400', hint: 'PATCH с {}' },
+        ],
+        correct: ['h_name_special', 'h_age_negative', 'h_no_id', 'h_age_string', 'h_status_gap'],
+      },
+      {
+        id: 'delete-user',
+        method: 'DELETE',
+        path: '/v1/api/users/:id',
+        bugs: [
+          { id: 'd_no_delete',    name: 'Пользователь НЕ удаляется (только SELECT)', hint: 'DELETE → GET — юзер всё ещё существует' },
+          { id: 'd_empty_body',   name: 'Ответ — пустое тело', hint: 'DELETE существующего юзера' },
+          { id: 'd_missing_id',   name: 'В ответе нет id удалённого пользователя', hint: 'Сравни поля ответа' },
+          { id: 'd_no_confirm',   name: 'Нет подтверждения в теле ответа', hint: 'Проверь message поле' },
+          { id: 'd_200_notfound', name: 'Несуществующий id — 200 вместо 404', hint: 'DELETE /v1/api/users/999' },
+          { id: 'd_double_delete', name: 'Повторный DELETE — 500 вместо 404', hint: 'DELETE дважды один id' },
+          { id: 'd_no_auth',      name: 'DELETE без api-key удаляет', hint: 'Без заголовка X-Fix-Bug' },
+        ],
+        correct: ['d_no_delete', 'd_missing_id', 'd_200_notfound'],
+      },
+    ];
+
+    let activeId = 'post-users';
+    let userSelections = new Set();
+    let results = {};
+    let submitted = false;
+
+    function getEndpoint(id) {
+      return ENDPOINTS.find(e => e.id === id);
+    }
+
+    function renderNav() {
+      const nav = document.getElementById('nav');
+      nav.innerHTML = '';
+      ENDPOINTS.forEach(ep => {
+        const item = document.createElement('div');
+        item.className = 'nav-item' + (ep.id === activeId ? ' active' : '');
+        item.innerHTML =
+          '<span class="nav-method ' + ep.method.toLowerCase() + '">' + ep.method + '</span>' +
+          '<span class="nav-path">' + ep.path + '</span>';
+        item.addEventListener('click', () => switchEndpoint(ep.id));
+        nav.appendChild(item);
+      });
+    }
+
+    function switchEndpoint(id) {
+      if (id === activeId) return;
+      activeId = id;
+      userSelections.clear();
+      results = {};
+      submitted = false;
+      hideToast();
+      renderNav();
+      render();
+    }
+
+    function render() {
+      const ep = getEndpoint(activeId);
+
+      const badge = document.getElementById('methodBadge');
+      badge.className = 'method-badge ' + ep.method.toLowerCase();
+      badge.textContent = ep.method;
+      document.getElementById('endpointPath').textContent = ep.path;
+
+      const container = document.getElementById('bugsContainer');
+      container.innerHTML = '';
+
+      ep.bugs.forEach(bug => {
+        const item = document.createElement('div');
+        item.className = 'bug-item';
+
+        if (submitted) {
+          item.classList.add('disabled');
+          if (userSelections.has(bug.id)) {
+            item.classList.add(ep.correct.includes(bug.id) ? 'correct' : 'wrong');
+          }
+        } else {
+          if (userSelections.has(bug.id)) {
+            item.classList.add('selected');
+          }
+          item.addEventListener('click', () => toggle(bug.id));
+        }
+
+        const check = document.createElement('div');
+        check.className = 'check';
+
+        const content = document.createElement('div');
+        content.className = 'bug-content';
+        content.innerHTML = '<div class="bug-name">' + bug.name + '</div>' +
+          '<div class="bug-hint">💡 ' + bug.hint + '</div>';
+
+        item.appendChild(check);
+        item.appendChild(content);
+        container.appendChild(item);
+      });
+
+      document.getElementById('submitBtn').disabled = submitted || userSelections.size === 0;
+    }
+
+    function toggle(id) {
+      if (submitted) return;
+      if (userSelections.has(id)) {
+        userSelections.delete(id);
+      } else {
+        userSelections.add(id);
+      }
+      hideToast();
+      render();
+    }
+
+    function check() {
+      if (submitted || userSelections.size === 0) return;
+      const ep = getEndpoint(activeId);
+
+      results = {};
+      let wrongCount = 0;
+
+      userSelections.forEach(id => {
+        if (ep.correct.includes(id)) {
+          results[id] = true;
+        } else {
+          results[id] = false;
+          wrongCount++;
+        }
+      });
+
+      submitted = true;
+      render();
+      document.getElementById('submitBtn').disabled = true;
+
+      const toast = document.getElementById('toast');
+      if (wrongCount > 0) {
+        toast.className = 'toast show error';
+        toast.textContent = '❌ Есть неточности. Попробуй ещё раз.';
+        return;
+      }
+
+      // Все выбранные верны — проверяем, все ли баги найдены
+      let missing = false;
+      ep.correct.forEach(id => {
+        if (!userSelections.has(id)) missing = true;
+      });
+
+      if (missing) {
+        toast.className = 'toast show error';
+        toast.textContent = 'Нашёл не все баги. Ищи дальше.';
+        spawnThinking();
+      } else {
+        toast.className = 'toast show success';
+        toast.textContent = '🎉 Всё верно! Все баги найдены!';
+        spawnFireworks();
+      }
+    }
+
+    function reset() {
+      userSelections.clear();
+      results = {};
+      submitted = false;
+      hideToast();
+      render();
+      document.getElementById('submitBtn').disabled = true;
+    }
+
+    function hideToast() {
+      document.getElementById('toast').className = 'toast';
+    }
+
+
+    function spawnThinking() {
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'think-emoji';
+          el.textContent = '🤔';
+          el.style.left = (15 + Math.random() * 70) + 'vw';
+          el.style.top = (25 + Math.random() * 50) + 'vh';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 1200);
+        }, i * 150);
+      }
+    }
+
+    function spawnFireworks() {
+      const emojis = ['🎉', '🎊', '⭐', '🔥', '💥'];
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const el = document.createElement('div');
+          el.className = 'firework';
+          el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          el.style.left = (10 + Math.random() * 80) + 'vw';
+          el.style.top = (30 + Math.random() * 40) + 'vh';
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 1000);
+        }, i * 200);
+      }
+    }
+
+    // Auth
+    function initAuth() {
+      const savedKey = localStorage.getItem('apiKey');
+      if (savedKey) {
+        fetch('/check-key?key=' + encodeURIComponent(savedKey))
+          .then(r => r.json())
+          .then(data => {
+            if (data.valid) login(savedKey);
+            else localStorage.removeItem('apiKey');
+          })
+          .catch(() => {});
+      }
+    }
+
+    function login(key) {
+      localStorage.setItem('apiKey', key);
+      document.getElementById('authOverlay').classList.add('hidden');
+    }
+
+    function validateKey(key) {
+      const btn = document.getElementById('authBtn');
+      const err = document.getElementById('authError');
+      btn.textContent = 'Проверяю...';
+      btn.disabled = true;
+
+      fetch('/check-key?key=' + encodeURIComponent(key))
+        .then(r => r.json())
+        .then(data => {
+          if (data.valid) {
+            login(key);
+          } else {
+            err.textContent = 'Ключ не подходит. Попробуй другой.';
+            err.classList.add('show');
+          }
+        })
+        .catch(() => {
+          // Если сервер не ответил — пропускаем
+          login(key);
+        })
+        .finally(() => {
+          btn.textContent = 'Начать';
+          btn.disabled = false;
+        });
+    }
+
+    function logout() {
+      localStorage.removeItem('apiKey');
+      document.getElementById('authOverlay').classList.remove('hidden');
+      document.getElementById('authError').classList.remove('show');
+      document.getElementById('authInput').value = '';
+      document.getElementById('authInput').focus();
+    }
+
+    document.getElementById('authBtn').addEventListener('click', () => {
+      const key = document.getElementById('authInput').value.trim();
+      if (!key) {
+        document.getElementById('authError').textContent = 'Введи API-ключ';
+        document.getElementById('authError').classList.add('show');
+        return;
+      }
+      document.getElementById('authError').classList.remove('show');
+      validateKey(key);
+    });
+
+    document.getElementById('authInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('authBtn').click();
+    });
+
+
+    document.getElementById('submitBtn').addEventListener('click', check);
+    document.getElementById('resetBtn').addEventListener('click', reset);
+
+    initAuth();
+    renderNav();
+    render();
+  </script>
+</body>
+</html>
