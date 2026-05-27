@@ -27,10 +27,14 @@ deploy_rsync() {
 }
 
 if [ -n "$SSH_KEY" ] && [ -n "$SERVER_HOST" ] && [ -n "$SERVER_USER" ]; then
-  # CI-режим: ключ из переменной
+  # CI-режим: ключ из переменной → во временный файл
   PORT="${SERVER_PORT:-22}"
+  KEY_FILE=$(mktemp)
+  echo "$SSH_KEY" > "$KEY_FILE"
+  chmod 600 "$KEY_FILE"
+  trap "rm -f $KEY_FILE" EXIT
   echo "▶ Deploying via CI to ${SERVER_USER}@${SERVER_HOST}:${PORT} ..."
-  SSH_CMD="ssh -p $PORT -i <(echo \"$SSH_KEY\") -o StrictHostKeyChecking=no"
+  SSH_CMD="ssh -p $PORT -i $KEY_FILE -o StrictHostKeyChecking=no"
   deploy_rsync "$SSH_CMD"
 elif ssh -o StrictHostKeyChecking=no timeweb echo ok 2>/dev/null; then
   # Локальный режим: через ~/.ssh/config (хост timeweb)
