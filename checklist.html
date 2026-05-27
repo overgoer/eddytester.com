@@ -366,7 +366,7 @@
           { id: 'g_security',      name: 'Нет X-Content-Type-Options и X-Frame-Options', hint: 'Сравни заголовки V1 и V2' },
           { id: 'g_content_type',  name: 'Content-Type: text/plain вместо application/json', hint: 'Заголовок Content-Type в ответе' },
         ],
-        correct: ['g_status_case', 'g_status_any', 'g_comma', 'g_cache', 'g_cache_info', 'g_security', 'g_content_type'],
+        correct: ['g_status_case', 'g_status_any', 'g_comma', 'g_cache', 'g_cache_info', 'g_security'],
       },
       {
         id: 'post-users',
@@ -402,7 +402,7 @@
           { id: 'u_content_type', name: 'Content-Type: text/plain', hint: 'Заголовок Content-Type' },
           { id: 'u_empty_body',   name: 'Пустое тело при невалидном id', hint: 'id=NaN или id=-1' },
         ],
-        correct: ['u_id_minus', 'u_cache', 'u_cache_info', 'u_security', 'u_content_type'],
+        correct: ['u_id_minus', 'u_cache', 'u_cache_info', 'u_security'],
       },
       {
         id: 'patch-user',
@@ -437,9 +437,61 @@
         ],
         correct: ['d_no_delete', 'd_missing_id', 'd_200_notfound'],
       },
+      {
+        id: 'post-passes',
+        method: 'POST',
+        path: '/v1/api/passes',
+        bugs: [
+          { id: 'pp_expires',     name: 'Срок действия пропуска — 60 часов вместо 1', hint: 'Проверь expires_at в ответе' },
+          { id: 'pp_no_body',     name: 'Пустое тело — 500 вместо 400', hint: 'POST с пустым {}' },
+          { id: 'pp_user_check',  name: 'Нет проверки существования user_id', hint: 'Создай pass c user_id=9999' },
+          { id: 'pp_extra_field', name: 'Лишние поля в теле не игнорируются', hint: 'Добавь поле role в тело' },
+          { id: 'pp_status_init', name: 'status не "active" при создании', hint: 'Проверь status в ответе' },
+        ],
+        correct: ['pp_expires', 'pp_user_check'],
+      },
+      {
+        id: 'get-pass-user',
+        method: 'GET',
+        path: '/v1/api/passes/user/:user_id',
+        bugs: [
+          { id: 'pu_ignore_id',   name: 'Игнорирует user_id — возвращает все пропуски', hint: 'Сравни результат с разными user_id' },
+          { id: 'pu_not_found',   name: 'Несуществующий user_id — 200 вместо 404', hint: 'GET /passes/user/9999' },
+          { id: 'pu_wrong_type',  name: 'Ответ — объект вместо массива', hint: 'Проверь тип ответа (не пустой)' },
+          { id: 'pu_security',    name: 'Нет X-Content-Type-Options и X-Frame-Options', hint: 'Сравни заголовки V1 и V2' },
+          { id: 'pu_content_type', name: 'Content-Type: text/plain', hint: 'Заголовок Content-Type' },
+        ],
+        correct: ['pu_ignore_id'],
+      },
+      {
+        id: 'patch-pass',
+        method: 'PATCH',
+        path: '/v1/api/passes/:id',
+        bugs: [
+          { id: 'hp_any_status',  name: 'Любой статус принимается ("banana" проходит)', hint: 'PATCH статус "foobar"' },
+          { id: 'hp_empty_status', name: 'Пустой статус — 200 вместо 400', hint: 'PATCH с status: ""' },
+          { id: 'hp_no_updated',  name: 'updated_at не обновляется при PATCH', hint: 'Сравни updated_at до и после' },
+          { id: 'hp_no_id',       name: 'Несуществующий id — 200 вместо 404', hint: 'PATCH /passes/9999' },
+          { id: 'hp_status_case', name: 'Статус чувствителен к регистру', hint: 'status: "ACTIVE" vs "active"' },
+        ],
+        correct: ['hp_any_status', 'hp_no_updated'],
+      },
+      {
+        id: 'delete-pass',
+        method: 'DELETE',
+        path: '/v1/api/passes/:id',
+        bugs: [
+          { id: 'dp_200_notfound', name: 'Несуществующий pass — 200 "Deleted" вместо 404', hint: 'DELETE /passes/9999' },
+          { id: 'dp_empty_body',   name: 'Ответ — пустое тело', hint: 'DELETE существующего pass' },
+          { id: 'dp_no_key',       name: 'Нет фильтра по api_key — можно удалить чужой pass', hint: 'Создай pass другим ключом и удали' },
+          { id: 'dp_no_id',        name: 'id не возвращается в ответе', hint: 'Сравни поля ответа' },
+          { id: 'dp_no_confirm',   name: 'Нет сообщения об успешном удалении', hint: 'Проверь message поле' },
+        ],
+        correct: ['dp_200_notfound', 'dp_no_key'],
+      },
     ];
 
-    let activeId = 'post-users';
+    let activeId = 'get-users';
     let userSelections = new Set();
     let results = {};
     let submitted = false;
