@@ -11,7 +11,7 @@ set -e
 
 SRC="${DEPLOY_SRC:-.}"
 DEST="${DEPLOY_DEST:-/var/www/eddytester.com}"
-EXCLUDE="${DEPLOY_EXCLUDE:-deploy.sh .git .github docs BACKLOG.md test.html page101918416.html.bak readme.txt}"
+EXCLUDE="${DEPLOY_EXCLUDE:-deploy.sh .git .github docs BACKLOG.md test.html page101918416.html.bak readme.txt .env}"
 
 # Собираем rsync exclude-флаги
 EXCLUDE_FLAGS=""
