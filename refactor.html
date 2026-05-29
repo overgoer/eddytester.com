@@ -21,9 +21,17 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
     .then(function(data) {
       if (!data.success) throw new Error(data.error || 'Payment error');
 
-      var checkout = new YooKassaCheckoutWidget({
+      var container = document.getElementById('yookassa-payment-form');
+      container.innerHTML = '';
+      container.classList.add('active');
+
+      var checkout = new YooMoneyCheckoutWidget({
         confirmation_token: data.confirmation_token,
-        return_url: 'https://eddytester.com/api'
+        return_url: 'https://eddytester.com/api',
+        error_callback: function(error) {
+          container.classList.remove('active');
+          alert('Ошибка оплаты: ' + (error.message || 'Неизвестная ошибка'));
+        }
       });
 
       checkout.on('success', function () {
@@ -31,7 +39,6 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
       });
 
       checkout.render('yookassa-payment-form');
-      checkout.openModal();
     })
     .catch(function(err) {
       alert('Ошибка оплаты: ' + err.message);
