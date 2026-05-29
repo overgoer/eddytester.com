@@ -8,9 +8,32 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
   // ==========================================
   const PRICE = 2900; // руб.
 
-  // Создать и показать платёжную форму ЮKassa
+  function formatPrice(n) {
+    return n.toString().replace(/(\d)(?=(\d{3})+)/g, '$1 ') + ' \u20BD';
+  }
+
   function buy(amount) {
     amount = amount || PRICE;
+
+    var modal = document.getElementById('yookassa-payment-form');
+    var content = modal.querySelector('.yk-body');
+    modal.style.display = 'flex';
+
+    content.innerHTML =
+      '<button onclick="document.getElementById(\'yookassa-payment-form\').style.display=\'none\'"' +
+      ' style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:28px;cursor:pointer;color:#999;line-height:1;padding:4px;">\u2716</button>' +
+      '<h2 style="font-size:24px;margin:0 0 8px;color:#1a1a1a">API \u041F\u0440\u0430\u043A\u0442\u0438\u043A\u0443\u043C</h2>' +
+      '<p style="font-size:14px;color:#888;margin:0 0 24px">\u0414\u043E\u0441\u0442\u0443\u043F \u043A \u0442\u0440\u0435\u043D\u0430\u0436\u0451\u0440\u0443 \u043D\u0430 30 \u0434\u043D\u0435\u0439</p>' +
+      '<div style="font-size:36px;font-weight:700;color:#036cff;margin-bottom:24px">' + formatPrice(amount) + '</div>' +
+      '<div id="yk-status" style="margin:16px 0;padding:12px;border-radius:8px;font-size:14px"></div>' +
+      '<div id="yk-container" style="margin-top:24px;min-height:300px"></div>';
+
+    var statusEl = document.getElementById('yk-status');
+    var containerEl = document.getElementById('yk-container');
+
+    statusEl.style.background = '#e8f0fe';
+    statusEl.style.color = '#036cff';
+    statusEl.textContent = '\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043F\u043B\u0430\u0442\u0435\u0436\u0430...';
 
     fetch('/create-payment', {
       method: 'POST',
@@ -19,50 +42,57 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (!data.success) throw new Error(data.error || 'Payment error');
+      if (!data.success) throw new Error(data.error || '\u041E\u0448\u0438\u0431\u043A\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F \u043F\u043B\u0430\u0442\u0435\u0436\u0430');
 
-      var container = document.getElementById('yookassa-payment-form');
-      container.innerHTML = '';
-      container.classList.add('active');
+      statusEl.style.background = 'none';
+      statusEl.textContent = '';
+      containerEl.innerHTML = '';
 
       var checkout = new YooMoneyCheckoutWidget({
         confirmation_token: data.confirmation_token,
         return_url: 'https://eddytester.com/api',
         error_callback: function(error) {
-          container.classList.remove('active');
-          alert('Ошибка оплаты: ' + (error.message || 'Неизвестная ошибка'));
+          statusEl.style.background = '#fde8e8';
+          statusEl.style.color = '#d32f2f';
+          statusEl.textContent = '\u274C \u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u043F\u043B\u0430\u0442\u044B: ' + (error.message || '');
         }
       });
 
-      checkout.on('success', function () {
-        window.location.href = 'https://eddytester.com/api';
+      checkout.on('success', function() {
+        statusEl.style.background = '#e8f5e9';
+        statusEl.style.color = '#2e7d32';
+        statusEl.textContent = '\u2705 \u041E\u043F\u043B\u0430\u0442\u0430 \u043F\u0440\u043E\u0448\u043B\u0430! \u041F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u043C...';
+        setTimeout(function() { window.location = 'https://eddytester.com/api'; }, 1500);
       });
 
-      checkout.render('yookassa-payment-form');
+      checkout.render('yk-container');
     })
     .catch(function(err) {
-      alert('Ошибка оплаты: ' + err.message);
+      statusEl.style.background = '#fde8e8';
+      statusEl.style.color = '#d32f2f';
+      statusEl.textContent = '\u274C ' + err.message;
     });
   }
 </script>
 <style>
   #yookassa-payment-form {
-    position: fixed;
-    z-index: 999999;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.5);
+    position: fixed; z-index: 999999; top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.4);
+    font-family: Montserrat, Arial, sans-serif;
   }
-  #yookassa-payment-form.active {
-    display: flex;
+  #yookassa-payment-form .yk-body {
+    background: #fff; border-radius: 16px; padding: 40px;
+    max-width: 520px; width: 90%; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    position: relative; text-align: center;
+  }
+  @media (max-width: 480px) {
+    #yookassa-payment-form .yk-body { padding: 24px; }
   }
 </style>
-<div id="yookassa-payment-form"></div>
+<div id="yookassa-payment-form"><div class="yk-body"></div></div>
 <!-- nominify end --><script type="text/javascript">window.dataLayer=window.dataLayer||[];</script> <script type="text/javascript">(function() {if((/bot|google|yandex|baidu|bing|msn|duckduckbot|teoma|slurp|crawler|spider|robot|crawling|facebook/i.test(navigator.userAgent))===false&&typeof(sessionStorage)!='undefined'&&sessionStorage.getItem('visited')!=='y'&&document.visibilityState){var style=document.createElement('style');style.type='text/css';style.innerHTML='@media screen and (min-width: 980px) {.t-records {opacity: 0;}.t-records_animated {-webkit-transition: opacity ease-in-out .2s;-moz-transition: opacity ease-in-out .2s;-o-transition: opacity ease-in-out .2s;transition: opacity ease-in-out .2s;}.t-records.t-records_visible {opacity: 1;}}';document.getElementsByTagName('head')[0].appendChild(style);function t_setvisRecs(){var alr=document.querySelectorAll('.t-records');Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_animated");});setTimeout(function() {Array.prototype.forEach.call(alr,function(el) {el.classList.add("t-records_visible");});sessionStorage.setItem("visited","y");},400);}
 document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head> <body class="t-body" style="margin:0;"> <!--allrecords--> <div id="allrecords" data-tilda-export="yes" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="9622775" data-tilda-page-id="101918416" data-tilda-page-alias="api-practicum" data-tilda-formskey="12901d9d87b681f2058c7a7f29622775" data-tilda-cookie="no" data-tilda-root-zone="com" data-tilda-project-headcode="yes" data-tilda-project-country="RU"> <div id="rec1661198081" class="r t-rec" style=" " data-record-type="1272"> <!-- T1272 --> <div id="nav1661198081marker"></div> <div class="t1272" data-menu="yes" data-full-submenu-mob="y" data-menu-widgeticons-hide="yes"> <div class="t-menu-base__mobile-menu tmenu-mobile"> <div class="tmenu-mobile__container tmenu-mobile__container_right"> <div class="t-menu-base__logowrapper t-menu-base__logowrapper_left t-menu-base__logowrapper_mobile"> <div class="t-menu-base__logo"> <a href="#rec1661252511"> <div class="t-menu-base__textlogo t-title" field="title">API ПРАКТИКУМ</div> </a> </div> </div> <style>#rec1661198081 .t-menu-base__imglogo{max-width:34px;width:34px;}</style> <button type="button"
 aria-expanded="false"
