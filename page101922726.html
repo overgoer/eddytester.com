@@ -297,5 +297,135 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
         }
         btn.classList.add('active');
     }
-</script> </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="9622775#101922726"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
+</script>
+
+<!-- ========== ACCESS CONTROL ========== -->
+<style>
+  #gk-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #f9f9f9; z-index: 999999;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+  }
+  #gk-overlay .gk-box {
+    background: #fff; border-radius: 16px; padding: 48px 40px 40px;
+    max-width: 420px; width: 90%; text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+  #gk-overlay h2 {
+    font-size: 22px; margin: 0 0 8px; color: #1a1a1a;
+  }
+  #gk-overlay p {
+    font-size: 14px; color: #888; margin: 0 0 24px;
+  }
+  #gk-input {
+    width: 100%; padding: 14px; border: 2px solid #ddd;
+    border-radius: 10px; font-size: 15px; box-sizing: border-box;
+    margin-bottom: 16px; font-family: inherit; outline: none;
+  }
+  #gk-input:focus { border-color: #036cff; }
+  #gk-btn {
+    width: 100%; padding: 14px; background: #036cff; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px;
+    font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  #gk-btn:hover { background: #0056d6; }
+  #gk-err {
+    font-size: 13px; color: #d32f2f; margin: 8px 0 0; display: none;
+  }
+  #gk-success {
+    font-size: 14px; color: #2e7d32; margin: 8px 0 0; display: none;
+  }
+</style>
+<div id="gk-overlay">
+  <div class="gk-box">
+    <h2>API Практикум</h2>
+    <p>Введите API-ключ, который пришёл вам на почту</p>
+    <input id="gk-input" type="text" placeholder="API-ключ" autofocus
+      onkeydown="if(event.key==='Enter') gkCheck()">
+    <button id="gk-btn" onclick="gkCheck()">Войти</button>
+    <div id="gk-err"></div>
+    <div id="gk-success">Ключ принят! Загружаем курс...</div>
+  </div>
+</div>
+<script>
+  (function() {
+    var key = localStorage.getItem('gk_key');
+    if (key) {
+      // Проверяем, что ключ всё ещё валиден
+      var x = new XMLHttpRequest();
+      x.open('GET', '/check-key?key=' + encodeURIComponent(key), true);
+      x.onload = function() {
+        try {
+          var r = JSON.parse(x.responseText);
+          if (r.valid) {
+            document.getElementById('gk-overlay').style.display = 'none';
+          } else {
+            localStorage.removeItem('gk_key');
+          }
+        } catch(e) { localStorage.removeItem('gk_key'); }
+      };
+      x.onerror = function() {
+        // Если сервер недоступен — всё равно пускаем по сохранённому ключу
+        document.getElementById('gk-overlay').style.display = 'none';
+      };
+      x.send();
+    }
+  })();
+
+  function gkCheck() {
+    var input = document.getElementById('gk-input');
+    var btn = document.getElementById('gk-btn');
+    var err = document.getElementById('gk-err');
+    var ok = document.getElementById('gk-success');
+    var key = input.value.trim();
+
+    err.style.display = 'none';
+    ok.style.display = 'none';
+
+    if (!key) {
+      err.textContent = 'Введите ключ';
+      err.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Проверка...';
+
+    var x = new XMLHttpRequest();
+    x.open('GET', '/check-key?key=' + encodeURIComponent(key), true);
+    x.onload = function() {
+      try {
+        var r = JSON.parse(x.responseText);
+        if (r.valid) {
+          localStorage.setItem('gk_key', key);
+          ok.style.display = 'block';
+          setTimeout(function() {
+            document.getElementById('gk-overlay').style.display = 'none';
+          }, 800);
+        } else {
+          err.textContent = 'Неверный ключ';
+          err.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Войти';
+        }
+      } catch(e) {
+        err.textContent = 'Ошибка проверки, попробуйте ещё раз';
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Войти';
+      }
+    };
+    x.onerror = function() {
+      err.textContent = 'Сервер недоступен, попробуйте позже';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Войти';
+    };
+    x.send();
+  }
+</script>
+<!-- ========== END ACCESS CONTROL ========== -->
+
+ </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="9622775#101922726"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
 window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'5c01df369e61157e2b5faf53d22cbdc4','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
