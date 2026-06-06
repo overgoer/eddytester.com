@@ -32,7 +32,7 @@ function uuid() {
   });
 }
 
-function yookassaRequest(amount) {
+function yookassaRequest(amount, email) {
   return new Promise((resolve, reject) => {
     const idempotenceKey = uuid();
     const body = JSON.stringify({
@@ -44,6 +44,8 @@ function yookassaRequest(amount) {
         type: 'embedded'
       },
       capture: true,
+      customer: { email: email || "" },
+      metadata: email ? { email: email } : {},
       description: 'Оплата доступа к API eddytester.com'
     });
 
@@ -118,16 +120,18 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
       let amount = 0;
+      let email = null;
       try {
         const parsed = JSON.parse(body);
         amount = parsed.amount != null ? parsed.amount : 2900;
+        email = parsed.email || null;
       } catch (e) {
         sendJson(res, 500, { success: false, error: e.message });
         return;
       }
 
       try {
-        const payment = await yookassaRequest(amount);
+        const payment = await yookassaRequest(amount, email);
         const result = {
           success: true,
           payment_id: payment.id,
