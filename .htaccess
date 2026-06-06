@@ -35,8 +35,8 @@ RewriteRule ^pers_data_policy/$ page77510526.html [NC]
 RewriteRule ^test_learning_page$ page79978736.html [NC]
 RewriteRule ^test_learning_page/$ page79978736.html [NC]
 
-RewriteRule ^glearning$ page101846156.html [NC]
-RewriteRule ^glearning/$ page101846156.html [NC]
+RewriteRule ^glearning$ page101922726.html [NC]
+RewriteRule ^glearning/$ page101922726.html [NC]
 
 RewriteRule ^api-practicum$ page101918416.html [NC]
 RewriteRule ^api-practicum/$ page101918416.html [NC]
