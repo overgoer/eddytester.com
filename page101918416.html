@@ -100,7 +100,7 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
 
       var checkout = new YooMoneyCheckoutWidget({
         confirmation_token: data.confirmation_token,
-        return_url: 'https://eddytester.com/api',
+        return_url: 'https://eddytester.com/glearning?paid=1',
         error_callback: function(error) {
           statusEl.style.background = '#fde8e8';
           statusEl.style.color = '#d32f2f';
