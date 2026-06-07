@@ -558,6 +558,8 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     'l14': 'patch-user',    // PATCH Запросы
     'l15': 'delete-user',   // DELETE Запросы
   };
+  const LESSON_MAP_REVERSE = {};
+  for (var p in LESSON_MAP) LESSON_MAP_REVERSE[LESSON_MAP[p]] = p;
 
   let gkKey = null;
   let allProgress = null;  // { lesson_id: { selected_bugs, correct_bugs, wrong_bugs, completed, attempts } }
@@ -694,7 +696,63 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     block.appendChild(section);
   }
 
-  // --- Отправка теста ---
+  // --- Подсветка результатов на существующих элементах (без перерендера) ---
+  function applyResults(lessonId, correctBugs, wrongBugs, completed, attempts) {
+    var block = document.getElementById(LESSON_MAP_REVERSE[lessonId]);
+    if (!block) return;
+    var section = block.querySelector('.test-section');
+    if (!section) return;
+
+    // Обновляем заголовок и подзаголовок
+    var h3 = section.querySelector('h3');
+    var subtitle = section.querySelector('.test-subtitle');
+    if (completed) {
+      if (h3) h3.textContent = '✅ Тест пройден';
+      if (subtitle) subtitle.textContent = 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts;
+      // Убираем кнопки
+      var actions = section.querySelector('.test-actions');
+      if (actions) {
+        actions.innerHTML = '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
+      }
+    }
+
+    // Подсвечиваем каждый элемент
+    var labels = section.querySelectorAll('.test-bug-item');
+    for (var i = 0; i < labels.length; i++) {
+      var label = labels[i];
+      var input = label.querySelector('input[type="checkbox"]');
+      if (!input) continue;
+      var bugId = input.dataset.bugId;
+
+      // Сбрасываем классы
+      label.classList.remove('correct', 'wrong');
+
+      var isCorrect = correctBugs.indexOf(bugId) >= 0;
+      var isWrong = wrongBugs.indexOf(bugId) >= 0;
+
+      if (isCorrect) {
+        label.classList.add('correct');
+        input.disabled = true;
+        label.style.pointerEvents = 'none';
+      } else if (isWrong) {
+        label.classList.add('wrong');
+        input.disabled = true;
+        label.style.pointerEvents = 'none';
+      }
+    }
+
+    // Обновляем все progress
+    if (allProgress) {
+      allProgress[lessonId] = {
+        selected_bugs: correctBugs.concat(wrongBugs),
+        correct_bugs: correctBugs,
+        wrong_bugs: wrongBugs,
+        completed: completed,
+        attempts: attempts,
+      };
+    }
+    renderProgressBar();
+  }
   window.submitTest = function(btn) {
     var section = btn.closest('.test-section');
     var lessonId = section.dataset.lessonId;
@@ -721,21 +779,21 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
       try {
         var r = JSON.parse(x.responseText);
         if (r.success) {
-          // Обновляем состояние
           if (r.completed) {
+            var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
+            applyResults(lessonId, r.correct_bugs, r.wrong_bugs, true, attemptsVal);
             msgDiv.className = 'test-result-msg success';
             msgDiv.innerHTML = '✅ Отлично! Все баги найдены! Переходи к следующему уроку.';
-            renderAllTests(); // перерендер (обновит состояние)
-            loadProgress(gkKey); // обновит прогресс-бар
+            loadProgress(gkKey);
           } else {
+            var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
+            applyResults(lessonId, r.correct_bugs, r.wrong_bugs, false, attemptsVal);
             var foundStr = 'Найдено багов: <strong>' + r.correct_bugs.length + '</strong>';
             if (r.wrong_bugs.length > 0) {
               foundStr += ' | Ошибок: <strong>' + r.wrong_bugs.length + '</strong>';
             }
             msgDiv.className = 'test-result-msg fail';
             msgDiv.innerHTML = '⚠️ ' + foundStr + '. Попробуй ещё раз!<div class="attempts-info">Подсказка: сверься с документацией и перечитай видеоурок.</div>';
-            // Перерендер с подсветкой правильных/неправильных
-            renderAllTests();
           }
         } else {
           msgDiv.className = 'test-result-msg error';
