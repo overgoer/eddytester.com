@@ -752,6 +752,27 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     }
     renderProgressBar();
   }
+
+  // --- Обновить отображение попыток в DOM ---
+  function updateAttemptsDisplay(lessonId, attempts) {
+    var block = document.getElementById(LESSON_MAP_REVERSE[lessonId]);
+    if (!block) return;
+    var section = block.querySelector('.test-section');
+    if (!section) return;
+    var actions = section.querySelector('.test-actions');
+    if (!actions) return;
+    var existing = actions.querySelector('.attempts-count');
+    if (existing) {
+      existing.textContent = 'Попыток: ' + attempts;
+    } else {
+      var span = document.createElement('span');
+      span.className = 'attempts-count';
+      span.style.cssText = 'font-size:13px;color:var(--text-muted)';
+      span.textContent = 'Попыток: ' + attempts;
+      actions.appendChild(span);
+    }
+  }
+
   window.submitTest = function(btn) {
     var section = btn.closest('.test-section');
     var lessonId = section.dataset.lessonId;
@@ -781,12 +802,14 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
           if (r.completed) {
             var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
             applyResults(lessonId, r.correct_bugs, r.wrong_bugs, true, attemptsVal);
+            updateAttemptsDisplay(lessonId, attemptsVal);
             msgDiv.className = 'test-result-msg success';
             msgDiv.innerHTML = '✅ Отлично! Все баги найдены! Переходи к следующему уроку.';
             loadProgress(gkKey);
           } else {
             var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
             applyResults(lessonId, r.correct_bugs, r.wrong_bugs, false, attemptsVal);
+            updateAttemptsDisplay(lessonId, attemptsVal);
             var foundStr = 'Найдено багов: <strong>' + r.correct_bugs.length + '</strong>';
             if (r.wrong_bugs.length > 0) {
               foundStr += ' | Ошибок: <strong>' + r.wrong_bugs.length + '</strong>';
