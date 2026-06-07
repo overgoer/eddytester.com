@@ -447,5 +447,370 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
 </script>
 <!-- ========== END ACCESS CONTROL ========== -->
 
+<!-- ========== TEST SYSTEM (ПРОВЕРКА ЗНАНИЙ) ========== -->
+<style>
+  /* Тестовый блок — стили */
+  .test-section {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 25px;
+    margin-top: 25px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+  }
+  .test-section.hidden { display: none; }
+  .test-section h3 {
+    font-size: 20px; font-weight: 700; margin: 0 0 6px;
+  }
+  .test-section .test-subtitle {
+    color: var(--text-muted); font-size: 14px; margin: 0 0 18px;
+  }
+  .test-bug-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; margin-bottom: 6px;
+    border-radius: 8px; cursor: pointer;
+    transition: background 0.15s; border: 1px solid var(--border-color);
+    background: #fff;
+  }
+  .test-bug-item:hover { background: #f5f7fa; }
+  .test-bug-item input[type="checkbox"] {
+    margin-top: 3px; width: 18px; height: 18px; cursor: pointer;
+    accent-color: var(--primary); flex-shrink: 0;
+  }
+  .test-bug-item .bug-label { flex: 1; font-size: 15px; cursor: pointer; }
+
+  /* Состояния после проверки */
+  .test-bug-item.correct {
+    background: #e8f5e9; border-color: #4caf50;
+  }
+  .test-bug-item.correct input[type="checkbox"] { accent-color: #4caf50; }
+  .test-bug-item.wrong {
+    background: #ffebee; border-color: #e53935;
+  }
+  .test-bug-item.wrong input[type="checkbox"] { accent-color: #e53935; }
+  .test-bug-item.disabled { opacity: 0.6; pointer-events: none; }
+  .test-bug-item .bug-badge {
+    display: none; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; margin-left: auto;
+  }
+  .test-bug-item.correct .bug-badge.correct-badge { display: inline-block; background: #4caf50; color: #fff; }
+  .test-bug-item.wrong .bug-badge.wrong-badge { display: inline-block; background: #e53935; color: #fff; }
+
+  .test-actions {
+    margin-top: 16px; display: flex; gap: 10px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .test-btn {
+    padding: 10px 24px; border-radius: 8px; font-size: 15px;
+    font-weight: 600; cursor: pointer; border: none;
+    transition: all 0.2s; font-family: inherit;
+  }
+  .test-btn-primary { background: var(--primary); color: #fff; }
+  .test-btn-primary:hover { background: var(--primary-hover); }
+  .test-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .test-btn-secondary {
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border-color);
+  }
+  .test-btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+  .test-result-msg {
+    margin-top: 12px; padding: 12px 16px; border-radius: 8px;
+    font-size: 14px; line-height: 1.5; display: none;
+  }
+  .test-result-msg.success { display: block; background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+  .test-result-msg.fail { display: block; background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+  .test-result-msg.error { display: block; background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+
+  .test-result-msg .attempts-info {
+    font-size: 12px; color: var(--text-muted); margin-top: 4px;
+  }
+
+  /* Прогресс-бар на курсе */
+  .course-progress-bar {
+    background: #e0e0e0; border-radius: 20px; height: 8px; overflow: hidden;
+    margin: 15px 0;
+  }
+  .course-progress-fill {
+    height: 100%; border-radius: 20px; background: linear-gradient(90deg, #43a047, #66bb6a);
+    transition: width 0.5s ease; width: 0%;
+  }
+  .progress-text {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+  }
+  .progress-text strong { color: var(--text-main); }
+
+  /* Ссылка на документацию — счётчик прогресса */
+  .sidebar-progress-mini {
+    font-size: 12px; color: var(--text-muted); padding: 0 10px 10px;
+  }
+</style>
+
+<!-- Прогресс-бар в сайдбар -->
+<script>
+(function() {
+  // --- МАППИНГ: ID урока на странице → lesson_id в бэкенде ---
+  const LESSON_MAP = {
+    'l9':  'get-users',     // GET: Практика
+    'l12': 'get-user',      // GET by ID
+    'l13': 'post-users',    // POST Запросы
+    'l14': 'patch-user',    // PATCH Запросы
+    'l15': 'delete-user',   // DELETE Запросы
+  };
+
+  let gkKey = null;
+  let allProgress = null;  // { lesson_id: { selected_bugs, correct_bugs, wrong_bugs, completed, attempts } }
+  let allLessons = null;   // { lesson_id: { title, correct, bugs } }
+
+  // --- Загружаем прогресс после того, как ключ подтверждён ---
+  function loadProgress(key) {
+    gkKey = key;
+    var x = new XMLHttpRequest();
+    x.open('GET', '/get-progress?key=' + encodeURIComponent(key), true);
+    x.onload = function() {
+      try {
+        var r = JSON.parse(x.responseText);
+        if (r.valid) {
+          allProgress = r.progress || {};
+          allLessons = r.lessons || {};
+          renderProgressBar();
+          renderAllTests();
+        }
+      } catch(e) { console.log('Progress load error:', e); }
+    };
+    x.onerror = function() { console.log('Progress server unavailable'); };
+    x.send();
+  }
+
+  // --- Прогресс-бар ---
+  function renderProgressBar() {
+    if (!allLessons) return;
+    var total = Object.keys(allLessons).length;
+    var completedCount = 0;
+    for (var lid in allLessons) {
+      if (allProgress[lid] && allProgress[lid].completed) completedCount++;
+    }
+
+    // Вставляем под ссылку на документацию
+    var sidebar = document.querySelector('.course-sidebar');
+    if (!sidebar) return;
+    var existing = document.getElementById('course-progress');
+    if (existing) existing.remove();
+
+    var div = document.createElement('div');
+    div.id = 'course-progress';
+    div.innerHTML =
+      '<div class="sidebar-progress-mini">' +
+        '<div class="progress-text">' +
+          '<span>Прогресс: <strong>' + completedCount + '/' + total + '</strong></span>' +
+          '<span>' + Math.round(completedCount / total * 100) + '%</span>' +
+        '</div>' +
+        '<div class="course-progress-bar">' +
+          '<div class="course-progress-fill" style="width:' + (completedCount / total * 100) + '%"></div>' +
+        '</div>' +
+      '</div>';
+
+    var docLink = sidebar.querySelector('.sidebar-doc-link');
+    if (docLink) {
+      docLink.parentNode.insertBefore(div, docLink.nextSibling);
+    } else {
+      sidebar.appendChild(div);
+    }
+  }
+
+  // --- Рендер тестов для всех практических уроков ---
+  function renderAllTests() {
+    for (var pageId in LESSON_MAP) {
+      var lessonId = LESSON_MAP[pageId];
+      renderTest(pageId, lessonId);
+    }
+  }
+
+  function renderTest(pageId, lessonId) {
+    var block = document.getElementById(pageId);
+    if (!block) return;
+
+    var config = allLessons ? allLessons[lessonId] : null;
+    if (!config) return;
+
+    // Не рендерить, если тест уже есть
+    if (block.querySelector('.test-section')) return;
+
+    var existingProgress = allProgress ? allProgress[lessonId] : null;
+    var isCompleted = existingProgress && existingProgress.completed;
+    var selectedBugs = existingProgress ? existingProgress.selected_bugs || [] : [];
+    var correctBugs = existingProgress ? existingProgress.correct_bugs || [] : [];
+    var wrongBugs = existingProgress ? existingProgress.wrong_bugs || [] : [];
+    var attempts = existingProgress ? existingProgress.attempts || 0 : 0;
+
+    var section = document.createElement('div');
+    section.className = 'test-section' + (isCompleted ? '' : '');
+    section.dataset.lessonId = lessonId;
+
+    var title = isCompleted ? '✅ Тест пройден' : '🔍 Найди баги';
+    var subtitle = isCompleted
+      ? 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts
+      : 'Отметь баги, которые ты нашёл в этом эндпоинте. Ответь на все — получишь +1 к прогрессу.';
+
+    var html = '<h3>' + title + '</h3>';
+    html += '<p class="test-subtitle">' + subtitle + '</p>';
+    html += '<div class="test-bugs-list">';
+
+    for (var i = 0; i < config.bugs.length; i++) {
+      var bug = config.bugs[i];
+      var isSelected = selectedBugs.indexOf(bug.id) >= 0;
+      var isCorrect = correctBugs.indexOf(bug.id) >= 0;
+      var isWrong = wrongBugs.indexOf(bug.id) >= 0;
+      var className = 'test-bug-item';
+      if (isCompleted || isCorrect) { className += ' correct disabled'; }
+      else if (isWrong) { className += ' wrong disabled'; }
+
+      var checked = isSelected ? 'checked' : '';
+      var disabled = isCompleted || isCorrect || isWrong ? 'disabled' : '';
+      var badgeHtml = '<span class="bug-badge correct-badge">✓ Баг</span><span class="bug-badge wrong-badge">✗ Не баг</span>';
+
+      html += '<label class="' + className + '">';
+      html += '<input type="checkbox" ' + checked + ' ' + disabled + ' data-bug-id="' + bug.id + '">';
+      html += '<span class="bug-label">' + bug.name + '</span>';
+      html += badgeHtml;
+      html += '</label>';
+    }
+
+    html += '</div>'; // .test-bugs-list
+
+    html += '<div class="test-actions">';
+    if (!isCompleted) {
+      html += '<button class="test-btn test-btn-primary" onclick="submitTest(this)">Проверить</button>';
+      html += '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Сбросить</button>';
+      if (attempts > 0) {
+        html += '<span style="font-size:13px;color:var(--text-muted)">Попыток: ' + attempts + '</span>';
+      }
+    }
+    html += '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
+    html += '</div>';
+
+    section.innerHTML = html;
+    block.appendChild(section);
+  }
+
+  // --- Отправка теста ---
+  window.submitTest = function(btn) {
+    var section = btn.closest('.test-section');
+    var lessonId = section.dataset.lessonId;
+    var checkboxes = section.querySelectorAll('input[type="checkbox"]');
+    var selected = [];
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+        selected.push(checkboxes[i].dataset.bugId);
+      }
+    }
+
+    var msgDiv = document.getElementById('test-msg-' + lessonId);
+    if (!msgDiv) {
+      msgDiv = section.querySelector('.test-result-msg');
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Проверяю...';
+
+    var x = new XMLHttpRequest();
+    x.open('POST', '/save-progress', true);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.onload = function() {
+      try {
+        var r = JSON.parse(x.responseText);
+        if (r.success) {
+          // Обновляем состояние
+          if (r.completed) {
+            msgDiv.className = 'test-result-msg success';
+            msgDiv.innerHTML = '✅ Отлично! Все баги найдены! Переходи к следующему уроку.';
+            renderAllTests(); // перерендер (обновит состояние)
+            loadProgress(gkKey); // обновит прогресс-бар
+          } else {
+            var foundStr = 'Найдено багов: <strong>' + r.correct_bugs.length + '</strong>';
+            if (r.wrong_bugs.length > 0) {
+              foundStr += ' | Ошибок: <strong>' + r.wrong_bugs.length + '</strong>';
+            }
+            msgDiv.className = 'test-result-msg fail';
+            msgDiv.innerHTML = '⚠️ ' + foundStr + '. Попробуй ещё раз!<div class="attempts-info">Подсказка: сверься с документацией и перечитай видеоурок.</div>';
+            // Перерендер с подсветкой правильных/неправильных
+            renderAllTests();
+          }
+        } else {
+          msgDiv.className = 'test-result-msg error';
+          msgDiv.innerHTML = '❌ ' + (r.error || 'Ошибка сервера');
+        }
+      } catch(e) {
+        msgDiv.className = 'test-result-msg error';
+        msgDiv.innerHTML = '❌ Ошибка ответа сервера';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Проверить';
+    };
+    x.onerror = function() {
+      msgDiv.className = 'test-result-msg error';
+      msgDiv.innerHTML = '❌ Сервер недоступен. Попробуй позже.';
+      btn.disabled = false;
+      btn.textContent = 'Проверить';
+    };
+    x.send(JSON.stringify({
+      api_key: gkKey,
+      lesson_id: lessonId,
+      selected_bugs: selected,
+    }));
+  };
+
+  // --- Сброс теста ---
+  window.resetTest = function(btn) {
+    var section = btn.closest('.test-section');
+    var checkboxes = section.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = false;
+    }
+    var msgDiv = section.querySelector('.test-result-msg');
+    if (msgDiv) { msgDiv.style.display = 'none'; }
+  };
+
+  // --- Перехватываем успешную аутентификацию и загружаем прогресс ---
+  // Сохраняем оригинальную gkCheck
+  var origGkCheck = window.gkCheck;
+  window.gkCheck = function() {
+    origGkCheck.apply(this, arguments);
+    // После того как ключ сохранён — загружаем прогресс
+    setTimeout(function() {
+      var key = localStorage.getItem('gk_key');
+      if (key) {
+        loadProgress(key);
+      }
+    }, 900);
+  };
+
+  // Если ключ уже сохранён — загружаем прогресс при загрузке страницы
+  window.addEventListener('load', function() {
+    var overlay = document.getElementById('gk-overlay');
+    if (overlay && overlay.style.display === 'none') {
+      var key = localStorage.getItem('gk_key');
+      if (key) loadProgress(key);
+    }
+  });
+
+  // Также проверяем после того как оверлей скрыт асинхронно
+  var origShow = null;
+  var observer = new MutationObserver(function() {
+    var overlay = document.getElementById('gk-overlay');
+    if (overlay && overlay.style.display === 'none' && !gkKey) {
+      var key = localStorage.getItem('gk_key');
+      if (key) loadProgress(key);
+    }
+  });
+  var overlay = document.getElementById('gk-overlay');
+  if (overlay) {
+    observer.observe(overlay, { attributes: true, attributeFilter: ['style'] });
+  }
+})();
+</script>
+<!-- ========== END TEST SYSTEM ========== -->
+
  </body> </html> <!-- nominify end --> </div> </div> </div> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="9622775#101922726"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
 window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'5c01df369e61157e2b5faf53d22cbdc4','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
