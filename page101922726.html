@@ -825,9 +825,20 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     var checkboxes = section.querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = false;
+      checkboxes[i].disabled = false;
+    }
+    // Сбрасываем подсветку (зелёный/красный фон)
+    var labels = section.querySelectorAll('.test-bug-item');
+    for (var j = 0; j < labels.length; j++) {
+      labels[j].classList.remove('correct', 'wrong');
+      labels[j].style.pointerEvents = '';
     }
     var msgDiv = section.querySelector('.test-result-msg');
-    if (msgDiv) { msgDiv.style.display = 'none'; }
+    if (msgDiv) {
+      msgDiv.style.display = 'none';
+      msgDiv.className = 'test-result-msg';
+      msgDiv.innerHTML = '';
+    }
   };
 
   // --- Перехватываем успешную аутентификацию и загружаем прогресс ---
