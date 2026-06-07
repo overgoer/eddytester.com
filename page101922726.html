@@ -665,11 +665,10 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
       var isCorrect = correctBugs.indexOf(bug.id) >= 0;
       var isWrong = wrongBugs.indexOf(bug.id) >= 0;
       var className = 'test-bug-item';
-      if (isCompleted || isCorrect) { className += ' correct disabled'; }
-      else if (isWrong) { className += ' wrong disabled'; }
+      if (isCompleted) { className += ' correct disabled'; }
 
       var checked = isSelected ? 'checked' : '';
-      var disabled = isCompleted || isCorrect || isWrong ? 'disabled' : '';
+      var disabled = isCompleted ? 'disabled' : '';
       var badgeHtml = '<span class="bug-badge correct-badge">✓ Баг</span><span class="bug-badge wrong-badge">✗ Не баг</span>';
 
       html += '<label class="' + className + '">';
