@@ -8,13 +8,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy via rsync
+      - name: Deploy via SSH (git pull)
         run: |
-          chmod +x deploy.sh
-          SSH_KEY="${{ secrets.SERVER_SSH_KEY }}" \
-          SERVER_HOST="${{ secrets.SERVER_HOST }}" \
-          SERVER_PORT="${{ secrets.SERVER_PORT }}" \
-          SERVER_USER="${{ secrets.SERVER_USER }}" \
-            ./deploy.sh
+          SSH_KEY="${{ secrets.SERVER_SSH_KEY }}"
+          HOST="${{ secrets.SERVER_HOST }}"
+          PORT="${{ secrets.SERVER_PORT }}"
+          USER="${{ secrets.SERVER_USER }}"
+
+          KEY_FILE=$(mktemp)
+          echo "$SSH_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+          trap "rm -f $KEY_FILE" EXIT
+
+          ssh -p "$PORT" -i "$KEY_FILE" -o StrictHostKeyChecking=no "$USER@$HOST" \
+            "cd /var/www/eddytester.com && \
+             git pull origin main && \
+             cp server/yookassa.js /var/www/v0-test-api/v0-test-api/src/routes/yookassa.js && \
+             pm2 restart payment-yookassa || true"
