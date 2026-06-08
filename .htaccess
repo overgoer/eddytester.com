@@ -5,6 +5,10 @@ DirectoryIndex page101918416.html
 
 RewriteEngine On
 
+# Proxy for Progress API
+RewriteRule ^get-progress http://localhost:3000/get-progress [P,L]
+RewriteRule ^save-progress http://localhost:3000/save-progress [P,L]
+
 RewriteCond %{REQUEST_FILENAME} /robots.txt
 RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
 RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]

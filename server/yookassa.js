@@ -143,7 +143,7 @@ router.post('/yookassa', express.json(), async (req, res) => {
         }
 
         // Отправляем email
-        const learningLink = 'https://v0-test-api-ten.vercel.app';
+        const learningLink = 'https://practicum.eddytester.com';
         const telegramLink = 'https://t.me/api_praktikum_bot';
 
         try {
