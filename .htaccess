@@ -48,4 +48,6 @@ RewriteRule ^api-practicum/$ page101918416.html [NC]
 RewriteRule ^designlearning$ page101922726.html [NC]
 RewriteRule ^designlearning/$ page101922726.html [NC]
 
-
+# Staging pages
+RewriteRule ^test/glearning-test$ test/glearning-test.html [NC]
+RewriteRule ^test/practicum$ test/practicum.html [NC]
