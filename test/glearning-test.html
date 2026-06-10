@@ -532,6 +532,11 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
   }
   .test-btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
+  .bug-counter {
+    margin-top: 12px; font-size: 14px; color: var(--text-muted);
+  }
+  .bug-counter strong { color: var(--text-color); }
+
   .test-result-msg {
     margin-top: 12px; padding: 12px 16px; border-radius: 8px;
     font-size: 14px; line-height: 1.5; display: none;
@@ -690,13 +695,19 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
       var badgeHtml = '<span class="bug-badge correct-badge">✓ Баг</span><span class="bug-badge wrong-badge">✗ Не баг</span>';
 
       html += '<label class="' + className + '">';
-      html += '<input type="checkbox" ' + checked + ' ' + disabled + ' data-bug-id="' + bug.id + '">';
+      html += '<input type="checkbox" ' + checked + ' ' + disabled + ' data-bug-id="' + bug.id + '" onchange="updateBugCounter(\'' + lessonId + '\')">';
       html += '<span class="bug-label">' + bug.name + '</span>';
       html += badgeHtml;
       html += '</label>';
     }
 
     html += '</div>'; // .test-bugs-list
+
+    // Счётчик "Отмечено X из N"
+    var checkedCount = selectedBugs.length;
+    html += '<div class="bug-counter" id="bug-counter-' + lessonId + '">';
+    html += 'Отмечено <strong>' + checkedCount + '</strong> из <strong>' + config.bugs.length + '</strong> багов';
+    html += '</div>';
 
     html += '<div class="test-actions">';
     if (!isCompleted) {
@@ -712,6 +723,18 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     section.innerHTML = html;
     block.appendChild(section);
   }
+
+  // --- Обновление счётчика "Отмечено X из N" ---
+  window.updateBugCounter = function(lessonId) {
+    var section = document.querySelector('.test-section[data-lesson-id="' + lessonId + '"]');
+    if (!section) return;
+    var checkboxes = section.querySelectorAll('input[type="checkbox"]:not([disabled])');
+    var checked = section.querySelectorAll('input[type="checkbox"]:checked:not([disabled])');
+    var counter = document.getElementById('bug-counter-' + lessonId);
+    if (counter) {
+      counter.innerHTML = 'Отмечено <strong>' + checked.length + '</strong> из <strong>' + checkboxes.length + '</strong> багов';
+    }
+  };
 
   // --- Подсветка результатов на существующих элементах (без перерендера) ---
   function applyResults(lessonId, correctBugs, wrongBugs, completed, attempts) {
