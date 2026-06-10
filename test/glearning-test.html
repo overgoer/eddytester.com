@@ -724,12 +724,30 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     var h3 = section.querySelector('h3');
     var subtitle = section.querySelector('.test-subtitle');
     if (completed) {
+      // Если тест пройден — убираем кнопки совсем
       if (h3) h3.textContent = '✅ Тест пройден';
       if (subtitle) subtitle.textContent = 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts;
-      // Убираем кнопки
       var actions = section.querySelector('.test-actions');
       if (actions) {
         actions.innerHTML = '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
+      }
+    } else {
+      // Если не пройден — добавляем кнопку "Попробовать ещё раз"
+      var actions = section.querySelector('.test-actions');
+      if (actions) {
+        // Убираем кнопку "Проверить", оставляем кнопку "Попробовать ещё раз" и "Сбросить"
+        var retryBtn = actions.querySelector('.test-btn-retry');
+        if (!retryBtn) {
+          var primaryBtns = actions.querySelectorAll('.test-btn-primary');
+          for (var b = 0; b < primaryBtns.length; b++) {
+            primaryBtns[b].style.display = 'none';
+          }
+          var retryHtml = '<button class="test-btn test-btn-primary" onclick="retryTest(this)">Попробовать ещё раз</button>';
+          var resetBtn = actions.querySelector('.test-btn-secondary');
+          if (resetBtn) {
+            resetBtn.insertAdjacentHTML('beforebegin', retryHtml);
+          }
+        }
       }
     }
 
@@ -859,9 +877,41 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
     }));
   };
 
+  // --- Повторная попытка (снять блокировку, оставить выбор) ---
+  window.retryTest = function(btn) {
+    var section = btn.closest('.test-section');
+    var lessonId = section.dataset.lessonId;
+
+    // Разблокируем все чекбоксы и убираем подсветку
+    var checkboxes = section.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].disabled = false;
+    }
+    var labels = section.querySelectorAll('.test-bug-item');
+    for (var j = 0; j < labels.length; j++) {
+      labels[j].classList.remove('correct', 'wrong');
+      labels[j].style.pointerEvents = '';
+    }
+
+    // Меняем кнопку обратно на "Проверить"
+    btn.textContent = 'Проверить';
+    btn.onclick = function() { submitTest(this); };
+
+    // Прячем сообщение
+    var msgDiv = section.querySelector('.test-result-msg');
+    if (msgDiv) {
+      msgDiv.style.display = 'none';
+      msgDiv.className = 'test-result-msg';
+      msgDiv.innerHTML = '';
+    }
+
+    btn.disabled = false;
+  };
+
   // --- Сброс теста ---
   window.resetTest = function(btn) {
     var section = btn.closest('.test-section');
+    var lessonId = section.dataset.lessonId;
     var checkboxes = section.querySelectorAll('input[type="checkbox"]');
     for (var i = 0; i < checkboxes.length; i++) {
       checkboxes[i].checked = false;
@@ -878,6 +928,21 @@ document.addEventListener('DOMContentLoaded',t_setvisRecs);}})();</script></head
       msgDiv.style.display = 'none';
       msgDiv.className = 'test-result-msg';
       msgDiv.innerHTML = '';
+    }
+    // Сбрасываем прогресс на сервере
+    var x = new XMLHttpRequest();
+    x.open('POST', '/save-progress', true);
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.send(JSON.stringify({
+      api_key: gkKey,
+      lesson_id: lessonId,
+      selected_bugs: [],
+    }));
+    // Возвращаем кнопку "Проверить", если была "Попробовать ещё раз"
+    var retryBtns = section.querySelectorAll('.test-btn-primary');
+    for (var k = 0; k < retryBtns.length; k++) {
+      retryBtns[k].textContent = 'Проверить';
+      retryBtns[k].onclick = function() { submitTest(this); };
     }
   };
 
