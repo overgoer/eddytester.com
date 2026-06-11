@@ -24,4 +24,10 @@ jobs:
             "cd /var/www/eddytester.com && \
              git pull origin main && \
              cp server/yookassa.js /var/www/v0-test-api/v0-test-api/src/routes/yookassa.js && \
+             cp -r apache/sites-available/*.conf /etc/apache2/sites-available/ && \
+             for conf in apache/sites-available/*.conf; do \
+               site=\$(basename \"\$conf\"); \
+               a2ensite \"\$site\" 2>/dev/null || true; \
+             done && \
+             apachectl -k graceful && \
              pm2 restart payment-yookassa || true"
