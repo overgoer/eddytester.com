@@ -27,12 +27,12 @@
 | ✅ g_cache | Ответ кэшируется на 3 минуты (public) |
 | ✅ g_security | Нет X-Content-Type-Options и X-Frame-Options |
 | ✅ g_content_type | Content-Type: text/plain вместо application/json |
+| ✅ g_cache_info | X-Cache-Info утекает наружу |
 | ✗ g_pagination | Нет пагинации |
 | ✗ g_sort | Параметр sort=name не сортирует |
 | ✗ g_empty_status | Пустой статус → 500 ошибка |
 | ✗ g_status_any | Любой левый статус — 200 вместо 400 |
 | ✗ g_total_count | Нет заголовка X-Total-Count |
-| ✗ g_cache_info | X-Cache-Info утекает наружу |
 | ✗ g_encoding | Кириллица в имени — кракозябры |
 
 ### 2. `l12` — GET by ID (`get-user`)
