@@ -18,22 +18,22 @@
 ### 1. `l9` — GET: Практика (`get-users`)
 
 **Эндпоинт:** `GET /users`
-**Всего багов:** 12 · **Найти:** 5
+**Всего багов:** 12 · **Найти:** 7
 
 | Баг | Описание |
 |---|---|
+| ✗ g_pagination | Нет пагинации |
 | ✅ g_status_case | Status-фильтр чувствителен к регистру |
-| ✅ g_comma | Comma-separated статусы игнорируются |
 | ✅ g_cache | Ответ кэшируется на 3 минуты (public) |
+| ✗ g_sort | Параметр sort=name не сортирует |
+| ✅ g_comma | Comma-separated статусы игнорируются |
+| ✗ g_empty_status | Пустой статус → 500 ошибка |
 | ✅ g_security | Нет X-Content-Type-Options и X-Frame-Options |
 | ✅ g_content_type | Content-Type: text/plain вместо application/json |
-| ✅ g_cache_info | X-Cache-Info утекает наружу |
-| ✗ g_pagination | Нет пагинации |
-| ✗ g_sort | Параметр sort=name не сортирует |
-| ✗ g_empty_status | Пустой статус → 500 ошибка |
-| ✗ g_status_any | Любой левый статус — 200 вместо 400 |
 | ✗ g_total_count | Нет заголовка X-Total-Count |
+| ✅ g_status_any | Любой левый статус — 200 вместо 400 |
 | ✗ g_encoding | Кириллица в имени — кракозябры |
+| ✅ g_cache_info | X-Cache-Info утекает наружу |
 
 ### 2. `l12` — GET by ID (`get-user`)
 

@@ -701,6 +701,11 @@
       if (attempts > 0) {
         html += '<span style="font-size:13px;color:var(--text-muted)">Попыток: ' + attempts + '</span>';
       }
+    } else {
+      html += '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Пройти заново</button>';
+      if (attempts > 0) {
+        html += '<span style="font-size:13px;color:var(--text-muted)">Попыток: ' + attempts + '</span>';
+      }
     }
     html += '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
     html += '</div>';
@@ -720,12 +725,13 @@
     var h3 = section.querySelector('h3');
     var subtitle = section.querySelector('.test-subtitle');
     if (completed) {
-      // Если тест пройден — убираем кнопки совсем
       if (h3) h3.textContent = '✅ Тест пройден';
       if (subtitle) subtitle.textContent = 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts;
       var actions = section.querySelector('.test-actions');
       if (actions) {
-        actions.innerHTML = '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
+        actions.innerHTML = '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Пройти заново</button>' +
+                            '<span style="font-size:13px;color:var(--text-muted);margin-left:10px">Попыток: ' + attempts + '</span>' +
+                            '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
       }
     } else {
       // Если не пройден — добавляем кнопку "Попробовать ещё раз"
@@ -929,17 +935,20 @@
     var x = new XMLHttpRequest();
     x.open('POST', '/save-progress', true);
     x.setRequestHeader('Content-Type', 'application/json');
+    x.onload = function() {
+      try {
+        var r = JSON.parse(x.responseText);
+        if (r.success) {
+          section.remove();
+          loadProgress(gkKey);
+        }
+      } catch(e) { console.log('Reset parse error:', e); }
+    };
     x.send(JSON.stringify({
       api_key: gkKey,
       lesson_id: lessonId,
       selected_bugs: [],
     }));
-    // Возвращаем кнопку "Проверить", если была "Попробовать ещё раз"
-    var retryBtns = section.querySelectorAll('.test-btn-primary');
-    for (var k = 0; k < retryBtns.length; k++) {
-      retryBtns[k].textContent = 'Проверить';
-      retryBtns[k].onclick = function() { submitTest(this); };
-    }
   };
 
   // --- Перехватываем успешную аутентификацию и загружаем прогресс ---
