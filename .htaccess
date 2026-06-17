@@ -48,6 +48,18 @@ RewriteRule ^api-practicum/$ page101918416.html [NC]
 RewriteRule ^designlearning$ page101922726.html [NC]
 RewriteRule ^designlearning/$ page101922726.html [NC]
 
+# Legal pages
+RewriteRule ^oferta$ legal/oferta.html [NC]
+RewriteRule ^oferta/$ legal/oferta.html [NC]
+RewriteRule ^privacy$ legal/privacy.html [NC]
+RewriteRule ^privacy/$ legal/privacy.html [NC]
+RewriteRule ^pd-consent$ legal/pd-consent.html [NC]
+RewriteRule ^pd-consent/$ legal/pd-consent.html [NC]
+RewriteRule ^terms$ legal/terms.html [NC]
+RewriteRule ^terms/$ legal/terms.html [NC]
+RewriteRule ^cookies$ legal/cookies.html [NC]
+RewriteRule ^cookies/$ legal/cookies.html [NC]
+
 # Staging pages
 RewriteRule ^test/glearning-test$ test/glearning-test.html [NC]
 RewriteRule ^test/practicum$ test/practicum.html [NC]
