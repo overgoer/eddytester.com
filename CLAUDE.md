@@ -56,9 +56,24 @@ cd ~/IdeaProjects/eddytester.com && open page101918416.html
 4. **Кэш Cloudflare**
    Если Cloudflare включён (оранжевое облако) — старые версии страниц могут кэшироваться до 24ч. Для тестирования изменений использовать `/test/*` (стейджинг) или Purge Cache в CF.
 
-## Разное
+## Деплой
 
-Остальные правила (деплой, коммиты) — см. BACKLOG.md.
+**Флоу:** Ветка → деплой на прод → тест → Ок? → мердж в main.
+
+```bash
+# Быстрый деплой (через Claude Code скилл)
+/deploy site <branch>
+
+# Или вручную:
+git push origin <branch>
+ssh timeweb "bash /var/www/eddytester.com/scripts/deploy-server.sh <branch>"
+
+# Откат
+ssh timeweb "cd /var/www/eddytester.com && git checkout main"
+```
+
+**После деплоя статики:** сбросить кэш Cloudflare (Purge Cache).
+Серверный скрипт: `scripts/deploy-server.sh` — backup, fetch, checkout, Apache reload, health check.
 
 ## Система тестов
 
