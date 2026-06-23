@@ -2,7 +2,7 @@
 
 > Единый справочник для AI-агента. Содержит всю связку: репозитории, инфраструктуру, домены, PM2, Apache, API, тесты и деплой.
 >
-> **Последнее обновление:** 16 июня 2026
+> **Последнее обновление:** 24 июня 2026
 
 ---
 
@@ -104,7 +104,7 @@ RewriteRule для статических страниц (см. раздел 6).
 | `/` | `page101918416.html` | Главная (лендинг) |
 | `/api-practicum` | `page101918416.html` | Ссылка на главную |
 | `/consult` | `page101918416.html` | Консультация |
-| `/glearning` | `page101922726.html` | **API Практикум — 16 уроков, 5 с тестами** |
+| `/glearning` | `page101922726.html` | **API Практикум — 16 уроков, 6 с тестами** |
 | `/designlearning` | `page101922726.html` | Дизайн-практикум (тот же файл) |
 | `/test/glearning-test` | `test/glearning-test.html` | Стейджинг /glearning |
 | `/test/practicum` | `test/practicum.html` | Стейджинг главной |
@@ -184,21 +184,24 @@ server.js                              # Entry point + роутинг
 5. Студент отмечает найденные баги → POST `/save-progress`
 6. Сервер сверяет с эталоном (`LESSONS_CONFIG` в `progress.js`)
 
-### 5 уроков с тестами
+### 6 уроков с тестами
 
 | Урок | ID | Эндпоинт | Всего багов | Найти нужно |
 |---|---|---|---|---|
+| l1 | `tutorial` | Введение (туториал) | 5 | 3 |
 | l9 | `get-users` | GET /users | 12 | 7 |
 | l12 | `get-user` | GET /users/{id} | 7 | 3 |
 | l13 | `post-users` | POST /users | 10 | 5 |
 | l14 | `patch-user` | PATCH /users/{id} | 10 | 5 |
 | l15 | `delete-user` | DELETE /users/{id} | 7 | 3 |
-| **Итого** | | | **46** | **23** |
+| **Итого** | | | **51** | **26** |
 
 **Важно:** количество багов в тестах (46) **не равно** количеству задокументированных багов в API (42). Тесты могут проверять разные аспекты одного бага или иметь свои тестовые сценарии.
 
 ### LESSONS_CONFIG
 Правильные ответы для каждого урока заданы в `src/routes/progress.js` (на сервере: `/var/www/v0-test-api/v0-test-api/src/routes/progress.js`).
+
+Каждый урок может иметь кастомные `testTitle` и `testSubtitle` — они переопределяют дефолтные «🔍 Найди баги» / «Отметь баги...» на странице теста.
 
 ### База данных (lesson_progress)
 ```sql
@@ -210,6 +213,9 @@ lesson_progress (api_key, lesson_id, selected_bugs[], correct_bugs[],
 - Весь код в `page101922726.html` (inline HTML + CSS + JS)
 - API-ключ кэшируется в localStorage (`gk_key`)
 - MutationObserver отслеживает скрытие оверлея
+- `renderTest()` рендерит тест с кастомными или дефолтными заголовками
+- `LESSON_MAP` мапит DOM-идентификаторы (l1, l9, l12...) на lesson_id (`tutorial`, `get-users`, ...)
+- Стили: заголовок и подзаголовок теста — 20px, жирный
 
 ---
 
