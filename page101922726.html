@@ -675,10 +675,10 @@
     section.className = 'test-section' + (isCompleted ? '' : '');
     section.dataset.lessonId = lessonId;
 
-    var title = isCompleted ? '✅ Тест пройден' : '🔍 Найди баги';
+    var title = isCompleted ? '✅ Тест пройден' : (config.testTitle || '🔍 Найди баги');
     var subtitle = isCompleted
       ? 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts
-      : 'Отметь баги, которые ты нашёл в этом эндпоинте. Ответь на все — получишь +1 к прогрессу.';
+      : (config.testSubtitle || 'Отметь баги, которые ты нашёл в этом эндпоинте. Ответь на все — получишь +1 к прогрессу.');
 
     var html = '<h3>' + title + '</h3>';
     html += '<p class="test-subtitle">' + subtitle + '</p>';
