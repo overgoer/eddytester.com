@@ -3,6 +3,8 @@ ErrorDocument 404 /404.html
 
 DirectoryIndex page101918416.html
 
+AddCharset UTF-8 .json
+
 RewriteEngine On
 
 # Proxy for Progress API
