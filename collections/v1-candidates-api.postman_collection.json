@@ -1,0 +1,673 @@
+{
+  "info": {
+    "_postman_id": "c4d7e8f2-a1b3-4c5d-9e0f-123456789abc",
+    "name": "Candidates API v1",
+    "description": "# Candidates API v1\n\nУчебное API для практики тестирования. Содержит **намеренные баги** — твоя задача их найти.\n\n## Быстрый старт\n\n1. Укажи свой API-ключ в переменной `apiKey` коллекции\n2. Убедись, что `baseUrl` = `https://practicum.eddytester.com`\n3. Начни с GET /users — и смотри внимательно\n\n## Аутентификация\n\nВсе запросы (кроме DELETE /users/:id — это баг) требуют заголовок `X-Fix-Bug` с твоим ключом.\n\n## Версии\n\n- **v1** — с багами (ты здесь)\n- **v2** — эталон без багов, для сверки",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://practicum.eddytester.com",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "YOUR_API_KEY_HERE",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "X-Fix-Bug",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Users",
+      "description": "CRUD для пользователей. Базовый путь: `/v1/api/users`",
+      "item": [
+        {
+          "name": "GET All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    pm.response.to.be.json;",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users"
+              ]
+            },
+            "description": "Возвращает список всех пользователей, созданных с твоим ключом.\n\n**🔍 Что проверять:** заголовки ответа, Content-Type, Cache-Control, security headers."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Users by Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users?status=candidate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "candidate",
+                  "description": "Фильтр по статусу: minor, candidate, retired"
+                }
+              ]
+            },
+            "description": "Возвращает пользователей, отфильтрованных по статусу.\n\n**🔍 Что проверять:** регистр (candidate vs CANDIDATE), невалидные значения, перечисление через запятую."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains user object\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('id');",
+                  "    pm.expect(data).to.have.property('name');",
+                  "    pm.expect(data).to.have.property('age');",
+                  "    pm.expect(data).to.have.property('status');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Ivan Petrov\",\n    \"age\": 25\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users"
+              ]
+            },
+            "description": "Создаёт нового пользователя.\n\n**Обязательные поля:** name (строка), age (число).\n\n**🔍 Что проверять:** валидацию name (цифры, спецсимволы, пустая строка), границы age (0–16, 17, 66+), тип age в ответе, уникальность имени, сколько пропусков создалось."
+          },
+          "response": []
+        },
+        {
+          "name": "GET User by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users",
+                "1"
+              ]
+            },
+            "description": "Возвращает пользователя по ID.\n\n**🔍 Что проверять:** соответствует ли ответ запрошенному id, несуществующий id, нечисловой id (abc), отрицательный id, очень большое число."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 400\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 400, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Updated Name\",\n    \"age\": 30\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users",
+                "1"
+              ]
+            },
+            "description": "Обновляет имя и/или возраст пользователя.\n\n**🔍 Что проверять:** есть ли id в ответе, тип age (число или строка), status для retired, отрицательный age, валидацию name, обновление на существующее имя."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// v1 БАГ: DELETE /users/:id не проверяет X-Fix-Bug",
+                  "// Запрос выполнится даже без заголовка"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/users/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "users",
+                "1"
+              ]
+            },
+            "description": "Удаляет пользователя по ID.\n\n**🔍 Что проверять:** удалился ли пользователь на самом деле (сделай GET после DELETE), что возвращает для несуществующего id, работает ли без заголовка X-Fix-Bug."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Passes",
+      "description": "Скрининговые пропуска. Базовый путь: `/v1/api/passes`",
+      "item": [
+        {
+          "name": "GET All Passes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/passes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "passes"
+              ]
+            },
+            "description": "Возвращает все скрининговые пропуска, созданные с твоим ключом.\n\n**🔍 Что проверять:** формат дат (есть ли Z и миллисекунды), работают ли limit/offset."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Pass",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response contains pass object\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('pass_code');",
+                  "    pm.expect(data).to.have.property('expires_at');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_id\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/passes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "passes"
+              ]
+            },
+            "description": "Создаёт скрининговый пропуск для пользователя.\n\n**Обязательное поле:** user_id.\n\n**🔍 Что проверять:** срок действия (1 час или 60?), формат pass_code (SCR- или scr_?), создаётся ли для несуществующего user_id."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Pass by User ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/passes/user/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "passes",
+                "user",
+                "1"
+              ]
+            },
+            "description": "Возвращает пропуск для указанного пользователя.\n\n**🔍 Что проверять:** чей пропуск возвращается — того user_id что в URL или любой? Что возвращается если пропусков нет?"
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update Pass",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"expired\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/passes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "passes",
+                "1"
+              ]
+            },
+            "description": "Обновляет статус пропуска.\n\n**🔍 Что проверять:** любые ли значения статуса принимаются (banana?), обновляется ли updated_at, можно ли менять user_id и pass_code, можно ли активировать просроченный пропуск."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Pass",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/passes/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "passes",
+                "1"
+              ]
+            },
+            "description": "Удаляет пропуск по ID.\n\n**🔍 Что проверять:** что возвращается для несуществующего id, фильтруется ли по api_key (можно ли удалить чужой пропуск?)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Utility",
+      "description": "Служебные эндпоинты: сброс данных, учётные данные, обслуживание.",
+      "item": [
+        {
+          "name": "DELETE Reset DB",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has deleted_count\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('deleted_count');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/reset",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "reset"
+              ]
+            },
+            "description": "Удаляет ВСЕХ пользователей и пропуска, созданных с твоим ключом. Используй для очистки перед повторным прохождением уроков.\n\n⚠️ **Действие необратимо.**"
+          },
+          "response": []
+        },
+        {
+          "name": "GET Credentials (demo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has demo credentials\", function () {",
+                  "    var data = pm.response.json();",
+                  "    pm.expect(data).to.have.property('credentials');",
+                  "    pm.expect(data).to.have.property('guide');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/credentials?demo=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "credentials"
+              ],
+              "query": [
+                {
+                  "key": "demo",
+                  "value": "true",
+                  "description": "Вернуть демонстрационные учётные данные"
+                }
+              ]
+            },
+            "description": "Возвращает демонстрационные SSH и PostgreSQL учётные данные (статический ответ). Не требует настоящего API-ключа с базой данных."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Credentials (real)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 or 404\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/credentials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "credentials"
+              ]
+            },
+            "description": "Возвращает реальные SSH и PostgreSQL учётные данные для твоего ключа. Если учётные данные ещё не выданы — 404."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Maintenance Run",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/api/maintenance/run",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "api",
+                "maintenance",
+                "run"
+              ]
+            },
+            "description": "Принудительный запуск очистки просроченных скрининговых пропусков."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
