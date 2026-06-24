@@ -5,6 +5,10 @@ DirectoryIndex page101918416.html
 
 AddCharset UTF-8 .json
 
+<FilesMatch "\.json$">
+    Header set Content-Disposition attachment
+</FilesMatch>
+
 RewriteEngine On
 
 # Proxy for Progress API
