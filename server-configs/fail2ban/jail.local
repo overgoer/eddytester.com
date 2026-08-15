@@ -1,0 +1,21 @@
+[DEFAULT]
+bantime = 24h
+findtime = 10m
+maxretry = 5
+
+[sshd]
+enabled = true
+port = 2222
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 48h
+
+[apache-404]
+enabled = true
+filter = apache-404
+port = http,https
+logpath = /eddytester.com_access.log
+        /eddytester.com_ssl_access.log
+maxretry = 5
+findtime = 120
+bantime = 4h

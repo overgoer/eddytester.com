@@ -1,0 +1,71 @@
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+
+DirectoryIndex page101918416.html
+
+AddCharset UTF-8 .json
+
+<FilesMatch "\.json$">
+    Header set Content-Disposition attachment
+</FilesMatch>
+
+RewriteEngine On
+
+# Proxy for Progress API
+RewriteRule ^get-progress http://localhost:3000/get-progress [P,L]
+RewriteRule ^save-progress http://localhost:3000/save-progress [P,L]
+
+RewriteCond %{REQUEST_FILENAME} /robots.txt
+RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
+RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]
+RewriteRule ^consult$ page101918416.html [NC]
+RewriteRule ^consult/$ page101918416.html [NC]
+
+RewriteRule ^api$ page64392263.html [NC]
+RewriteRule ^api/$ page64392263.html [NC]
+
+RewriteRule ^api_oferta$ page65082509.html [NC]
+RewriteRule ^api_oferta/$ page65082509.html [NC]
+
+RewriteRule ^api_docs$ page65526529.html [NC]
+RewriteRule ^api_docs/$ page65526529.html [NC]
+
+RewriteRule ^test_layout$ page71319435.html [NC]
+RewriteRule ^test_layout/$ page71319435.html [NC]
+
+RewriteRule ^docs2$ page71604261.html [NC]
+RewriteRule ^docs2/$ page71604261.html [NC]
+
+RewriteRule ^oferta_api_eddytester$ page73441323.html [NC]
+RewriteRule ^oferta_api_eddytester/$ page73441323.html [NC]
+
+RewriteRule ^pers_data_policy$ page77510526.html [NC]
+RewriteRule ^pers_data_policy/$ page77510526.html [NC]
+
+RewriteRule ^test_learning_page$ page79978736.html [NC]
+RewriteRule ^test_learning_page/$ page79978736.html [NC]
+
+RewriteRule ^glearning$ page101922726.html [NC]
+RewriteRule ^glearning/$ page101922726.html [NC]
+
+RewriteRule ^api-practicum$ page101918416.html [NC]
+RewriteRule ^api-practicum/$ page101918416.html [NC]
+
+RewriteRule ^designlearning$ page101922726.html [NC]
+RewriteRule ^designlearning/$ page101922726.html [NC]
+
+# Legal pages
+RewriteRule ^oferta$ legal/oferta.html [NC]
+RewriteRule ^oferta/$ legal/oferta.html [NC]
+RewriteRule ^privacy$ legal/privacy.html [NC]
+RewriteRule ^privacy/$ legal/privacy.html [NC]
+RewriteRule ^pd-consent$ legal/pd-consent.html [NC]
+RewriteRule ^pd-consent/$ legal/pd-consent.html [NC]
+RewriteRule ^terms$ legal/terms.html [NC]
+RewriteRule ^terms/$ legal/terms.html [NC]
+RewriteRule ^cookies$ legal/cookies.html [NC]
+RewriteRule ^cookies/$ legal/cookies.html [NC]
+
+# Staging pages
+RewriteRule ^test/glearning-test$ test/glearning-test.html [NC]
+RewriteRule ^test/practicum$ test/practicum.html [NC]
