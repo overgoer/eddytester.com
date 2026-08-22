@@ -71,12 +71,30 @@
             font-family: inherit;
         }
         .copy-btn:hover { background: rgba(255,255,255,0.25); }
+        .pdf-link {
+            display: inline-block;
+            background: #20232c;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .pdf-link:hover { background: #30343f; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            section { break-inside: avoid; }
+            .copy-btn { display: none; }
+            .pdf-link { display: none; }
+        }
     </style>
 </head>
 <body>
 <div class="wrap">
     <h1>Полезные SQL-запросы для тестировщика</h1>
     <p class="subtitle">Краткий чек-лист запросов к базе данных API Практикума</p>
+    <a class="pdf-link" href="sql-cheatsheet.pdf" download>⬇ Скачать PDF</a>
 
     <div class="note">🔒 База изолирована: ты видишь только записи, созданные твоим API-ключом. Не пугайся, если таблицы выглядят полупустыми.</div>
 
