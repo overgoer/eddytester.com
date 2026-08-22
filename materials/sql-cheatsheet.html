@@ -56,6 +56,21 @@
         }
         .finale strong { display: block; font-size: 17px; margin-bottom: 6px; }
         .finale p { font-size: 14.5px; color: #333; }
+        .code-wrap { position: relative; }
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.12);
+            color: #cfd4de;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .copy-btn:hover { background: rgba(255,255,255,0.25); }
     </style>
 </head>
 <body>
@@ -169,5 +184,36 @@ GROUP BY status;</pre>
         <p>БД никогда не врёт, в отличие от ответов API. Ответ может вернуть 200 OK, но только прямой запрос в базу покажет, сохранились ли данные правильно. Сверяй каждый запрос к API с состоянием базы!</p>
     </div>
 </div>
+<script>
+    document.querySelectorAll('pre').forEach(function(pre) {
+        var wrap = document.createElement('div');
+        wrap.className = 'code-wrap';
+        pre.parentNode.insertBefore(wrap, pre);
+        wrap.appendChild(pre);
+
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Копировать';
+        btn.addEventListener('click', function() {
+            var text = pre.innerText;
+            function done() {
+                btn.textContent = 'Скопировано!';
+                setTimeout(function() { btn.textContent = 'Копировать'; }, 1500);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done);
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                done();
+            }
+        });
+        wrap.appendChild(btn);
+    });
+</script>
 </body>
 </html>
