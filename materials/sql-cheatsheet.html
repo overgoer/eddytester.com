@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полезные SQL-запросы для тестировщика</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f6f8;
+            color: #1a1a2e;
+            line-height: 1.6;
+            padding: 24px 16px 60px;
+        }
+        .wrap { max-width: 780px; margin: 0 auto; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #667; margin-bottom: 24px; }
+        .note {
+            background: #fff8e1;
+            border-left: 4px solid #f0a500;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+        section {
+            background: #fff;
+            border: 1px solid #e4e6eb;
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        section h2 { font-size: 19px; margin-bottom: 12px; }
+        pre {
+            background: #20232c;
+            color: #e8eaf0;
+            padding: 14px 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: 13.5px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        pre .c { color: #7f8694; }
+        .why { font-size: 14.5px; margin-bottom: 8px; }
+        .when { font-size: 14px; color: #444; }
+        .when ul { padding-left: 20px; margin-top: 4px; }
+        .finale {
+            background: #eef4ff;
+            border: 1px solid #c8d9f5;
+            border-radius: 8px;
+            padding: 20px 22px;
+            text-align: center;
+        }
+        .finale strong { display: block; font-size: 17px; margin-bottom: 6px; }
+        .finale p { font-size: 14.5px; color: #333; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Полезные SQL-запросы для тестировщика</h1>
+    <p class="subtitle">Краткий чек-лист запросов к базе данных API Практикума</p>
+
+    <div class="note">🔒 База изолирована: ты видишь только записи, созданные твоим API-ключом. Не пугайся, если таблицы выглядят полупустыми.</div>
+
+    <section>
+        <h2>1. Проверка создания записи</h2>
+<pre>SELECT * FROM users
+ORDER BY id DESC
+LIMIT 5;</pre>
+        <p class="why"><b>Зачем:</b> проверяет, что отправленный через POST /v1/api/users кандидат действительно записался в базу, и его поля (имя, возраст, статус) сохранились без искажений.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Сразу после POST-запросов — подтвердить успешную вставку.</li>
+                <li>Проверить, что id увеличивается корректно.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>2. Простая фильтрация данных</h2>
+<pre><span class="c">-- Фильтр по конкретному статусу</span>
+SELECT * FROM users
+WHERE status = 'candidate';
+
+<span class="c">-- Фильтр по возрасту</span>
+SELECT * FROM users
+WHERE age &gt;= 18;</pre>
+        <p class="why"><b>Зачем:</b> быстро получить срез данных из базы и сверить его с ответом API (например, с результатом GET /v1/api/users?status=candidate).</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Сверка работы фильтров: API вернул 10 кандидатов, а база выдаёт 12 — ты нашёл баг фильтрации.</li>
+                <li>Ручной поиск тестовых данных для других тестов.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. Авто-аудит бизнес-логики</h2>
+<pre>SELECT id, name, age, status FROM users
+WHERE (age &lt; 18 AND status != 'minor')
+   OR (age BETWEEN 18 AND 65 AND status != 'candidate')
+   OR (age &gt;= 66 AND status != 'retired');</pre>
+        <p class="why"><b>Зачем:</b> один запрос проверяет всю таблицу на соответствие ТЗ. Вернулась хотя бы одна строка — ты нашёл баг в логике назначения статусов.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Проверка автоматического назначения статуса по возрасту.</li>
+                <li>За секунду протестировать всю базу после нагрузочного теста.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Поиск дубликатов (лишние пропуски)</h2>
+<pre>SELECT user_id, COUNT(*) FROM screening_passes
+GROUP BY user_id
+HAVING COUNT(*) &gt; 1;</pre>
+        <p class="why"><b>Зачем:</b> по ТЗ на каждого кандидата выдаётся ровно один скрининговый пропуск. Если у одного user_id несколько пропусков — это баг. Кстати, в v1 метод POST /users как раз создаёт 2 пропуска вместо 1 — этот запрос поможет его поймать.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Сразу после POST /v1/api/users — проверить, сколько пропусков создалось.</li>
+                <li>Поиск «двойных» записей при тестировании выдачи пропусков.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>5. Сквозная проверка связей (JOIN)</h2>
+<pre>SELECT u.name, u.status, p.pass_code, p.status AS pass_status
+FROM users u
+JOIN screening_passes p ON u.id = p.user_id;</pre>
+        <p class="why"><b>Зачем:</b> проверяет побочные эффекты: при создании пользователя ему должен автоматически выдаваться пропуск. JOIN связывает пользователя и его пропуск — вся картина на одном экране.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Интеграционные сценарии: создался ли пропуск, тот ли у него user_id.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>6. Поиск зависших статусов (просрочка)</h2>
+<pre>SELECT id, pass_code, expires_at, status
+FROM screening_passes
+WHERE expires_at &lt; NOW() AND status = 'active';</pre>
+        <p class="why"><b>Зачем:</b> если срок пропуска истёк (expires_at &lt; NOW()), но статус всё ещё 'active' — это логический баг: либо не отработала фоновая очистка (Maintenance), либо сломалась логика обновления статуса.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Тестирование жизненного цикла пропусков и фоновых задач очистки.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section>
+        <h2>7. Аудит статистики</h2>
+<pre>SELECT status, COUNT(*) FROM users
+GROUP BY status;</pre>
+        <p class="why"><b>Зачем:</b> быстрая сверка статистики: совпадают ли цифры на экране с реальными данными в базе.</p>
+        <div class="when"><b>Когда:</b>
+            <ul>
+                <li>Тестирование дашбордов, счётчиков и аналитики.</li>
+            </ul>
+        </div>
+    </section>
+
+    <div class="finale">
+        <strong>🚀 База данных — твой главный свидетель</strong>
+        <p>БД никогда не врёт, в отличие от ответов API. Ответ может вернуть 200 OK, но только прямой запрос в базу покажет, сохранились ли данные правильно. Сверяй каждый запрос к API с состоянием базы!</p>
+    </div>
+</div>
+</body>
+</html>
