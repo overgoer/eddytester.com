@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Типы данных в API — краткий справочник тестировщика</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f6f8;
+            color: #1a1a2e;
+            line-height: 1.6;
+            padding: 24px 16px 60px;
+        }
+        .wrap { max-width: 780px; margin: 0 auto; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #667; margin-bottom: 24px; }
+        .pdf-link {
+            display: inline-block;
+            background: #036cff;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .pdf-link:hover { background: #0258d6; }
+        section {
+            background: #fff;
+            border: 1px solid #e4e6eb;
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        section h2 { font-size: 19px; margin-bottom: 10px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; font-size: 14.5px; }
+        pre {
+            background: #20232c;
+            color: #e8eaf0;
+            padding: 12px 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: 13.5px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .finale {
+            background: #eef4ff;
+            border: 1px solid #c8d9f5;
+            border-radius: 8px;
+            padding: 20px 22px;
+            text-align: center;
+        }
+        .finale strong { display: block; font-size: 17px; margin-bottom: 8px; }
+        .finale a { color: #036cff; font-weight: 600; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            section { break-inside: avoid; }
+            .pdf-link { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Типы данных в API</h1>
+    <p class="subtitle">Краткий справочник тестировщика: какие типы бывают в JSON и что с ними проверять</p>
+    <a class="pdf-link" href="data-types.pdf" download>⬇ Скачать PDF</a>
+
+    <section>
+        <h2>Зачем тестировщику типы данных</h2>
+        <ul>
+            <li>Типы полей описаны в документации API — это часть контракта</li>
+            <li>Большинство багов валидации ловится именно на несоответствии типов: число пришло строкой, дата — в неверном формате, вместо объекта — null</li>
+            <li>Проверяй не только запросы, но и ответы: сервер должен отвечать ровно теми типами, что задокументированы</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Integer — целое число</h2>
+<pre>{ "age": 25, "count": 3 }</pre>
+        <ul>
+            <li>Только целые значения: 25.5 или "25" (строкой) — не подходит</li>
+            <li>Проверяй границы из документации: minimum, maximum (возраст 0–120 и т.п.)</li>
+            <li>Классический баг: сервер возвращает число как строку <code>"age": "25"</code></li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>String — строка</h2>
+<pre>{ "name": "John Doe" }</pre>
+        <ul>
+            <li>Проверяй ограничения из документации: допустимые символы, длина, pattern (регулярка)</li>
+            <li>Пробелы по краям (тримминг), пустая строка "", спецсимволы, кириллица/латиница</li>
+            <li>Валидация на входе и на выходе может отличаться — проверяй обе</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Boolean — true / false</h2>
+<pre>{ "is_active": true }</pre>
+        <ul>
+            <li>Только true или false — без кавычек: "true" строкой — это баг</li>
+            <li>Не путать с числами: 0 и 1 вместо false и true — частое расхождение</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Enum — перечисление</h2>
+<pre>{ "status": "candidate" }  // только из списка: minor, candidate, retired</pre>
+        <ul>
+            <li>Принимаются только значения из списка; всё остальное — 400 Bad Request</li>
+            <li>Проверяй регистр: "CANDIDATE" не должно пройти, если задокументирован нижний</li>
+            <li>Проверяй весь список: каждое допустимое значение должно обрабатываться</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Float — дробное число</h2>
+<pre>{ "price": 19.99, "rating": 4.5 }</pre>
+        <ul>
+            <li>Дробная часть через точку, не запятую</li>
+            <li>Отрицательные значения, ноль, очень большие числа</li>
+            <li>Точность: сколько знаков после точки допускает документация</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Array — массив</h2>
+<pre>{ "items": [1, 2, 3] }</pre>
+        <ul>
+            <li>Пустой массив <code>[]</code> — валидный ответ, когда данных нет (не ошибка!)</li>
+            <li>Проверяй, что элементы массива одного типа и соответствуют схеме</li>
+            <li>Сортировка, порядок, лимиты и пагинация — отдельная тема для списков</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Object — объект</h2>
+<pre>{ "user": { "id": 1, "name": "John" } }</pre>
+        <ul>
+            <li>Все обязательные ключи должны присутствовать; лишние поля — повод проверить документацию</li>
+            <li>Вложенные объекты: проверяй типы на каждом уровне</li>
+            <li>Ключи регистрозависимы: "Name" вместо "name" — это другое поле</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Null — отсутствие значения</h2>
+<pre>{ "middle_name": null }</pre>
+        <ul>
+            <li>Null ≠ 0, Null ≠ "" (пустая строка), Null ≠ [] (пустой массив) — не подменяй при проверке</li>
+            <li>Уточни по документации: в каких полях null допустим, а в каких должен быть валидный объект</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Дата и время</h2>
+<pre>{ "expires_at": "2026-08-23T12:00:00Z" }</pre>
+        <ul>
+            <li>Стандарт — ISO 8601: YYYY-MM-DDTHH:MM:SSZ</li>
+            <li>Проверяй таймзоны, границы (даты в прошлом/будущем) и точность (с секундами или без)</li>
+            <li>Сроки действия (expires_at) — любимое место багов: протухшая запись всё ещё active</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Коды и идентификаторы</h2>
+<pre>{ "pass_code": "SCR-A1B2C3D4", "id": 42 }</pre>
+        <ul>
+            <li>Формат кодов обычно строго задан (префикс + символы) — сверяй с документацией</li>
+            <li>ID — почти всегда целое число; проверяй отрицательные, нулевые и очень большие значения</li>
+        </ul>
+    </section>
+
+    <div class="finale">
+        <strong>Типы данных — часть контракта API</strong>
+        <p>Документация описывает не только методы, но и типы каждого поля. Любое отклонение — баг.<br>
+        Больше полезного про тестирование — в телеграм-канале <a href="https://t.me/eddytester" target="_blank">@eddytester</a>.</p>
+    </div>
+</div>
+</body>
+</html>
