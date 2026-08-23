@@ -541,6 +541,20 @@
         }
         window.location.hash = lessonId;
         window.scrollTo(0, 0);
+
+        // Интро и достижение Passes Quest видны только в уроках квеста
+        var questIds = ['l14', 'l15', 'l16', 'l17', 'l18'];
+        var isQuest = questIds.indexOf(lessonId) >= 0;
+        var questIntro = document.getElementById('quest-intro');
+        if (questIntro) questIntro.style.display = isQuest ? 'block' : 'none';
+        var questAch = document.getElementById('passes-achievement');
+        if (questAch) {
+            if (isQuest) {
+                updatePassesAchievement();
+            } else {
+                questAch.style.display = 'none';
+            }
+        }
     }
 
     function changeSource(lessonId, url, btn) {
