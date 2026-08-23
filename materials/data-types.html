@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Типы данных в API — краткий справочник тестировщика</title>
+    <title>Типы данных в API — справочник тестировщика</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -35,6 +35,7 @@
             margin-bottom: 20px;
         }
         section h2 { font-size: 19px; margin-bottom: 10px; }
+        section h3 { font-size: 15px; margin: 14px 0 6px; color: #333; }
         ul { padding-left: 20px; }
         li { margin-bottom: 6px; font-size: 14.5px; }
         pre {
@@ -48,6 +49,16 @@
             line-height: 1.5;
             margin-bottom: 12px;
         }
+        code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        th, td { border: 1px solid #e4e6eb; padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { background: #f0f4fa; }
         .finale {
             background: #eef4ff;
             border: 1px solid #c8d9f5;
@@ -67,113 +78,154 @@
 <body>
 <div class="wrap">
     <h1>Типы данных в API</h1>
-    <p class="subtitle">Краткий справочник тестировщика: какие типы бывают в JSON и что с ними проверять</p>
+    <p class="subtitle">Справочник тестировщика: типы JSON и OpenAPI, их форматы и что с ними проверять</p>
     <a class="pdf-link" href="data-types.pdf" download>⬇ Скачать PDF</a>
 
     <section>
-        <h2>Зачем тестировщику типы данных</h2>
+        <h2>База: типы данных JSON</h2>
+        <p>Любой ответ API — это JSON, а в JSON всего шесть типов:</p>
+        <table>
+            <tr><th>Тип</th><th>Пример</th></tr>
+            <tr><td><code>string</code></td><td><code>"John"</code></td></tr>
+            <tr><td><code>number</code></td><td><code>25.5</code></td></tr>
+            <tr><td><code>object</code></td><td><code>{ "id": 1 }</code></td></tr>
+            <tr><td><code>array</code></td><td><code>[1, 2, 3]</code></td></tr>
+            <tr><td><code>boolean</code></td><td><code>true</code></td></tr>
+            <tr><td><code>null</code></td><td><code>null</code></td></tr>
+        </table>
+        <p style="margin-top:10px; font-size:14px;">OpenAPI уточняет их через ключевые слова: <code>integer</code> — целое, <code>format</code> — подтип (дата, uuid, email…), а также ограничения: <code>minimum</code>, <code>maxLength</code>, <code>pattern</code>, <code>enum</code> и другие. Типы полей описаны в документации — это часть контракта API, и каждое отклонение от них — баг.</p>
+    </section>
+
+    <section>
+        <h2>String — строка</h2>
+<pre>"name": "John Doe"</pre>
+        <h3>Форматы (format)</h3>
         <ul>
-            <li>Типы полей описаны в документации API — это часть контракта</li>
-            <li>Большинство багов валидации ловится именно на несоответствии типов: число пришло строкой, дата — в неверном формате, вместо объекта — null</li>
-            <li>Проверяй не только запросы, но и ответы: сервер должен отвечать ровно теми типами, что задокументированы</li>
+            <li><code>date</code> — дата: <code>"2026-08-23"</code></li>
+            <li><code>date-time</code> — дата и время: <code>"2026-08-23T12:00:00Z"</code></li>
+            <li><code>email</code>, <code>uuid</code>, <code>uri</code>, <code>ipv4</code>, <code>hostname</code> — по соответствующим стандартам</li>
+        </ul>
+        <h3>Что проверять</h3>
+        <ul>
+            <li>Длина: <code>minLength</code> / <code>maxLength</code> — пустая строка, 1 символ, граница, превышение</li>
+            <li><code>pattern</code> — регулярка допустимых символов; цифры, спецсимволы, другая раскладка</li>
+            <li>Пробелы по краям (тримминг), регистр, кодировки и юникод</li>
         </ul>
     </section>
 
     <section>
         <h2>Integer — целое число</h2>
-<pre>{ "age": 25, "count": 3 }</pre>
+<pre>"age": 25</pre>
+        <h3>Форматы</h3>
         <ul>
-            <li>Только целые значения: 25.5 или "25" (строкой) — не подходит</li>
-            <li>Проверяй границы из документации: minimum, maximum (возраст 0–120 и т.п.)</li>
-            <li>Классический баг: сервер возвращает число как строку <code>"age": "25"</code></li>
+            <li><code>int32</code> — от −2 147 483 648 до 2 147 483 647</li>
+            <li><code>int64</code> — от −9 223 372 036 854 775 808 до 9 223 372 036 854 775 807</li>
+        </ul>
+        <h3>Что проверять</h3>
+        <ul>
+            <li>Границы: <code>minimum</code> / <code>maximum</code> и значения сразу за ними</li>
+            <li>Ноль, отрицательные, очень большие числа (переполнение int32)</li>
+            <li>Дробное значение 25.5 — не целое; число строкой <code>"25"</code> — классический баг типа в ответе</li>
         </ul>
     </section>
 
     <section>
-        <h2>String — строка</h2>
-<pre>{ "name": "John Doe" }</pre>
+        <h2>Number — дробное число</h2>
+<pre>"price": 19.99</pre>
+        <h3>Форматы</h3>
         <ul>
-            <li>Проверяй ограничения из документации: допустимые символы, длина, pattern (регулярка)</li>
-            <li>Пробелы по краям (тримминг), пустая строка "", спецсимволы, кириллица/латиница</li>
-            <li>Валидация на входе и на выходе может отличаться — проверяй обе</li>
+            <li><code>float</code> — одинарная точность (~7 значащих цифр)</li>
+            <li><code>double</code> — двойная точность (~15 значащих цифр)</li>
+        </ul>
+        <h3>Что проверять</h3>
+        <ul>
+            <li>Точка как разделитель, количество знаков после запятой, округление</li>
+            <li>Отрицательные, ноль, экспоненциальная запись</li>
+            <li><code>multipleOf</code> — кратность (например, шаг 0.01 для цен)</li>
         </ul>
     </section>
 
     <section>
-        <h2>Boolean — true / false</h2>
-<pre>{ "is_active": true }</pre>
+        <h2>Boolean — логическое</h2>
+<pre>"is_active": true</pre>
         <ul>
-            <li>Только true или false — без кавычек: "true" строкой — это баг</li>
-            <li>Не путать с числами: 0 и 1 вместо false и true — частое расхождение</li>
-        </ul>
-    </section>
-
-    <section>
-        <h2>Enum — перечисление</h2>
-<pre>{ "status": "candidate" }  // только из списка: minor, candidate, retired</pre>
-        <ul>
-            <li>Принимаются только значения из списка; всё остальное — 400 Bad Request</li>
-            <li>Проверяй регистр: "CANDIDATE" не должно пройти, если задокументирован нижний</li>
-            <li>Проверяй весь список: каждое допустимое значение должно обрабатываться</li>
-        </ul>
-    </section>
-
-    <section>
-        <h2>Float — дробное число</h2>
-<pre>{ "price": 19.99, "rating": 4.5 }</pre>
-        <ul>
-            <li>Дробная часть через точку, не запятую</li>
-            <li>Отрицательные значения, ноль, очень большие числа</li>
-            <li>Точность: сколько знаков после точки допускает документация</li>
+            <li>Только <code>true</code> или <code>false</code>, без кавычек: <code>"true"</code> строкой — баг</li>
+            <li>Не путать с числами: 0/1 вместо false/true — частое расхождение</li>
+            <li>Значение по умолчанию, если поле не прислано</li>
         </ul>
     </section>
 
     <section>
         <h2>Array — массив</h2>
-<pre>{ "items": [1, 2, 3] }</pre>
+<pre>"items": [ {"id": 1}, {"id": 2} ]</pre>
         <ul>
-            <li>Пустой массив <code>[]</code> — валидный ответ, когда данных нет (не ошибка!)</li>
-            <li>Проверяй, что элементы массива одного типа и соответствуют схеме</li>
-            <li>Сортировка, порядок, лимиты и пагинация — отдельная тема для списков</li>
+            <li>Элементы одного типа по схеме (<code>items</code>)</li>
+            <li>Пустой массив <code>[]</code> — валидный ответ, когда данных нет; не ошибка</li>
+            <li>Ограничения <code>minItems</code> / <code>maxItems</code>, порядок, дубликаты</li>
+            <li>Пагинация и сортировка для списков — отдельная зона проверок</li>
         </ul>
     </section>
 
     <section>
         <h2>Object — объект</h2>
-<pre>{ "user": { "id": 1, "name": "John" } }</pre>
+<pre>"user": { "id": 1, "name": "John", "email": null }</pre>
         <ul>
-            <li>Все обязательные ключи должны присутствовать; лишние поля — повод проверить документацию</li>
-            <li>Вложенные объекты: проверяй типы на каждом уровне</li>
-            <li>Ключи регистрозависимы: "Name" вместо "name" — это другое поле</li>
+            <li>Обязательные ключи (<code>required</code>) — отсутствие обязательного поля это баг</li>
+            <li>Лишние поля (<code>additionalProperties</code>) — пропускает сервер или режет?</li>
+            <li>Вложенные объекты — типы проверяются на каждом уровне</li>
+            <li>Ключи регистрозависимы: <code>"Name"</code> и <code>"name"</code> — разные поля</li>
         </ul>
     </section>
 
     <section>
         <h2>Null — отсутствие значения</h2>
-<pre>{ "middle_name": null }</pre>
+<pre>"middle_name": null</pre>
         <ul>
-            <li>Null ≠ 0, Null ≠ "" (пустая строка), Null ≠ [] (пустой массив) — не подменяй при проверке</li>
-            <li>Уточни по документации: в каких полях null допустим, а в каких должен быть валидный объект</li>
+            <li>null ≠ 0, null ≠ <code>""</code>, null ≠ <code>[]</code> — не подменяй при проверке</li>
+            <li>Где null допустим — решает документация: <code>nullable: true</code> или <code>type: [string, null]</code></li>
+            <li>Отличай «поле отсутствует» от «поле = null» — сервисы часто трактуют по-разному</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Enum — перечисление</h2>
+<pre>"status": "active"   // допустимы только: active, blocked, deleted</pre>
+        <ul>
+            <li>Только значения из списка; всё остальное — ошибка 400</li>
+            <li>Регистр: <code>"ACTIVE"</code> не должен проходить, если задокументирован нижний</li>
+            <li>Проверь каждое значение списка — все должны обрабатываться</li>
         </ul>
     </section>
 
     <section>
         <h2>Дата и время</h2>
-<pre>{ "expires_at": "2026-08-23T12:00:00Z" }</pre>
+<pre>"created_at": "2026-08-23T12:00:00Z"</pre>
         <ul>
-            <li>Стандарт — ISO 8601: YYYY-MM-DDTHH:MM:SSZ</li>
-            <li>Проверяй таймзоны, границы (даты в прошлом/будущем) и точность (с секундами или без)</li>
-            <li>Сроки действия (expires_at) — любимое место багов: протухшая запись всё ещё active</li>
+            <li>Стандарт ISO 8601 / RFC 3339: <code>YYYY-MM-DDTHH:MM:SSZ</code></li>
+            <li>Таймзоны: суффикс <code>Z</code> (UTC) или смещение <code>+03:00</code></li>
+            <li>Границы: даты в прошлом и будущем, високосные годы, точность (с секундами, миллисекундами или без)</li>
+            <li>Сроки действия — любимое место багов: «истёкшее» значение всё ещё активно</li>
         </ul>
     </section>
 
     <section>
-        <h2>Коды и идентификаторы</h2>
-<pre>{ "pass_code": "SCR-A1B2C3D4", "id": 42 }</pre>
+        <h2>UUID и другие идентификаторы</h2>
+<pre>"id": "550e8400-e29b-41d4-a716-446655440000"</pre>
         <ul>
-            <li>Формат кодов обычно строго задан (префикс + символы) — сверяй с документацией</li>
-            <li>ID — почти всегда целое число; проверяй отрицательные, нулевые и очень большие значения</li>
+            <li>UUID (RFC 4122): 36 символов, 8-4-4-4-12, шестнадцатеричные</li>
+            <li>Формат кодов часто задан жёстко (префикс, регистр, длина) — сверяй с документацией</li>
+            <li>Целочисленные ID: отрицательные, нулевые, очень большие, несуществующие</li>
         </ul>
+    </section>
+
+    <section>
+        <h2>Комбинации схем</h2>
+        <ul>
+            <li><code>oneOf</code> — ровно одна из схем</li>
+            <li><code>anyOf</code> — хотя бы одна из схем</li>
+            <li><code>allOf</code> — все схемы одновременно</li>
+        </ul>
+        <p style="font-size:14px; margin-top:6px;">Встречаются в сложных ответах: поле может быть строкой ИЛИ объектом. Проверяй все ветви каждой комбинации.</p>
     </section>
 
     <div class="finale">
