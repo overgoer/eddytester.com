@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Что тестировать в каждом методе API</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f6f8;
+            color: #1a1a2e;
+            line-height: 1.6;
+            padding: 24px 16px 60px;
+        }
+        .wrap { max-width: 780px; margin: 0 auto; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        .subtitle { color: #667; margin-bottom: 24px; }
+        .pdf-link {
+            display: inline-block;
+            background: #036cff;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .pdf-link:hover { background: #0258d6; }
+        section {
+            background: #fff;
+            border: 1px solid #e4e6eb;
+            border-radius: 8px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+        section h2 { font-size: 19px; margin-bottom: 12px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; font-size: 14.5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { border: 1px solid #e4e6eb; padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { background: #f0f4fa; }
+        code {
+            background: #eef1f5;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: 13px;
+        }
+        .finale {
+            background: #eef4ff;
+            border: 1px solid #c8d9f5;
+            border-radius: 8px;
+            padding: 20px 22px;
+            text-align: center;
+        }
+        .finale strong { display: block; font-size: 17px; margin-bottom: 6px; }
+        .finale p { font-size: 14.5px; color: #333; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            section { break-inside: avoid; }
+            .pdf-link { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>Что тестировать в каждом методе API</h1>
+    <p class="subtitle">Краткая выжимка урока про CRUD — твой контекст перед практикой</p>
+    <a class="pdf-link" href="crud-checklist.pdf" download>⬇ Скачать PDF</a>
+
+    <section>
+        <h2>CRUD и CRUD-L</h2>
+        <ul>
+            <li><b>C</b>reate — создать (<code>POST</code>)</li>
+            <li><b>R</b>ead — прочитать (<code>GET</code>)</li>
+            <li><b>U</b>pdate — обновить (<code>PUT</code> / <code>PATCH</code>)</li>
+            <li><b>D</b>elete — удалить (<code>DELETE</code>)</li>
+            <li><b>L</b> (в CRUD-L) — List: списков в базе в готовом виде нет, их собирает API как посредник между хранилищем и системами</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Параметры vs часть пути</h2>
+        <table>
+            <tr>
+                <th>Параметр <code>?status=candidate</code></th>
+                <th>Часть пути <code>/users/:id</code></th>
+            </tr>
+            <tr>
+                <td>Фильтрация, сортировка, пагинация</td>
+                <td>Идентификация конкретного ресурса</td>
+            </tr>
+            <tr>
+                <td>Логика обработки в коде</td>
+                <td>Роутинг эндпоинта</td>
+            </tr>
+            <tr>
+                <td>Пустой результат — валидный <code>200 OK</code></td>
+                <td>Ресурс не найден — <code>404 Not Found</code></td>
+            </tr>
+        </table>
+    </section>
+
+    <section>
+        <h2>Тестирование POST</h2>
+        <ul>
+            <li>Валидация схемы входящего запроса (JSON-схема)</li>
+            <li>Обязательность полей и типы данных</li>
+            <li>Валидация схемы ответа и статус-кода (<code>201 Created</code>)</li>
+            <li>Попытка создания полного дубликата записи (если дубликаты не прописаны в доке — уточнить и всё равно проверить)</li>
+            <li>Обработка некорректного тела запроса (<code>400 Bad Request</code>)</li>
+            <li>Проверка прав доступа и авторизации (права на создание)</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Тестирование GET</h2>
+        <ul>
+            <li>Получение по ID: существующий (<code>200 OK</code>) vs отсутствующий (<code>404 Not Found</code>)</li>
+            <li>Получение списка: фильтрация, сортировка, пагинация</li>
+            <li>Валидация структуры и типов данных в ответе</li>
+            <li>Изоляция данных (разграничение доступа между пользователями)</li>
+            <li>Поведение при большом объёме записей</li>
+            <li>Кэш: удали ресурс и запроси снова — как быстро обновляется ответ</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Тестирование PATCH</h2>
+        <ul>
+            <li>Частичное обновление (передача только изменённых полей)</li>
+            <li>Валидация типов данных и ограничений обновляемых полей</li>
+            <li>Защита системных и неизменяемых полей (ID, дата создания)</li>
+            <li>Обработка некорректных значений (<code>400 Bad Request</code>)</li>
+            <li>Проверка прав доступа на редактирование (<code>403 Forbidden</code>)</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Тестирование DELETE</h2>
+        <ul>
+            <li>Удаление существующего ресурса (<code>200 OK</code> или <code>204 No Content</code>)</li>
+            <li>Повторное удаление ресурса (<code>404 Not Found</code>)</li>
+            <li>Каскадное удаление (автоматическое удаление связанных данных)</li>
+            <li>Проверка прав доступа на удаление ресурса</li>
+            <li>Поведение зависимых ресурсов после удаления родительского</li>
+            <li>Soft delete: ресурс может помечаться удалённым и не выдаваться в GET</li>
+        </ul>
+    </section>
+
+    <div class="finale">
+        <strong>🚀 Это твой контекст перед практикой</strong>
+        <p>Каждый метод в каждом API уникален, но по HTTP-методу сразу понятно, что проверять. Теперь используй этот чек-лист в задачах практикума.</p>
+    </div>
+</div>
+</body>
+</html>
