@@ -49,6 +49,9 @@
             line-height: 1.5;
             margin-bottom: 12px;
         }
+        pre .c { color: #7f8694; }
+        pre .ok { color: #7ddb8a; }
+        pre .bad { color: #ff8f8f; }
         code {
             background: #eef1f5;
             padding: 1px 6px;
@@ -105,11 +108,19 @@
             <li><code>date-time</code> — дата и время: <code>"2026-08-23T12:00:00Z"</code></li>
             <li><code>email</code>, <code>uuid</code>, <code>uri</code>, <code>ipv4</code>, <code>hostname</code> — по соответствующим стандартам</li>
         </ul>
+        <h3>Примеры</h3>
+<pre><span class="ok">"John Doe"</span>            <span class="c">// валидно</span>
+<span class="bad">""</span>                      <span class="c">// пустая строка — допустима ли по доке?</span>
+<span class="bad">"John123"</span>             <span class="c">// цифры, если pattern только буквы</span>
+<span class="bad">"  John  "</span>            <span class="c">// пробелы по краям — триммит ли сервер?</span>
+<span class="bad">"John&quot; O&#39;Neil"</span>       <span class="c">// кавычки внутри — экранирование</span>
+<span class="bad">"aaaaaaaa…(300 симв.)"</span> <span class="c">// превышение maxLength</span>
+<span class="bad">"Иван Петров"</span>          <span class="c">// другая раскладка/юникод</span></pre>
         <h3>Что проверять</h3>
         <ul>
             <li>Длина: <code>minLength</code> / <code>maxLength</code> — пустая строка, 1 символ, граница, превышение</li>
             <li><code>pattern</code> — регулярка допустимых символов; цифры, спецсимволы, другая раскладка</li>
-            <li>Пробелы по краям (тримминг), регистр, кодировки и юникод</li>
+            <li>Пробелы по краям (тримминг), регистр, кодировки и юникод, экранирование кавычек и переводов строк</li>
         </ul>
     </section>
 
@@ -121,6 +132,13 @@
             <li><code>int32</code> — от −2 147 483 648 до 2 147 483 647</li>
             <li><code>int64</code> — от −9 223 372 036 854 775 808 до 9 223 372 036 854 775 807</li>
         </ul>
+        <h3>Примеры</h3>
+<pre><span class="ok">25</span>                      <span class="c">// валидно</span>
+<span class="ok">0</span>                       <span class="c">// ноль — допустим ли по доке?</span>
+<span class="bad">-1</span>                      <span class="c">// отрицательное при minimum: 0</span>
+<span class="bad">25.5</span>                    <span class="c">// дробное — не целое</span>
+<span class="bad">"25"</span>                    <span class="c">// число строкой — классика</span>
+<span class="bad">2147483648</span>             <span class="c">// переполнение int32</span></pre>
         <h3>Что проверять</h3>
         <ul>
             <li>Границы: <code>minimum</code> / <code>maximum</code> и значения сразу за ними</li>
@@ -137,27 +155,52 @@
             <li><code>float</code> — одинарная точность (~7 значащих цифр)</li>
             <li><code>double</code> — двойная точность (~15 значащих цифр)</li>
         </ul>
+        <h3>Примеры</h3>
+<pre><span class="ok">19.99</span>                   <span class="c">// валидно</span>
+<span class="bad">19.999</span>                  <span class="c">// лишний знак при шаге 0.01</span>
+<span class="bad">19,99</span>                   <span class="c">// запятая вместо точки</span>
+<span class="bad">-42.7</span>                   <span class="c">// отрицательная цена?</span>
+<span class="bad">0.1 + 0.2 = 0.30000000000000004</span> <span class="c">// бинарная арифметика</span>
+<span class="bad">1234567.891</span>            <span class="c">// точность float: хвост потеряется</span>
+<span class="bad">1e10</span>                    <span class="c">// экспоненциальная запись</span></pre>
         <h3>Что проверять</h3>
         <ul>
-            <li>Точка как разделитель, количество знаков после запятой, округление</li>
-            <li>Отрицательные, ноль, экспоненциальная запись</li>
+            <li>Точка как разделитель, количество знаков после запятой</li>
+            <li>Отрицательные, ноль, экспоненциальная запись, потеря точности float (7 значащих цифр)</li>
             <li><code>multipleOf</code> — кратность (например, шаг 0.01 для цен)</li>
+            <li><b>Округление при трансформации:</b> сервер может гонять число через float→double или decimal в БД — 19.999 может прийти как 20.00 или 19.99. Сверь, сколько знаков реально приходит, и какое округление используется (вверх, вниз, банковское)</li>
         </ul>
     </section>
 
     <section>
         <h2>Boolean — логическое</h2>
 <pre>"is_active": true</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">true</span>                     <span class="c">// валидно</span>
+<span class="ok">false</span>                    <span class="c">// валидно</span>
+<span class="bad">"true"</span>                   <span class="c">// строка вместо булева</span>
+<span class="bad">1</span>                        <span class="c">// число вместо булева</span>
+<span class="bad">"yes"</span>                    <span class="c">// сервер кастует? контракт должен решать</span>
+<span class="bad">null</span>                     <span class="c">// допустим ли null для обязательного флага</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>Только <code>true</code> или <code>false</code>, без кавычек: <code>"true"</code> строкой — баг</li>
             <li>Не путать с числами: 0/1 вместо false/true — частое расхождение</li>
-            <li>Значение по умолчанию, если поле не прислано</li>
+            <li>Неявные касты: принимает ли сервер "yes"/"no"/1/0 и что отвечает в ответе</li>
         </ul>
     </section>
 
     <section>
         <h2>Array — массив</h2>
 <pre>"items": [ {"id": 1}, {"id": 2} ]</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">[]</span>                       <span class="c">// пустой — валидный ответ, не ошибка</span>
+<span class="ok">[1, 2, 3]</span>                <span class="c">// элементы одного типа</span>
+<span class="bad">[1, "two", 3]</span>            <span class="c">// смешанные типы</span>
+<span class="bad">[1, 1, 1]</span>                <span class="c">// дубликаты — допустимы ли?</span>
+<span class="bad">[[1], [2]]</span>               <span class="c">// вложенные массивы по схеме?</span>
+<span class="bad">null</span>                     <span class="c">// null вместо массива</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>Элементы одного типа по схеме (<code>items</code>)</li>
             <li>Пустой массив <code>[]</code> — валидный ответ, когда данных нет; не ошибка</li>
@@ -169,6 +212,14 @@
     <section>
         <h2>Object — объект</h2>
 <pre>"user": { "id": 1, "name": "John", "email": null }</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">{ "id": 1, "name": "John" }</span>        <span class="c">// валидно</span>
+<span class="bad">{}</span>                                   <span class="c">// пустой объект без required-полей</span>
+<span class="bad">{ "id": 1 }</span>                          <span class="c">// нет обязательного name</span>
+<span class="bad">{ "id": 1, "name": "John", "hack": 1 }</span> <span class="c">// лишнее поле</span>
+<span class="bad">{ "Name": "John", "id": 1 }</span>          <span class="c">// регистр ключа</span>
+<span class="bad">"user": null</span>                         <span class="c">// null вместо объекта</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>Обязательные ключи (<code>required</code>) — отсутствие обязательного поля это баг</li>
             <li>Лишние поля (<code>additionalProperties</code>) — пропускает сервер или режет?</li>
@@ -180,6 +231,13 @@
     <section>
         <h2>Null — отсутствие значения</h2>
 <pre>"middle_name": null</pre>
+        <h3>Примеры: это РАЗНЫЕ вещи</h3>
+<pre><span class="bad">null</span>        <span class="c">// явный null</span>
+<span class="bad">(нет поля)</span>  <span class="c">// поле вообще отсутствует в ответе</span>
+<span class="bad">""</span>         <span class="c">// пустая строка</span>
+<span class="bad">0</span>          <span class="c">// ноль</span>
+<span class="bad">[]</span>         <span class="c">// пустой массив</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>null ≠ 0, null ≠ <code>""</code>, null ≠ <code>[]</code> — не подменяй при проверке</li>
             <li>Где null допустим — решает документация: <code>nullable: true</code> или <code>type: [string, null]</code></li>
@@ -190,6 +248,13 @@
     <section>
         <h2>Enum — перечисление</h2>
 <pre>"status": "active"   // допустимы только: active, blocked, deleted</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">"active"</span>     <span class="c">// валидно</span>
+<span class="bad">"ACTIVE"</span>     <span class="c">// регистр</span>
+<span class="bad">"unknown"</span>    <span class="c">// значение вне списка</span>
+<span class="bad">""</span>           <span class="c">// пустая строка</span>
+<span class="bad">null</span>         <span class="c">// null вместо enum</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>Только значения из списка; всё остальное — ошибка 400</li>
             <li>Регистр: <code>"ACTIVE"</code> не должен проходить, если задокументирован нижний</li>
@@ -200,6 +265,15 @@
     <section>
         <h2>Дата и время</h2>
 <pre>"created_at": "2026-08-23T12:00:00Z"</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">"2026-08-23"</span>                 <span class="c">// дата</span>
+<span class="ok">"2026-08-23T12:00:00Z"</span>       <span class="c">// UTC (суффикс Z)</span>
+<span class="ok">"2026-08-23T15:00:00+03:00"</span>  <span class="c">// со смещением таймзоны</span>
+<span class="ok">"2026-08-23T12:00:00.123Z"</span>   <span class="c">// миллисекунды</span>
+<span class="bad">"23.08.2026"</span>                 <span class="c">// локальный формат вместо ISO</span>
+<span class="bad">"2026-13-45"</span>                 <span class="c">// невалидные месяц и день</span>
+<span class="bad">"2025-02-29"</span>                 <span class="c">// 29 февраля в невисокосный год</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>Стандарт ISO 8601 / RFC 3339: <code>YYYY-MM-DDTHH:MM:SSZ</code></li>
             <li>Таймзоны: суффикс <code>Z</code> (UTC) или смещение <code>+03:00</code></li>
@@ -211,6 +285,13 @@
     <section>
         <h2>UUID и другие идентификаторы</h2>
 <pre>"id": "550e8400-e29b-41d4-a716-446655440000"</pre>
+        <h3>Примеры</h3>
+<pre><span class="ok">"550e8400-e29b-41d4-a716-446655440000"</span>  <span class="c">// валидный UUID v4</span>
+<span class="bad">"550e8400"</span>                               <span class="c">// слишком короткий</span>
+<span class="bad">"550e8400-e29b-41d4-a716-44665544000G"</span>  <span class="c">// буква G — не hex</span>
+<span class="bad">"550e8400e29b41d4a716446655440000"</span>       <span class="c">// без дефисов</span>
+<span class="bad">null</span>                                       <span class="c">// null вместо id</span></pre>
+        <h3>Что проверять</h3>
         <ul>
             <li>UUID (RFC 4122): 36 символов, 8-4-4-4-12, шестнадцатеричные</li>
             <li>Формат кодов часто задан жёстко (префикс, регистр, длина) — сверяй с документацией</li>
