@@ -1,7 +1,7 @@
 {
     "info": {
-        "_postman_id": "a9a8df39-73ad-4850-9369-e55cc6ad6c23",
-        "name": "Candidates API v1",
+        "_postman_id": "e8dceaf4-eabc-42bd-9245-16371d55efbc",
+        "name": "Candidates API v2",
         "description": "# Candidates API v1\n\nУчебное API для практики тестирования. Содержит **намеренные баги** — твоя задача их найти.\n\n## Быстрый старт\n\n1. Укажи свой API-ключ в переменной `apiKey` коллекции\n2. Убедись, что `baseUrl` = `https://practicum.eddytester.com`\n3. Начни с GET /users — и смотри внимательно\n\n## Аутентификация\n\nВсе запросы (кроме DELETE /users/:id — это баг) требуют заголовок `X-Fix-Bug` с твоим ключом.\n\n## Версии\n\n- **v1** — с багами (ты здесь)\n- **v2** — эталон без багов, для сверки",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         "_exporter_id": "10187587"
@@ -46,13 +46,7 @@
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/users",
                             "host": [
@@ -92,13 +86,7 @@
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/users?status=candidate",
                             "host": [
@@ -152,16 +140,11 @@
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
-                            },
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
                             }
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\":\"Ivan Petrov\",\n    \"age\": 25\n}",
+                            "raw": "{\n    \"name\": \"Ivan Petrov\",\n    \"age\": 22\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -202,15 +185,9 @@
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
-                            "raw": "{{baseUrl}}/v1/api/users/1",
+                            "raw": "{{baseUrl}}/v1/api/users/104",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -218,7 +195,7 @@
                                 "v1",
                                 "api",
                                 "users",
-                                "1"
+                                "104"
                             ]
                         },
                         "description": "Возвращает пользователя по ID.\n\n**🔍 Что проверять:** соответствует ли ответ запрошенному id, несуществующий id, нечисловой id (abc), отрицательный id, очень большое число."
@@ -248,11 +225,6 @@
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
-                            },
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
                             }
                         ],
                         "body": {
@@ -260,7 +232,7 @@
                             "raw": "{\n    \"name\": \"Updated Name\",\n    \"age\": 30\n}"
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/v1/api/users/1",
+                            "raw": "{{baseUrl}}/v1/api/users/104",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -268,7 +240,7 @@
                                 "v1",
                                 "api",
                                 "users",
-                                "1"
+                                "104"
                             ]
                         },
                         "description": "Обновляет имя и/или возраст пользователя.\n\n**🔍 Что проверять:** есть ли id в ответе, тип age (число или строка), status для retired, отрицательный age, валидацию name, обновление на существующее имя."
@@ -306,15 +278,9 @@
                     ],
                     "request": {
                         "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
-                            "raw": "{{baseUrl}}/v1/api/users/1",
+                            "raw": "{{baseUrl}}/v1/api/users/104",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -322,7 +288,7 @@
                                 "v1",
                                 "api",
                                 "users",
-                                "1"
+                                "104"
                             ]
                         },
                         "description": "Удаляет пользователя по ID.\n\n**🔍 Что проверять:** удалился ли пользователь на самом деле (сделай GET после DELETE), что возвращает для несуществующего id, работает ли без заголовка X-Fix-Bug."
@@ -351,19 +317,15 @@
                                     "    pm.expect(data).to.be.an('array');",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/passes",
                             "host": [
@@ -396,7 +358,9 @@
                                     "    pm.expect(data).to.have.property('expires_at');",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
@@ -406,11 +370,6 @@
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
-                            },
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
                             }
                         ],
                         "body": {
@@ -443,19 +402,15 @@
                                     "    pm.response.to.have.status(200);",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/passes/user/1",
                             "host": [
@@ -484,7 +439,9 @@
                                     "    pm.response.to.have.status(200);",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
@@ -494,11 +451,6 @@
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
-                            },
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
                             }
                         ],
                         "body": {
@@ -532,19 +484,15 @@
                                     "    pm.response.to.have.status(200);",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/passes/1",
                             "host": [
@@ -583,19 +531,15 @@
                                     "    pm.expect(data).to.have.property('deleted_count');",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/reset",
                             "host": [
@@ -628,19 +572,15 @@
                                     "    pm.expect(data).to.have.property('guide');",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/credentials?demo=true",
                             "host": [
@@ -674,19 +614,15 @@
                                     "    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "GET",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/credentials",
                             "host": [
@@ -713,19 +649,15 @@
                                     "    pm.response.to.have.status(200);",
                                     "});"
                                 ],
-                                "type": "text/javascript"
+                                "type": "text/javascript",
+                                "packages": {},
+                                "requests": {}
                             }
                         }
                     ],
                     "request": {
                         "method": "POST",
-                        "header": [
-                            {
-                                "key": "X-Fix-Bug",
-                                "value": "{{apiKey}}",
-                                "type": "text"
-                            }
-                        ],
+                        "header": [],
                         "url": {
                             "raw": "{{baseUrl}}/v1/api/maintenance/run",
                             "host": [
@@ -746,6 +678,26 @@
             "description": "Служебные эндпоинты: сброс данных, учётные данные, обслуживание."
         }
     ],
+    "auth": {
+        "type": "apikey",
+        "apikey": [
+            {
+                "key": "key",
+                "value": "X-Fix-Bug",
+                "type": "string"
+            },
+            {
+                "key": "value",
+                "value": "{{apiKey}}",
+                "type": "string"
+            },
+            {
+                "key": "in",
+                "value": "header",
+                "type": "string"
+            }
+        ]
+    },
     "event": [
         {
             "listen": "prerequest",
