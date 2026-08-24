@@ -4,7 +4,7 @@ ErrorDocument 404 /404.html
 DirectoryIndex page101918416.html
 
 # Favicon для всего сайта (лого практикума)
-RewriteRule ^favicon\.ico$ images/tild6563-6563-4161-b763-313132373666__postman-logo-icon-or.svg [L]
+RewriteRule ^favicon\.ico$ images/tild3532-6535-4238-b431-306238333239__postman-icon_1.png [L]
 
 AddCharset UTF-8 .json
 
