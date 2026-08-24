@@ -1032,12 +1032,13 @@
   }
 
   function streamSetSource(src) {
-    if (!currentStream) return;
     currentSource = src;
-    var iframe = document.getElementById('vid-l20');
-    iframe.src = src === 'yt'
-      ? 'https://www.youtube.com/embed/' + currentStream.yt + '?playsinline=1&rel=0'
-      : currentStream.vk;
+    if (currentStream) {
+      var iframe = document.getElementById('vid-l20');
+      iframe.src = src === 'yt'
+        ? 'https://www.youtube.com/embed/' + currentStream.yt + '?playsinline=1&rel=0'
+        : currentStream.vk;
+    }
     var btns = document.querySelectorAll('#stream-tabs .src-btn');
     for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
     var target = document.querySelectorAll('#stream-tabs .src-btn')[src === 'yt' ? 1 : 0];
