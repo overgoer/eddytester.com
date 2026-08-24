@@ -120,6 +120,7 @@
     .prac-prio-med { color: #8a6d00; background: #fdf6e3; }
     .progress-bugs { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
     .btn-bugs-badge { font-size: 11px; color: var(--text-muted); margin-left: 6px; white-space: nowrap; }
+    .btn-done-badge { color: #2e7d32; font-weight: 800; margin-left: 6px; }
     .nav-divider { display: inline-block; font-size: 13px; font-weight: 700; color: #8a6d00; background: #fdf6e3; border-radius: 4px; padding: 4px 10px; margin: 0 4px; vertical-align: middle; }
     .quest-intro { background: #fff; border: 1px solid var(--border-color); border-left: 4px solid #8a6d00; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px; }
     .lead-msg { margin-top: 10px; }
@@ -933,20 +934,35 @@
       var btn = document.getElementById('btn-' + pageId);
       if (!btn) continue;
       var badge = btn.querySelector('.btn-bugs-badge');
-      if (!isBugHunt) {
-        if (badge) badge.remove();
-        continue;
+      if (isBugHunt) {
+        var p = allProgress && allProgress[lessonId];
+        var found = p && p.correct_bugs ? p.correct_bugs.length : 0;
+        var c = allLessons && allLessons[lessonId];
+        var total = c && c.correct ? c.correct.length : 0;
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'btn-bugs-badge';
+          btn.appendChild(badge);
+        }
+        badge.textContent = found + '/' + total;
+      } else if (badge) {
+        badge.remove();
       }
-      var p = allProgress && allProgress[lessonId];
-      var found = p && p.correct_bugs ? p.correct_bugs.length : 0;
-      var c = allLessons && allLessons[lessonId];
-      var total = c && c.correct ? c.correct.length : 0;
-      if (!badge) {
-        badge = document.createElement('span');
-        badge.className = 'btn-bugs-badge';
-        btn.appendChild(badge);
+
+      // Галочка для пройденных уроков
+      var done = btn.querySelector('.btn-done-badge');
+      var prog = allProgress && allProgress[lessonId];
+      var completed = !!(prog && prog.completed);
+      if (completed) {
+        if (!done) {
+          done = document.createElement('span');
+          done.className = 'btn-done-badge';
+          btn.appendChild(done);
+        }
+        done.textContent = '✓';
+      } else if (done) {
+        done.remove();
       }
-      badge.textContent = found + '/' + total;
     }
   }
 
