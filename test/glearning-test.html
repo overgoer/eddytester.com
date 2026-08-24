@@ -118,6 +118,8 @@
     .prac-badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
     .prac-prio { color: #b02a2a; background: #fdecec; }
     .prac-prio-med { color: #8a6d00; background: #fdf6e3; }
+    .progress-bugs { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .btn-bugs-badge { font-size: 11px; color: var(--text-muted); margin-left: 6px; white-space: nowrap; }
     .nav-divider { display: inline-block; font-size: 13px; font-weight: 700; color: #8a6d00; background: #fdf6e3; border-radius: 4px; padding: 4px 10px; margin: 0 4px; vertical-align: middle; }
     .quest-intro { background: #fff; border: 1px solid var(--border-color); border-left: 4px solid #8a6d00; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px; }
     .prac-status { color: #555; background: #e9e9e9; }
@@ -887,6 +889,53 @@
     el.style.display = allDone ? 'block' : 'none';
   }
 
+
+  // --- Счётчик найденных багов (только практические уроки) ---
+  var BUG_HUNT_LESSONS = ['get-users', 'get-user', 'post-users', 'patch-user', 'delete-user',
+                          'passes-list', 'passes-post', 'passes-by-user', 'passes-patch', 'passes-delete'];
+
+  function totalBugs() {
+    var t = 0;
+    for (var i = 0; i < BUG_HUNT_LESSONS.length; i++) {
+      var c = allLessons && allLessons[BUG_HUNT_LESSONS[i]];
+      if (c && c.correct) t += c.correct.length;
+    }
+    return t;
+  }
+
+  function foundBugs() {
+    var f = 0;
+    for (var i = 0; i < BUG_HUNT_LESSONS.length; i++) {
+      var p = allProgress && allProgress[BUG_HUNT_LESSONS[i]];
+      if (p && p.correct_bugs) f += p.correct_bugs.length;
+    }
+    return f;
+  }
+
+  function updateButtonBadges() {
+    for (var pageId in LESSON_MAP) {
+      var lessonId = LESSON_MAP[pageId];
+      var isBugHunt = BUG_HUNT_LESSONS.indexOf(lessonId) >= 0;
+      var btn = document.getElementById('btn-' + pageId);
+      if (!btn) continue;
+      var badge = btn.querySelector('.btn-bugs-badge');
+      if (!isBugHunt) {
+        if (badge) badge.remove();
+        continue;
+      }
+      var p = allProgress && allProgress[lessonId];
+      var found = p && p.correct_bugs ? p.correct_bugs.length : 0;
+      var c = allLessons && allLessons[lessonId];
+      var total = c && c.correct ? c.correct.length : 0;
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'btn-bugs-badge';
+        btn.appendChild(badge);
+      }
+      badge.textContent = found + '/' + total;
+    }
+  }
+
   function renderProgressBar() {
     if (!allLessons) return;
     var total = Object.keys(allLessons).length;
@@ -906,9 +955,10 @@
     div.innerHTML =
       '<div class="sidebar-progress-mini">' +
         '<div class="progress-text">' +
-          '<span>Прогресс: <strong>' + completedCount + '/' + total + '</strong></span>' +
+          '<span>Пройдено: <strong>' + completedCount + '/' + total + '</strong></span>' +
           '<span>' + Math.round(completedCount / total * 100) + '%</span>' +
         '</div>' +
+        '<div class="progress-bugs">Багов найдено: <strong>' + foundBugs() + ' из ' + totalBugs() + '</strong></div>' +
         '<div class="course-progress-bar">' +
           '<div class="course-progress-fill" style="width:' + (completedCount / total * 100) + '%"></div>' +
         '</div>' +
@@ -929,6 +979,7 @@
       renderTest(pageId, lessonId);
     }
     updatePassesAchievement();
+    updateButtonBadges();
   }
 
   function renderTest(pageId, lessonId) {
@@ -1091,6 +1142,7 @@
       };
     }
     updatePassesAchievement();
+    updateButtonBadges();
     renderProgressBar();
   }
 
