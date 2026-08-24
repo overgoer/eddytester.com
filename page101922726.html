@@ -1053,6 +1053,7 @@
     var target = document.querySelectorAll('#stream-tabs .src-btn')[src === 'yt' ? 1 : 0];
     if (target) target.classList.add('active');
   }
+  window.streamSetSource = streamSetSource;
 
   function renderProgressBar() {
     if (!allLessons) return;
