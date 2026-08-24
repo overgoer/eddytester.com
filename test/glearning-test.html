@@ -121,6 +121,14 @@
     .progress-bugs { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
     .btn-bugs-badge { font-size: 11px; color: var(--text-muted); margin-left: 6px; white-space: nowrap; }
     .btn-done-badge { color: #2e7d32; font-weight: 800; margin-left: 6px; }
+    .streams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
+    .stream-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; }
+    .stream-card:hover { border-color: #036cff; }
+    .stream-card.active { border-color: #036cff; box-shadow: 0 0 0 1px #036cff; }
+    .stream-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .stream-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .stream-desc { font-size: 13px; color: var(--text-muted); }
+    .stream-placeholder { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 14px; background: var(--bg-card); border: 1px dashed var(--border-color); border-radius: var(--radius); }
     .nav-divider { display: inline-block; font-size: 13px; font-weight: 700; color: #8a6d00; background: #fdf6e3; border-radius: 4px; padding: 4px 10px; margin: 0 4px; vertical-align: middle; }
     .quest-intro { background: #fff; border: 1px solid var(--border-color); border-left: 4px solid #8a6d00; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px; }
     .lead-msg { margin-top: 10px; }
@@ -271,7 +279,7 @@
 <body>
 <div class="course-wrapper"> <div class="course-sidebar"> <a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank" class="sidebar-doc-link">
             &#128218; Тест
-        </a> <button id="btn-l1" class="lesson-btn active" onclick="openLesson('l1')">1. Введение</button> <button id="btn-l2" class="lesson-btn" onclick="openLesson('l2')">2. Установка Postman</button> <button id="btn-l3" class="lesson-btn" onclick="openLesson('l3')">3. Что такое API</button> <button id="btn-l4" class="lesson-btn" onclick="openLesson('l4')">4. Bug Report</button> <button id="btn-l5" class="lesson-btn" onclick="openLesson('l5')">5. Граничные значения</button> <button id="btn-l6" class="lesson-btn" onclick="openLesson('l6')">6. Тест план</button> <button id="btn-l7" class="lesson-btn" onclick="openLesson('l7')">7. База данных</button> <button id="btn-l8" class="lesson-btn" onclick="openLesson('l8')">8. CRUD</button> <button id="btn-l9" class="lesson-btn" onclick="openLesson('l9')">9. PRAC-9 · GET /users</button> <button id="btn-l10" class="lesson-btn" onclick="openLesson('l10')">10. PRAC-10 · GET by ID</button> <button id="btn-l11" class="lesson-btn" onclick="openLesson('l11')">11. PRAC-11 · POST /users</button> <button id="btn-l12" class="lesson-btn" onclick="openLesson('l12')">12. PRAC-12 · PATCH /users/:id</button> <button id="btn-l13" class="lesson-btn" onclick="openLesson('l13')">13. PRAC-13 · DELETE /users/:id</button> <span class="nav-divider">Passes Quest</span> <button id="btn-l14" class="lesson-btn" onclick="openLesson('l14')">14. Passes: список</button> <button id="btn-l15" class="lesson-btn" onclick="openLesson('l15')">15. Passes: создание</button> <button id="btn-l16" class="lesson-btn" onclick="openLesson('l16')">16. Passes: по кандидату</button> <button id="btn-l17" class="lesson-btn" onclick="openLesson('l17')">17. Passes: статус</button> <button id="btn-l18" class="lesson-btn" onclick="openLesson('l18')">18. Passes: удаление</button>   </div> <div class="course-content"> <div id="l1" class="lesson-block active"> <h2 class="lesson-title">1. Введение</h2> <p class="lesson-desc">Старт практикума. Разбираемся, что нас ждет, где брать ключи.</p> <div class="video-card"> <iframe id="vid-l1" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239034&hash=c2752d6b8c50cf77&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l1', 'https://www.youtube.com/embed/A4s06HtWtx0?si=RCokRLIUg_s2BVtm', this)"> <span class="dot dot-yt"></span>YouTube
+        </a> <button id="btn-l1" class="lesson-btn active" onclick="openLesson('l1')">1. Введение</button> <button id="btn-l2" class="lesson-btn" onclick="openLesson('l2')">2. Установка Postman</button> <button id="btn-l3" class="lesson-btn" onclick="openLesson('l3')">3. Что такое API</button> <button id="btn-l4" class="lesson-btn" onclick="openLesson('l4')">4. Bug Report</button> <button id="btn-l5" class="lesson-btn" onclick="openLesson('l5')">5. Граничные значения</button> <button id="btn-l6" class="lesson-btn" onclick="openLesson('l6')">6. Тест план</button> <button id="btn-l7" class="lesson-btn" onclick="openLesson('l7')">7. База данных</button> <button id="btn-l8" class="lesson-btn" onclick="openLesson('l8')">8. CRUD</button> <button id="btn-l9" class="lesson-btn" onclick="openLesson('l9')">9. PRAC-9 · GET /users</button> <button id="btn-l10" class="lesson-btn" onclick="openLesson('l10')">10. PRAC-10 · GET by ID</button> <button id="btn-l11" class="lesson-btn" onclick="openLesson('l11')">11. PRAC-11 · POST /users</button> <button id="btn-l12" class="lesson-btn" onclick="openLesson('l12')">12. PRAC-12 · PATCH /users/:id</button> <button id="btn-l13" class="lesson-btn" onclick="openLesson('l13')">13. PRAC-13 · DELETE /users/:id</button> <span class="nav-divider">Passes Quest</span> <button id="btn-l14" class="lesson-btn" onclick="openLesson('l14')">14. Passes: список</button> <button id="btn-l15" class="lesson-btn" onclick="openLesson('l15')">15. Passes: создание</button> <button id="btn-l16" class="lesson-btn" onclick="openLesson('l16')">16. Passes: по кандидату</button> <button id="btn-l17" class="lesson-btn" onclick="openLesson('l17')">17. Passes: статус</button> <button id="btn-l18" class="lesson-btn" onclick="openLesson('l18')">18. Passes: удаление</button> <button id="btn-l20" class="lesson-btn" onclick="openLesson('l20')">📺 Эфиры и записи</button>   </div> <div class="course-content"> <div id="l1" class="lesson-block active"> <h2 class="lesson-title">1. Введение</h2> <p class="lesson-desc">Старт практикума. Разбираемся, что нас ждет, где брать ключи.</p> <div class="video-card"> <iframe id="vid-l1" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239034&hash=c2752d6b8c50cf77&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l1', 'https://www.youtube.com/embed/A4s06HtWtx0?si=RCokRLIUg_s2BVtm', this)"> <span class="dot dot-yt"></span>YouTube
                 </button> <button class="src-btn active" onclick="changeSource('l1', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239034&hash=c2752d6b8c50cf77&hd=4', this)"> <span class="dot dot-vk"></span>VK Видео
                 </button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank">Тест API</a></li>  <li><a href="https://habr.com/ru/articles/836464/" target="_blank">Статья: Клиент-серверная архитектура</a></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Найти на почте письмо с API Key.</li> <li>Бегло просмотреть документацию.</li> </ul> </div> </div> <div id="l2" class="lesson-block"> <h2 class="lesson-title">2. Установка Postman</h2> <p class="lesson-desc">Настраиваем главный инструмент тестировщика.</p> <div class="video-card"> <iframe id="vid-l2" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239035&hash=374beade5cc0b790&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l2', 'https://www.youtube.com/embed/Qmiv20lGYWo?si=aFy2dHmlxTSF8gqB', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l2', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239035&hash=374beade5cc0b790&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://www.postman.com/downloads/" target="_blank">Скачать Postman (Оф. сайт)</a></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Установить Postman.</li> <li>Импортировать коллекцию v1.</li> <li>Сделать первый запрос (Create User).</li> <li>Очистить базу (DELETE Reset Database).</li> </ul> </div> </div> <div id="l3" class="lesson-block"> <h2 class="lesson-title">3. Что такое API</h2> <p class="lesson-desc">Что такое API и зачем его тестировать.</p> <div class="video-card"> <iframe id="vid-l3" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239037&hash=f09cef2266161c32&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l3', 'https://www.youtube.com/embed/7Yed51XXXPs?si=zHzT46UXvmiJ73lF', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l3', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239037&hash=f09cef2266161c32&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"><li><a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank">Документация API</a></li><li><a href="https://www.redhat.com/en/topics/api/what-is-a-rest-api" target="_blank">Что такое REST API (RedHat)</a></li></ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Проверить по документации, допустимы ли цифры в имени.</li> <li>Создать кандидата с цифрой в имени (ожидаем 400 validNameIsRequired, фактически 201) — найти первый баг.</li> </ul> </div> </div> <div id="l4" class="lesson-block"> <h2 class="lesson-title">4. Bug Report</h2> <p class="lesson-desc">Что такое баг-репорт и зачем он нужен.</p> <div class="video-card"> <iframe id="vid-l4" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239036&hash=0ccb94e87e738f28&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l4', 'https://www.youtube.com/embed/eJs7R2RIizI?si=1e3XDDgKsFPrfCR-', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l4', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239036&hash=0ccb94e87e738f28&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://developer.mozilla.org/ru/docs/Web/HTTP/Overview" target="_blank">MDN: Обзор протокола HTTP</a></li> <li><a href="https://datatracker.ietf.org/doc/html/rfc7231" target="_blank">RFC 7231 (Стандарт)</a></li><li><a href="https://docs.google.com/document/d/1MsL_7cKK6VtkVcGA3-Clu7gNjWSZFgSJ3hrk87hBFR4/edit?usp=sharing" target="_blank">Пример баг-репорта (заполненный)</a></li><li><a href="https://docs.google.com/document/d/1fuwTDc5TnFi3SOYrwVltQ0xzs-huuAgsVrT4sQFewpI/edit?usp=sharing" target="_blank">Шаблон баг-репорта (пустой)</a></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Изучить структуру HTTP запроса.</li> <li>Оформить баг-репорт на первый баг (цифра в имени) по шаблону.</li> </ul> </div> </div> <div id="l5" class="lesson-block"> <h2 class="lesson-title">5. Граничные значения</h2> <p class="lesson-desc">Где прячутся самые хитрые баги?</p> <div class="video-card"> <iframe id="vid-l5" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239042&hash=43da1cd90b67e1a4&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l5', 'https://www.youtube.com/embed/qtSVdH6q23A?si=ezGhYb9GBpXDAeOF', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l5', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239042&hash=43da1cd90b67e1a4&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://habr.com/ru/companies/lanit/articles/913818/" target="_blank">Гайд: техники тест-дизайна (Хабр)</a></li><li><a href="https://habr.com/en/articles/887070/" target="_blank">Классы эквивалентности — мат. взгляд (EN)</a></li> <li><a href="/collections/v2-candidates-api.postman_collection.json" target="_blank">Коллекция Postman (v2)</a> <span class="note">Скачать JSON</span></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Выделить классы эквивалентности для поля Age.</li> <li>Определить границы для статусов (Minor, Candidate, Retired).</li> </ul> </div> </div> <div id="l6" class="lesson-block"> <h2 class="lesson-title">6. Тест план</h2> <p class="lesson-desc">Как составить план тестирования.</p> <div class="video-card"> <iframe id="vid-l6" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239043&hash=c8556e8e213edaae&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l6', 'https://www.youtube.com/embed/XIEDRyTGMNE?si=LjdqpA5AH8v2Hxt3', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l6', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239043&hash=c8556e8e213edaae&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://docs.google.com/document/d/1PtFLzr6geRUYcP4TYhJ5vDFnuH2h4yWPSo5AuLKlmr4/edit?usp=sharing" target="_blank">Шаблон тест-кейса</a></li> <li><a href="https://docs.google.com/document/d/1YVjEEAaKW4fx3P5cf7bkEqKDn47XiLxnGbpmjB1LDf0/edit?usp=sharing" target="_blank">Документация API</a></li> <li><a href="/collections/v1-candidates-api.postman_collection.json" target="_blank">Коллекция Postman (v1)</a> <span class="note">Скачать JSON</span></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Составить тест-кейсы для GET /users от документации: структура, фильтр status, регистр, заголовки ответа, пустой список.</li> <li>Отправить тест-кейсы на почту.</li> </ul> </div> </div> <div id="l7" class="lesson-block"> <h2 class="lesson-title">7. База данных</h2> <p class="lesson-desc">Смотрим, как данные хранятся в базе.</p> <div class="video-card"> <iframe id="vid-l7" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239044&hash=a852ad7474f4b9a1&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l7', 'https://www.youtube.com/embed/frffx0xjA2E?si=H6FZEeuI6EM2MM1P', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l7', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239044&hash=a852ad7474f4b9a1&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="https://dbeaver.io/download/" target="_blank">Скачать DBeaver Community</a></li><li><a href="/materials/sql-cheatsheet.html" target="_blank">Краткий чек-лист SQL-запросов</a></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Подключиться к БД через DBeaver (креды — в ответе GET Credentials, папка utility коллекции).</li><li>Найти через SELECT кандидата, которого ты создавал в уроке 2.</li> </ul> </div> </div> <div id="l8" class="lesson-block"> <h2 class="lesson-title">8. CRUD</h2> <p class="lesson-desc">Создаём, читаем, меняем и удаляем данные.</p> <div class="video-card"> <iframe id="vid-l8" src="https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239045&hash=c7b0c9e8d6f54110&hd=4" allowfullscreen></iframe> </div> <div class="source-tabs"> <button class="src-btn" onclick="changeSource('l8', 'https://www.youtube.com/embed/xSfZcDMhQeg?si=EMLl_BAQwS13wlGG', this)"><span class="dot dot-yt"></span>YouTube</button> <button class="src-btn active" onclick="changeSource('l8', 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239045&hash=c7b0c9e8d6f54110&hd=4', this)"><span class="dot dot-vk"></span>VK Видео</button> </div> <div class="info-card"> <div class="block-header">Материалы</div> <ul class="materials-list"> <li><a href="/materials/crud-checklist.html" target="_blank">Чек-лист: что тестировать в каждом методе</a></li><li><a href="/materials/data-types.html" target="_blank">Справочник: типы данных в API</a></li> </ul> </div> <div class="info-card"> <div class="block-header">Задание</div> <ul class="task-list"> <li>Разобрать примеры урока в Postman: пустой список по фильтру (200) vs несуществующий ID (404).</li> <li>Проверить повторное удаление (404).</li> </ul> </div> </div> <div id="l9" class="lesson-block">
   <div class="prac-card">
@@ -520,6 +528,19 @@
 </div><div id="passes-achievement" class="quest-intro" style="display:none;">
   <div class="block-header" style="font-size:22px;">Настоящий тестировщик</div>
   <p style="font-size:14.5px; color:#333; margin:0;">Все задачи квеста закрыты — ты проверил модуль пропусков от и до. Отличная работа!</p>
+</div>
+<div id="l20" class="lesson-block">
+  <h2 class="lesson-title">Эфиры и записи</h2>
+  <p class="lesson-desc">Прямые эфиры с вопросами по практикуму и разбором тем тестирования. Выбери эфир — запись откроется в плеере выше, источник переключается.</p>
+  <div class="video-card">
+    <div id="stream-placeholder" class="stream-placeholder">Выбери эфир из списка — запись появится здесь</div>
+    <iframe id="vid-l20" style="display:none;" src="" allowfullscreen></iframe>
+  </div>
+  <div class="source-tabs" id="stream-tabs">
+    <button class="src-btn active" onclick="streamSetSource('vk')"><span class="dot dot-vk"></span>VK Видео</button>
+    <button class="src-btn" onclick="streamSetSource('yt')"><span class="dot dot-yt"></span>YouTube</button>
+  </div>
+  <div id="streams-grid" class="streams-grid"></div>
 </div> </div> </div> <script>
     function openLesson(lessonId) {
         // Сбросить чекбоксы и подсветку на текущем активном уроке
@@ -966,6 +987,63 @@
     }
   }
 
+
+  // --- Эфиры и записи ---
+  var STREAMS = [
+    { date: 'Эфир №1', title: 'Введение', desc: 'Старт практикума: что нас ждёт, где брать ключи.', yt: 'A4s06HtWtx0', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239034&hash=c2752d6b8c50cf77&hd=4' },
+    { date: 'Эфир №2', title: 'Установка Postman', desc: 'Настраиваем главный инструмент тестировщика.', yt: 'Qmiv20lGYWo', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239035&hash=374beade5cc0b790&hd=4' },
+    { date: 'Эфир №3', title: 'Что такое API', desc: 'Теория и первый найденный баг.', yt: '7Yed51XXXPs', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239037&hash=f09cef2266161c32&hd=4' },
+    { date: 'Эфир №4', title: 'Bug Report', desc: 'Баг-репорт и устройство HTTP-запроса.', yt: 'eJs7R2RIizI', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239036&hash=0ccb94e87e738f28&hd=4' },
+    { date: 'Эфир №5', title: 'Граничные значения', desc: 'Классы эквивалентности и границы на практике.', yt: 'qtSVdH6q23A', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239042&hash=43da1cd90b67e1a4&hd=4' },
+    { date: 'Эфир №6', title: 'Тест план', desc: 'Составляем тест-кейсы от документации.', yt: 'XIEDRyTGMNE', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239043&hash=c8556e8e213edaae&hd=4' },
+    { date: 'Эфир №7', title: 'База данных', desc: 'DBeaver и проверка данных напрямую.', yt: 'frffx0xjA2E', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239044&hash=a852ad7474f4b9a1&hd=4' },
+    { date: 'Эфир №8', title: 'CRUD', desc: 'Что проверять в каждом методе API.', yt: 'xSfZcDMhQeg', vk: 'https://vkvideo.ru/video_ext.php?oid=-220913896&id=456239045&hash=c7b0c9e8d6f54110&hd=4' }
+  ];
+  var currentStream = null;
+  var currentSource = 'vk';
+
+  function renderStreams() {
+    var grid = document.getElementById('streams-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    for (var i = 0; i < STREAMS.length; i++) {
+      (function(idx) {
+        var s = STREAMS[idx];
+        var card = document.createElement('div');
+        card.className = 'stream-card';
+        card.id = 'stream-card-' + idx;
+        card.innerHTML = '<div class="stream-date">📺 ' + s.date + '</div><div class="stream-title">' + s.title + '</div><div class="stream-desc">' + s.desc + '</div>';
+        card.addEventListener('click', function() { openStream(idx); });
+        grid.appendChild(card);
+      })(i);
+    }
+  }
+
+  function openStream(idx) {
+    currentStream = STREAMS[idx];
+    var ph = document.getElementById('stream-placeholder');
+    if (ph) ph.style.display = 'none';
+    document.getElementById('vid-l20').style.display = 'block';
+    streamSetSource(currentSource);
+    var cards = document.querySelectorAll('.stream-card');
+    for (var i = 0; i < cards.length; i++) cards[i].classList.remove('active');
+    var card = document.getElementById('stream-card-' + idx);
+    if (card) card.classList.add('active');
+  }
+
+  function streamSetSource(src) {
+    if (!currentStream) return;
+    currentSource = src;
+    var iframe = document.getElementById('vid-l20');
+    iframe.src = src === 'yt'
+      ? 'https://www.youtube.com/embed/' + currentStream.yt + '?playsinline=1&rel=0'
+      : currentStream.vk;
+    var btns = document.querySelectorAll('#stream-tabs .src-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+    var target = document.querySelectorAll('#stream-tabs .src-btn')[src === 'yt' ? 1 : 0];
+    if (target) target.classList.add('active');
+  }
+
   function renderProgressBar() {
     if (!allLessons) return;
     var total = Object.keys(allLessons).length;
@@ -1394,6 +1472,7 @@
   if (overlay) {
     observer.observe(overlay, { attributes: true, attributeFilter: ['style'] });
   }
+  renderStreams();
 })();
 </script>
 <!-- ========== END TEST SYSTEM ========== --></body></html>
