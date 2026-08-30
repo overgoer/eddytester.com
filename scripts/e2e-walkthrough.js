@@ -73,8 +73,8 @@ async function countSections(page, lessonNum) {
         report.counterLog.push({ when: 'после входа', value: counter0 });
         log('счётчик после входа', true, counter0);
 
-        // Обход всех 13 уроков
-        for (let n = 1; n <= 13; n++) {
+        // Обход всех 19 уроков
+        for (let n = 1; n <= 19; n++) {
             const ok = await page.evaluate(n => {
                 const btn = document.getElementById('btn-l' + n);
                 if (!btn) return { err: 'нет кнопки' };
@@ -112,17 +112,17 @@ async function countSections(page, lessonNum) {
         log('l1 верный выбор → пройден', /Тест успешно пройден/.test(sub), sub.trim());
         await page.screenshot({ path: SHOTS + '/04-l1-passed.png' });
 
-        // Кейс 3: l9 (PRAC) — часть багов + дистрактор
-        await page.click('#btn-l9');
+        // Кейс 3: l10 (PRAC-9) — часть багов + дистрактор
+        await page.click('#btn-l10');
         await checkboxByBugId(page, 'g_status_case', true);
         await checkboxByBugId(page, 'g_cache', true);
         await checkboxByBugId(page, 'g_pagination', true); // дистрактор
         await submitTest(page);
         sub = await page.textContent('.lesson-block.active .test-subtitle').catch(() => '');
-        log('l9 неполный выбор + дистрактор → не пройден', !/нашёл все баги/.test(sub), sub.trim());
+        log('l10 неполный выбор + дистрактор → не пройден', !/нашёл все баги/.test(sub), sub.trim());
         await page.screenshot({ path: SHOTS + '/05-l9-wrong.png' });
 
-        // Кейс 4: l9 — полный верный набор
+        // Кейс 4: l10 — полный верный набор
         await checkboxByBugId(page, 'g_pagination', false);
         for (const id of ['g_comma', 'g_security', 'g_content_type', 'g_cache_info', 'g_status_any']) {
             await checkboxByBugId(page, id, true);
@@ -130,8 +130,8 @@ async function countSections(page, lessonNum) {
         await submitTest(page);
         sub = await page.textContent('.lesson-block.active .test-subtitle').catch(() => '');
         const c2 = await readCounter(page);
-        report.counterLog.push({ when: 'после прохождения l9', value: c2 });
-        log('l9 полный набор → пройден', /нашёл все баги/.test(sub), sub.trim());
+        report.counterLog.push({ when: 'после прохождения l10', value: c2 });
+        log('l10 полный набор → пройден', /нашёл все баги/.test(sub), sub.trim());
         await page.screenshot({ path: SHOTS + '/06-l9-passed.png' });
 
         // Кейс 5: сброс пройденного урока (l2 чек-лист)
