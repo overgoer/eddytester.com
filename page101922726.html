@@ -122,6 +122,7 @@
     .progress-bugs { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
     .btn-bugs-badge { font-size: 11px; color: var(--text-muted); margin-left: 6px; white-space: nowrap; }
     .btn-done-badge { color: #2e7d32; font-weight: 800; margin-left: 6px; }
+    .streams-label { font-size: 15px; font-weight: 700; margin: 0 0 8px; }
     .streams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 16px; }
     .stream-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; }
     .stream-card:hover { border-color: #036cff; }
@@ -541,6 +542,7 @@
     <button class="src-btn active" onclick="streamSetSource('vk')"><span class="dot dot-vk"></span>VK Видео</button>
     <button class="src-btn" onclick="streamSetSource('yt')"><span class="dot dot-yt"></span>YouTube</button>
   </div>
+  <div class="streams-label">Выбери видео для просмотра:</div>
   <div id="streams-grid" class="streams-grid"></div>
 </div> </div> </div> <script>
     function openLesson(lessonId) {
@@ -1001,7 +1003,7 @@
 
   // --- Эфиры и записи ---
   var STREAMS = [
-    { date: 'Эфир №1', title: 'Запись эфира', desc: 'Прямой эфир в записи.', yt: 'C1fE8ef4ETI', vk: 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239037&autoplay=1' }
+    { date: 'Эфир №1', title: 'Запись эфира', desc: 'Прямой эфир в записи.', yt: 'C1fE8ef4ETI', vk: 'https://vkvideo.ru/video_ext.php?oid=805830968&id=456239037' }
   ];
   var currentStream = null;
   var currentSource = 'vk';
@@ -1499,6 +1501,7 @@
     }
   })();
   renderStreams();
+  if (STREAMS.length > 0) openStream(0);
 })();
 </script>
 <!-- ========== END TEST SYSTEM ========== -->
