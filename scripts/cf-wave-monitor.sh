@@ -11,7 +11,8 @@ probe() {
 }
 
 ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-d=$(probe "https://eddytester.com/glearning")
+# прямой путь = голый IP сервера: код 51/60 = TLS прошло (волны нет), 000 = TLS режется (волна)
+d=$(probe "https://85.193.81.51/")
 c=$(probe "https://practicum.eddytester.com/health")
 y=$(probe "https://ya.ru")
 echo "{\"ts\":\"$ts\",\"direct\":\"$d\",\"cf\":\"$c\",\"control\":\"$y\"}" >> "$LOG"
