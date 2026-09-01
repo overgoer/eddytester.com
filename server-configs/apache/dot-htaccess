@@ -3,9 +3,6 @@ ErrorDocument 404 /404.html
 
 DirectoryIndex page101918416.html
 
-# Favicon для всего сайта (лого практикума)
-RewriteRule ^favicon\.ico$ images/tild3532-6535-4238-b431-306238333239__postman-icon_1.png [L]
-
 AddCharset UTF-8 .json
 
 <FilesMatch "\.json$">
@@ -27,8 +24,8 @@ RewriteRule ^consult/$ page101918416.html [NC]
 RewriteRule ^api$ page64392263.html [NC]
 RewriteRule ^api/$ page64392263.html [NC]
 
-RewriteRule ^api_oferta$ /oferta [NC,R=301,L]
-RewriteRule ^api_oferta/$ /oferta [NC,R=301,L]
+RewriteRule ^api_oferta$ page65082509.html [NC]
+RewriteRule ^api_oferta/$ page65082509.html [NC]
 
 RewriteRule ^api_docs$ page65526529.html [NC]
 RewriteRule ^api_docs/$ page65526529.html [NC]
@@ -39,8 +36,8 @@ RewriteRule ^test_layout/$ page71319435.html [NC]
 RewriteRule ^docs2$ page71604261.html [NC]
 RewriteRule ^docs2/$ page71604261.html [NC]
 
-RewriteRule ^oferta_api_eddytester$ /oferta [NC,R=301,L]
-RewriteRule ^oferta_api_eddytester/$ /oferta [NC,R=301,L]
+RewriteRule ^oferta_api_eddytester$ page73441323.html [NC]
+RewriteRule ^oferta_api_eddytester/$ page73441323.html [NC]
 
 RewriteRule ^pers_data_policy$ page77510526.html [NC]
 RewriteRule ^pers_data_policy/$ page77510526.html [NC]

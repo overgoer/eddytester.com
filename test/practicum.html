@@ -21,6 +21,23 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
     return n.toString().replace(/(\d)(?=(\d{3})+)/g, '$1 ') + ' \u20BD';
   }
 
+  function checkConsent() {
+    var oferta = document.getElementById('consent-oferta');
+    var pd = document.getElementById('consent-pd');
+    var btn = document.getElementById('pay-button');
+    if (oferta && pd && btn) {
+      if (oferta.checked && pd.checked) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+      } else {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      }
+    }
+  }
+
   function showEmailForm(amount) {
     amount = amount || PRICE;
     var modal = document.getElementById('yookassa-payment-form');
@@ -34,8 +51,7 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
       '<p style="font-size:13px;color:#888;margin:0 0 20px">\u041D\u0430 email \u043F\u0440\u0438\u0434\u0451\u0442 \u043A\u043B\u044E\u0447 \u0434\u043E\u0441\u0442\u0443\u043F\u0430</p>' +
       '<input id="yk-email" type="email" placeholder="email" autofocus' +
       ' style="width:100%;padding:12px 14px;border:2px solid #ddd;border-radius:10px;font-size:15px;box-sizing:border-box;margin-bottom:12px;font-family:inherit;outline:none">' +
-      '<div style="font-size:32px;font-weight:700;color:#036cff;margin-bottom:20px">' + formatPrice(amount) + '</div>' +
-      '<button onclick="buy()" style="width:100%;padding:14px;background:#036cff;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit">\u041E\u043F\u043B\u0430\u0442\u0438\u0442\u044C</button>';
+      '<div class="legal-consent" style="text-align:left;font-size:12px;color:#888;margin-bottom:16px;">' + '<label style="display:flex;align-items:flex-start;gap:7px;margin-bottom:10px;cursor:pointer;">' + '<input type="checkbox" id="consent-oferta" onchange="checkConsent()" style="margin-top:2px;min-width:16px;accent-color:#036cff;">' + '<span>\u042F \u043F\u0440\u0438\u043D\u0438\u043C\u0430\u044E \u0443\u0441\u043B\u043E\u0432\u0438\u044F <a href="/oferta" target="_blank" style="color:#036cff;">\u0414\u043E\u0433\u043E\u0432\u043E\u0440\u0430 \u043E\u0444\u0435\u0440\u0442\u044B</a> \u0438 <a href="/terms" target="_blank" style="color:#036cff;">\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u043E\u0433\u043E \u0441\u043E\u0433\u043B\u0430\u0448\u0435\u043D\u0438\u044F</a></span>' + '</label>' + '<label style="display:flex;align-items:flex-start;gap:7px;margin-bottom:10px;cursor:pointer;">' + '<input type="checkbox" id="consent-pd" onchange="checkConsent()" style="margin-top:2px;min-width:16px;accent-color:#036cff;">' + '<span>\u042F \u0434\u0430\u044E <a href="/pd-consent" target="_blank" style="color:#036cff;">\u0421\u043E\u0433\u043B\u0430\u0441\u0438\u0435 \u043D\u0430 \u043E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0443 \u041F\u0414</a> \u0432 \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u0438 \u0441 <a href="/privacy" target="_blank" style="color:#036cff;">\u041F\u043E\u043B\u0438\u0442\u0438\u043A\u043E\u0439 \u043A\u043E\u043D\u0444\u0438\u0434\u0435\u043D\u0446\u0438\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u0438</a></span>' + '</label>' + '</div>' + '<div style="font-size:32px;font-weight:700;color:#036cff;margin-bottom:20px">' + formatPrice(amount) + '</div>' + '<button id="pay-button" onclick="buy()" disabled style="width:100%;padding:14px;background:#036cff;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;font-family:inherit;opacity:0.5">\u041E\u043F\u043B\u0430\u0442\u0438\u0442\u044C</button>';
 
     window._pendingAmount = amount;
 
@@ -50,6 +66,17 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
 
   function buy(amount) {
     amount = amount || _pendingAmount || PRICE;
+
+    var oferta = document.getElementById('consent-oferta');
+    var pd = document.getElementById('consent-pd');
+    if (oferta && !oferta.checked) {
+      alert('\u0414\u043B\u044F \u043E\u043F\u043B\u0430\u0442\u044B \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E \u043F\u0440\u0438\u043D\u044F\u0442\u044C \u0443\u0441\u043B\u043E\u0432\u0438\u044F \u0414\u043E\u0433\u043E\u0432\u043E\u0440\u0430 \u043E\u0444\u0435\u0440\u0442\u044B.');
+      return;
+    }
+    if (pd && !pd.checked) {
+      alert('\u0414\u043B\u044F \u043E\u043F\u043B\u0430\u0442\u044B \u043D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u043E \u0434\u0430\u0442\u044C \u0441\u043E\u0433\u043B\u0430\u0441\u0438\u0435 \u043D\u0430 \u043E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0443 \u041F\u0414.');
+      return;
+    }
 
     var emailInput = document.getElementById('yk-email');
     if (emailInput) {
@@ -308,4 +335,4 @@ aria-label='' role="img"> </div> </div> </div> </div> <script>t_onFuncLoad('t396
 src="images/tild3532-6535-4238-b431-306238333239__postman-icon_1.png"
 imgfield="img"
 style="max-width: 100px; width: 100%;" alt=""> <div class="t134__descr" field="descr">Эдгар Буренкин<br />+79938890834<br />eddythetest@gmail.com<br />ИНН: 220413735051</div> </div> </div> </div> <style>#rec1661398231 .t134__title,#rec1661398231 .t134__descr{color:#ffffff;}</style> <style> #rec1661398231 .t134__title{font-size:16px;font-weight:400;}#rec1661398231 .t134__descr{font-size:14px;font-weight:500;color:#adadad;padding-top:40px;}</style> </div> </div> <!--/allrecords--> <!-- Tilda copyright. Don't remove this line --><div class="t-tildalabel " id="tildacopy" data-tilda-sign="9622775#101918416"><a href="https://tilda.cc/" class="t-tildalabel__link"><div class="t-tildalabel__wrapper"><div class="t-tildalabel__txtleft">Made on </div><div class="t-tildalabel__wrapimg"><img src="images/tildacopy.png" class="t-tildalabel__img" fetchpriority="low" alt=""></div><div class="t-tildalabel__txtright">Tilda</div></div></a></div> <!-- Stat --> <script type="text/javascript">if(!window.mainTracker) {window.mainTracker='tilda';}
-window.tildastatcookie='no';setTimeout(function(){(function(d,w,k,o,g) {var n=d.getElementsByTagName(o)[0],s=d.createElement(o),f=function(){n.parentNode.insertBefore(s,n);};s.type="text/javascript";s.async=true;s.key=k;s.id="tildastatscript";s.src=g;if(w.opera=="[object Opera]") {d.addEventListener("DOMContentLoaded",f,false);} else {f();}})(document,window,'5c01df369e61157e2b5faf53d22cbdc4','script','js/tilda-stat-1.0.min.js');},2000);</script> </body> </html>
+</script> </body> </html>
