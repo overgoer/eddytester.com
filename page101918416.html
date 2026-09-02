@@ -176,13 +176,13 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
   }
 </style>
 <div id="yookassa-payment-form"><div class="yk-body"></div></div>
-<div id="cookie-toast" style="position:fixed;bottom:20px;right:20px;background:rgba(30,30,30,0.9);color:#aaa;padding:10px 16px;border-radius:8px;font-size:12px;line-height:1.5;z-index:99999;font-family:Montserrat,Arial,sans-serif;max-width:280px;opacity:0;transition:opacity 0.4s;">Сайт не использует tracking cookie. Только localStorage.</div>
+<div id="cookie-toast" style="position:fixed;bottom:20px;right:20px;background:rgba(30,30,30,0.9);color:#aaa;padding:10px 16px;border-radius:8px;font-size:12px;line-height:1.5;z-index:99999;font-family:Montserrat,Arial,sans-serif;max-width:280px;opacity:0;transition:opacity 0.4s;">Сайт использует только технические файлы cookie, необходимые для работы. Аналитика и рекламные трекеры не используются. <a href="/cookies" target="_blank" style="color:#7db4ff;">Подробнее</a></div>
 <script>
 (function() {
   if (!localStorage.getItem('cookie-toast-shown')) {
     var t = document.getElementById('cookie-toast');
     t.style.opacity = '1';
-    setTimeout(function() { t.style.opacity = '0'; }, 7000);
+    setTimeout(function() { t.style.opacity = '0'; }, 9000);
     localStorage.setItem('cookie-toast-shown', '1');
   }
 })();

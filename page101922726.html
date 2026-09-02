@@ -1346,4 +1346,16 @@ Email: <a href="mailto:eddythetest@gmail.com">eddythetest@gmail.com</a>
 </div>
 <div>© 2026 eddytester.com — API Практикум</div>
 </footer>
+
+<div id="cookie-toast" style="position:fixed;bottom:20px;right:20px;background:rgba(30,30,30,0.9);color:#aaa;padding:10px 16px;border-radius:8px;font-size:12px;line-height:1.5;z-index:99999;font-family:Montserrat,Arial,sans-serif;max-width:280px;opacity:0;transition:opacity 0.4s;">Сайт использует только технические файлы cookie, необходимые для работы. Аналитика и рекламные трекеры не используются. <a href="/cookies" target="_blank" style="color:#7db4ff;">Подробнее</a></div>
+<script>
+(function() {
+  if (!localStorage.getItem('cookie-toast-shown')) {
+    var t = document.getElementById('cookie-toast');
+    t.style.opacity = '1';
+    setTimeout(function() { t.style.opacity = '0'; }, 9000);
+    localStorage.setItem('cookie-toast-shown', '1');
+  }
+})();
+</script>
 </body></html>
