@@ -123,7 +123,7 @@ const server = http.createServer((req, res) => {
       let email = null;
       try {
         const parsed = JSON.parse(body);
-        amount = parsed.amount != null ? parsed.amount : 2900;
+        amount = parsed.amount != null ? parsed.amount : 2770;
         email = parsed.email || null;
       } catch (e) {
         sendJson(res, 500, { success: false, error: e.message });
