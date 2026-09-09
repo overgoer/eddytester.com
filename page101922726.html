@@ -1001,10 +1001,10 @@ var section = document.createElement('div');
 section.className = 'test-section' + (isCompleted ? '' : '');
 section.dataset.lessonId = lessonId;
 var title = isCompleted ? '✅ Тест пройден' : (config.testTitle || '🔍 Найди баги');
-var defaultCompletedSub = 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts;
+var defaultCompletedSub = 'Поздравляю! Ты нашёл все баги в этом уроке.';
 if (isCompleted) {
 if (config.testType === 'quiz') {
-defaultCompletedSub = 'Поздравляю! Тест успешно пройден. Попыток: ' + attempts;
+defaultCompletedSub = 'Поздравляю! Тест успешно пройден.';
 }
 }
 var subtitle = isCompleted ? defaultCompletedSub : (config.testSubtitle || 'Отметь баги, которые ты нашёл в этом эндпоинте. Ответь на все — получишь +1 к прогрессу.');
@@ -1038,21 +1038,15 @@ html += '<div class="test-actions">';
 if (!isCompleted) {
 html += '<button class="test-btn test-btn-primary" onclick="submitTest(this)">Проверить</button>';
 html += '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Сбросить</button>';
-if (attempts > 0) {
-html += '<span class="attempts-count" style="font-size:13px;color:var(--text-muted)">Попыток: ' + attempts + '</span>';
-}
 } else {
 html += '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Пройти заново</button>';
-if (attempts > 0) {
-html += '<span class="attempts-count" style="font-size:13px;color:var(--text-muted)">Попыток: ' + attempts + '</span>';
-}
 }
 html += '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
 html += '</div>';
 section.innerHTML = html;
 block.appendChild(section);
 }
-function applyResults(lessonId, correctBugs, wrongBugs, completed, attempts) {
+function applyResults(lessonId, correctBugs, wrongBugs, completed) {
 var block = document.getElementById(LESSON_MAP_REVERSE[lessonId]);
 if (!block) return;
 var section = block.querySelector('.test-section');
@@ -1064,15 +1058,14 @@ if (completed) {
 if (h3) h3.textContent = '✅ Тест пройден';
 if (subtitle) {
 if (lessonConfig.testType === 'quiz') {
-subtitle.textContent = 'Поздравляю! Тест успешно пройден. Попыток: ' + attempts;
+subtitle.textContent = 'Поздравляю! Тест успешно пройден.';
 } else {
-subtitle.textContent = 'Поздравляю! Ты нашёл все баги в этом уроке. Попыток: ' + attempts;
+subtitle.textContent = 'Поздравляю! Ты нашёл все баги в этом уроке.';
 }
 }
 var actions = section.querySelector('.test-actions');
 if (actions) {
 actions.innerHTML = '<button class="test-btn test-btn-secondary" onclick="resetTest(this)">Пройти заново</button>' +
-'<span style="font-size:13px;color:var(--text-muted);margin-left:10px">Попыток: ' + attempts + '</span>' +
 '<div class="test-result-msg" id="test-msg-' + lessonId + '"></div>';
 }
 } else {
@@ -1124,24 +1117,6 @@ updatePassesAchievement();
 updateButtonBadges();
 renderProgressBar();
 }
-function updateAttemptsDisplay(lessonId, attempts) {
-var block = document.getElementById(LESSON_MAP_REVERSE[lessonId]);
-if (!block) return;
-var section = block.querySelector('.test-section');
-if (!section) return;
-var actions = section.querySelector('.test-actions');
-if (!actions) return;
-var existing = actions.querySelector('.attempts-count');
-if (existing) {
-existing.textContent = 'Попыток: ' + attempts;
-} else {
-var span = document.createElement('span');
-span.className = 'attempts-count';
-span.style.cssText = 'font-size:13px;color:var(--text-muted)';
-span.textContent = 'Попыток: ' + attempts;
-actions.appendChild(span);
-}
-}
 window.submitTest = function(btn) {
 var section = btn.closest('.test-section');
 var lessonId = section.dataset.lessonId;
@@ -1167,16 +1142,12 @@ var r = JSON.parse(x.responseText);
 if (r.success) {
 var lessonConfig = allLessons && allLessons[lessonId] ? allLessons[lessonId] : {};
 if (r.completed) {
-var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
-applyResults(lessonId, r.correct_bugs, r.wrong_bugs, true, attemptsVal);
-updateAttemptsDisplay(lessonId, attemptsVal);
+applyResults(lessonId, r.correct_bugs, r.wrong_bugs, true);
 msgDiv.className = 'test-result-msg success';
 msgDiv.innerHTML = lessonConfig.successMsg || '✅ Отлично! Все баги найдены! Переходи к следующему уроку.';
 loadProgress(gkKey);
 } else {
-var attemptsVal = allProgress && allProgress[lessonId] ? allProgress[lessonId].attempts + 1 : 1;
-applyResults(lessonId, r.correct_bugs, r.wrong_bugs, false, attemptsVal);
-updateAttemptsDisplay(lessonId, attemptsVal);
+applyResults(lessonId, r.correct_bugs, r.wrong_bugs, false);
 if (lessonConfig.testType === 'quiz') {
 msgDiv.className = 'test-result-msg fail';
 var failText = '⚠️ Тест не пройден. Отмечены не все верные ответы или допущены ошибки. Попробуй ещё раз!';
