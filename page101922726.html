@@ -146,7 +146,7 @@ position: relative;
 padding-bottom: 56.25%;
 height: 0;
 }
-.video-card iframe {
+.video-card iframe, .video-card video {
 position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
 }
 .source-tabs {
@@ -565,9 +565,35 @@ if (url.includes('ВСТАВИТЬ') || url.includes('ССЫЛКА_НА_ФАЙЛ
 alert('Материал загружается...');
 return;
 }
+var posters = {'l1':'01-vvedenie.jpg','l2':'02-postman.jpg','l3':'03-chto-takoe-api.jpg','l4':'04-bug-report.jpg','l5':'05-granichnye-znacheniya.jpg','l6':'06-test-plan.jpg','l7':'07-baza-dannyh.jpg','l8':'08-crud.jpg','l9':'09-praktika.jpg'};
 var frame = document.getElementById('vid-' + lessonId);
+var isMp4 = url.indexOf('.mp4') !== -1;
 if (frame) {
+if (isMp4) {
+if (frame.tagName !== 'VIDEO') {
+var v = document.createElement('video');
+v.id = 'vid-' + lessonId;
+v.controls = true;
+v.preload = 'metadata';
+if (posters[lessonId]) {
+v.poster = 'https://storage.yandexcloud.net/video-practicum/posters/' + posters[lessonId];
+}
+v.src = url;
+frame.parentNode.replaceChild(v, frame);
+} else {
 frame.src = url;
+}
+} else {
+if (frame.tagName === 'VIDEO') {
+var f = document.createElement('iframe');
+f.id = 'vid-' + lessonId;
+f.setAttribute('allowfullscreen', '');
+f.src = url;
+frame.parentNode.replaceChild(f, frame);
+} else {
+frame.src = url;
+}
+}
 }
 var parent = btn.parentNode;
 var tabs = parent.getElementsByClassName('src-btn');
