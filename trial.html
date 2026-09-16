@@ -8,104 +8,197 @@
 body { font-family: 'Montserrat', Arial, sans-serif; background: #f7f9fc; color: #1a1a1a;
        display: flex; justify-content: center; padding: 40px 16px; margin: 0; }
 .card { background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        max-width: 560px; width: 100%; padding: 40px 36px; box-sizing: border-box; }
-h1 { font-size: 26px; margin: 0 0 8px; }
+        max-width: 640px; width: 100%; padding: 40px 36px; box-sizing: border-box; }
+h1 { font-size: 24px; margin: 0 0 8px; }
+h2 { font-size: 17px; margin: 28px 0 8px; }
 p { font-size: 15px; line-height: 1.55; color: #444; }
-.btn { display: inline-block; background: #1f5bff; color: #fff; font-size: 17px; font-weight: 700;
-       border: none; border-radius: 10px; padding: 16px 40px; cursor: pointer; text-decoration: none; }
+.btn { display: inline-block; background: #1f5bff; color: #fff; font-size: 16px; font-weight: 700;
+       border: none; border-radius: 10px; padding: 14px 36px; cursor: pointer; text-decoration: none; }
 .btn.outline { background: transparent; color: #1f5bff; border: 2px solid #1f5bff; }
 .key-box { background: #f0f4ff; border: 1px dashed #1f5bff; border-radius: 10px;
-           padding: 14px; font-family: monospace; font-size: 18px; word-break: break-all; margin: 16px 0; }
+           padding: 12px; font-family: monospace; font-size: 16px; word-break: break-all; margin: 10px 0; }
 .hidden { display: none; }
 input[type="email"] { width: 100%; padding: 12px; font-size: 15px; border: 1px solid #ccc;
-                      border-radius: 8px; box-sizing: border-box; margin: 10px 0; }
-.note { font-size: 13px; color: #888; margin-top: 14px; }
+                      border-radius: 8px; box-sizing: border-box; margin: 8px 0; }
+.note { font-size: 13px; color: #888; margin-top: 12px; }
 a { color: #1f5bff; }
-.steps { font-size: 14px; line-height: 1.7; color: #333; margin: 12px 0 0; padding-left: 18px; }
+.video-placeholder { background: #eef1f7; border: 2px dashed #b9c4da; border-radius: 12px;
+                     padding: 40px; text-align: center; color: #667; font-size: 14px; }
+.bug-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; margin: 6px 0;
+            border: 1px solid #e3e8f0; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.bug-item input { margin-top: 3px; }
+.bug-item.checked-correct { background: #e8f8ec; border-color: #2e7d32; }
+.bug-item.checked-wrong { background: #fdecea; border-color: #c0392b; }
+.bug-item.disabled { pointer-events: none; opacity: 0.9; }
+.counter { font-size: 15px; font-weight: 700; margin: 12px 0; }
+.counter .found { color: #2e7d32; }
+.bridge { background: #f0f4ff; border-radius: 12px; padding: 24px; margin-top: 24px; }
 </style>
 </head>
 <body>
 <div class="card">
-  <div id="fresh">
-    <h1>Бесплатный триал: 24 часа</h1>
-    <p>Живой API с настоящими багами. Получи ключ — и ищи баги руками: отправляй запросы, сверяйся с документацией, находи несоответствия.</p>
+
+  <h1>Бесплатный триал: 24 часа</h1>
+  <p>Найди 7 багов в живом API — как в настоящем практикуме. Сервер сам скажет, прав ты или нет.</p>
+
+  <div id="video-block" class="video-placeholder">Видео-инструкция скоро будет здесь</div>
+
+  <!-- ключ -->
+  <h2>1. Получи ключ</h2>
+  <div id="no-key">
     <button class="btn" onclick="getKey()">Получить ключ</button>
-    <div id="fresh-result" class="hidden">
-      <p>Твой ключ (работает 24 часа):</p>
-      <div class="key-box" id="fresh-key"></div>
-      <p class="steps"><b>Старт за 2 минуты:</b></p>
-      <ol class="steps">
-        <li>Открой документацию: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a></li>
-        <li>Отправляй запросы с заголовком <b>X-Fix-Bug: ключ</b></li>
-        <li>Сверяй поведение API с документацией — несовпадение = баг</li>
-      </ol>
-      <p class="note">Ключ один на браузер. Закончится — сможешь продлить ещё на 48 часов за email.</p>
-    </div>
+  </div>
+  <div id="has-key" class="hidden">
+    <p>Твой ключ (работает 24 часа):</p>
+    <div class="key-box" id="key-box"></div>
   </div>
 
-  <div id="expired" class="hidden">
-    <h1>Триал уже был</h1>
-    <p>Полная версия: <b>48 багов</b>, <b>19 уроков</b>, проверка баг-репортов лично мной. От 2770 ₽.</p>
-    <a class="btn" href="https://eddytester.com">К полной версии</a>
-    <p style="margin-top:24px;">Не готов? Оставь email — дам ещё <b>48 часов</b> бесплатно:</p>
+  <!-- сценарий -->
+  <h2>2. Найди баги (7 штук)</h2>
+  <p>Сценарий: <b>создай пользователя → найди его по id → посмотри список</b>.
+     Документация: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a>.
+     Запросы — в Postman или прямо в Swagger. Заголовок: <b>X-Fix-Bug: твой ключ</b>.</p>
+
+  <h2>3. Отметь, что нашёл — и проверь себя</h2>
+  <div id="test-list"></div>
+  <button class="btn" id="check-btn" onclick="check()">Проверить</button>
+  <div class="counter hidden" id="counter">Найдено: <span class="found" id="found-count">0</span>/7</div>
+  <div id="verdict-msg" class="hidden" style="margin-top:10px;font-size:14px;"></div>
+
+  <!-- мост -->
+  <div class="bridge hidden" id="bridge">
+    <b>Ты прошёл мини-практикум.</b> В полной версии — 48 багов, 19 уроков, проверка баг-репортов лично мной.
+    <p style="margin:12px 0;"><a class="btn" href="https://eddytester.com">К полной версии</a></p>
+    <p>Не готов? Оставь email — дам ещё <b>48 часов</b>:</p>
     <input type="email" id="extend-email" placeholder="email">
     <button class="btn" onclick="extend()">Продлить на 48 часов</button>
-    <div id="extend-result" class="hidden">
-      <p>Новый ключ (48 часов, также отправил на почту):</p>
-      <div class="key-box" id="extend-key"></div>
-    </div>
+    <div id="extend-result" class="hidden" style="margin-top:8px;"></div>
     <div id="extend-error" class="hidden" style="color:#c0392b;font-size:14px;margin-top:8px;"></div>
   </div>
+
+  <p class="note">Ключ один на браузер. Истёк — придёшь сюда же, предложим продление.</p>
 </div>
 
 <script>
-function markUsed() {
-  try { localStorage.setItem('free_trial_used', '1'); } catch (e) {}
-}
-function show(id) { document.getElementById(id).classList.remove('hidden'); }
+var API = 'https://api.eddytester.com';
+var BUGS = [
+  { id: 'age17',     text: 'Возраст 17 принимается' },
+  { id: 'notrim',    text: 'Имя сохраняется с пробелами («  Alice  » → «  Alice  »)' },
+  { id: 'nolimit',   text: 'Нет ограничения длины имени (500 символов проходят)' },
+  { id: 'limit1',    text: 'Лимит в списке всегда отдаёт одну запись' },
+  { id: 'content',   text: 'Content-Type в ответе — text/plain вместо JSON' },
+  { id: 'idminus',   text: 'GET /users/2 возвращает пользователя с id=1' },
+  { id: 'crash500',  text: 'Некорректный id (0 или буквы) роняет сервер с 500' },
+  { id: 'trap1',     text: 'Пустое имя отклоняется (400)' },
+  { id: 'trap2',     text: 'Возраст 16 отклоняется' },
+  { id: 'trap3',     text: 'GET /users/2 возвращает пользователя с id=2' },
+  { id: 'trap4',     text: 'Content-Type в ответе — application/json' },
+];
 
-if (typeof localStorage !== 'undefined') {
-  try {
-    if (localStorage.getItem('free_trial_used') === '1') {
-      document.getElementById('fresh').classList.add('hidden');
-      document.getElementById('expired').classList.remove('hidden');
-    }
-  } catch (e) {}
+function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function ss(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+function key() { return ls('free_trial_key'); }
+
+function renderTest() {
+  var list = document.getElementById('test-list');
+  BUGS.forEach(function (b) {
+    var div = document.createElement('div');
+    div.className = 'bug-item';
+    div.id = 'bug-' + b.id;
+    div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
+    list.appendChild(div);
+  });
 }
 
 function getKey() {
-  fetch('https://api.eddytester.com/free/api/keys', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+  fetch(API + '/free/api/keys', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
     .then(function (r) { return r.json(); })
     .then(function (d) {
-      if (d.key) {
-        document.getElementById('fresh-key').textContent = d.key;
-        show('fresh-result');
-        markUsed();
-      } else {
-        alert('Не получилось выдать ключ. Попробуй позже.');
-      }
+      if (!d.key) { alert('Не получилось выдать ключ. Попробуй позже.'); return; }
+      ss('free_trial_key', d.key);
+      ss('free_trial_used', '1');
+      document.getElementById('no-key').classList.add('hidden');
+      document.getElementById('has-key').classList.remove('hidden');
+      document.getElementById('key-box').textContent = d.key;
     })
     .catch(function () { alert('Сервис недоступен. Попробуй позже.'); });
+}
+
+function check() {
+  var selected = [];
+  document.querySelectorAll('#test-list input[type="checkbox"]:checked').forEach(function (c) {
+    selected.push(c.dataset.bug);
+  });
+  fetch(API + '/free/api/progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Fix-Bug': key() || '' },
+    body: JSON.stringify({ selected: selected })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.error) {
+        // ключ истёк — показываем мост с продлением
+        document.getElementById('bridge').classList.remove('hidden');
+        return;
+      }
+      BUGS.forEach(function (b) {
+        var el = document.getElementById('bug-' + b.id);
+        var v = d.verdict.find(function (x) { return x.bug_id === b.id; });
+        if (v && v.is_bug) { el.classList.add('checked-correct'); }
+        else if (v) { el.classList.add('checked-wrong'); }
+        el.classList.add('disabled');
+      });
+      var found = d.found.length;
+      document.getElementById('found-count').textContent = found;
+      document.getElementById('counter').classList.remove('hidden');
+      var msg = document.getElementById('verdict-msg');
+      msg.classList.remove('hidden');
+      if (found === 7) {
+        msg.innerHTML = '✅ Все 7 найдены! Это 7 из 48 — остальные 42 в полной версии.';
+        document.getElementById('bridge').classList.remove('hidden');
+      } else if (found === 0 && d.wrong.length > 0) {
+        msg.innerHTML = '❌ Пока мимо — это не баги. Перечитай документацию и попробуй снова (обнови страницу для сброса).';
+      } else {
+        msg.innerHTML = 'Найдено ' + found + ' из 7. ' + (d.wrong.length ? 'Что-то отмечено зря — обнови страницу и попробуй снова. Остальные баги ждут.' : 'Продолжай искать!');
+      }
+    })
+    .catch(function () {
+      alert('Сервис недоступен. Попробуй позже.');
+    });
 }
 
 function extend() {
   var email = document.getElementById('extend-email').value.trim();
   var err = document.getElementById('extend-error');
   err.classList.add('hidden');
-  fetch('https://api.eddytester.com/free/api/extend', {
+  fetch(API + '/free/api/extend', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email })
   })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d.key) {
-        document.getElementById('extend-key').textContent = d.key;
-        show('extend-result');
+        ss('free_trial_key', d.key);
+        document.getElementById('extend-result').classList.remove('hidden');
+        document.getElementById('extend-result').innerHTML = 'Новый ключ (48 часов, также на почте): <div class="key-box">' + d.key + '</div>';
       } else {
-        err.textContent = d.error ? d.error + '. Полная версия — eddytester.com' : 'Не получилось. Полная версия — eddytester.com';
+        err.textContent = (d.error || 'Не получилось') + '. Полная версия — eddytester.com';
         err.classList.remove('hidden');
       }
     })
     .catch(function () { err.textContent = 'Сервис недоступен. Попробуй позже.'; err.classList.remove('hidden'); });
+}
+
+// инициализация
+renderTest();
+var k = key();
+if (k) {
+  document.getElementById('no-key').classList.add('hidden');
+  document.getElementById('has-key').classList.remove('hidden');
+  document.getElementById('key-box').textContent = k;
+}
+if (ls('free_trial_used') === '1' && !k) {
+  document.getElementById('bridge').classList.remove('hidden');
 }
 </script>
 </body>
