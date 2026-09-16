@@ -60,8 +60,8 @@ a { color: #1f5bff; }
      Запросы — в Postman или прямо в Swagger. Заголовок: <b>X-Fix-Bug: твой ключ</b>.</p>
 
   <h2>3. Отметь, что нашёл — и проверь себя</h2>
+  <p style="font-size:13px;color:#888;">Проверяй по одному методу: отметил в группе → «Проверить» в этой группе → она закроется с вердиктом, остальные останутся.</p>
   <div id="test-list"></div>
-  <button class="btn" id="check-btn" onclick="check()">Проверить</button>
   <div class="counter hidden" id="counter">Найдено: <span class="found" id="found-count">0</span>/7</div>
   <div id="verdict-msg" class="hidden" style="margin-top:10px;font-size:14px;"></div>
 
@@ -127,6 +127,12 @@ function renderTest() {
       div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
       list.appendChild(div);
     });
+    var btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.style.cssText = 'margin-top:8px;padding:10px 24px;font-size:14px;';
+    btn.textContent = 'Проверить';
+    btn.onclick = function () { check(m); };
+    list.appendChild(btn);
   });
 }
 
@@ -144,10 +150,11 @@ function getKey() {
     .catch(function () { alert('Сервис недоступен. Попробуй позже.'); });
 }
 
-function check() {
+function check(m) {
   var selected = [];
-  document.querySelectorAll('#test-list input[type="checkbox"]:checked').forEach(function (c) {
-    selected.push(c.dataset.bug);
+  BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
+    var c = document.querySelector('#bug-' + b.id + ' input');
+    if (c && c.checked) selected.push(b.id);
   });
   fetch(API + '/free/api/progress', {
     method: 'POST',
@@ -162,6 +169,7 @@ function check() {
         return;
       }
       BUGS.forEach(function (b) {
+        if (b.m !== m) return;
         var el = document.getElementById('bug-' + b.id);
         var v = d.verdict.find(function (x) { return x.bug_id === b.id; });
         if (v && v.is_bug) { el.classList.add('checked-correct'); }
@@ -178,9 +186,9 @@ function check() {
         msg.innerHTML = '✅ Все 7 найдены! Это 7 из 48 — остальные 42 в полной версии.';
         document.getElementById('bridge').classList.remove('hidden');
       } else if (found === 0 && d.wrong.length > 0) {
-        msg.innerHTML = '❌ Пока мимо — это не баги. Перечитай документацию и попробуй снова (обнови страницу для сброса).';
+        msg.innerHTML = '❌ В этой группе пока мимо — это не баги. Другие методы ещё ждут — проверяй их.';
       } else {
-        msg.innerHTML = 'Найдено ' + found + ' из 7. ' + (d.wrong.length ? 'Что-то отмечено зря — обнови страницу и попробуй снова. Остальные баги ждут.' : 'Продолжай искать!');
+        msg.innerHTML = 'Всего найдено ' + found + ' из 7. ' + (d.wrong.length ? 'Что-то в этой группе отмечено зря. Другие методы ещё ждут.' : 'Продолжай — другие методы ещё ждут!');
       }
     })
     .catch(function () {
