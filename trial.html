@@ -133,6 +133,12 @@ function renderTest() {
     btn.textContent = 'Проверить';
     btn.onclick = function () { check(m); };
     list.appendChild(btn);
+    var rst = document.createElement('button');
+    rst.className = 'btn outline';
+    rst.style.cssText = 'margin:8px 0 0 8px;padding:10px 20px;font-size:14px;';
+    rst.textContent = 'Сбросить';
+    rst.onclick = function () { resetGroup(m); };
+    list.appendChild(rst);
   });
 }
 
@@ -148,6 +154,32 @@ function getKey() {
       document.getElementById('key-box').textContent = d.key;
     })
     .catch(function () { alert('Сервис недоступен. Попробуй позже.'); });
+}
+
+function resetGroup(m) {
+  BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
+    var el = document.getElementById('bug-' + b.id);
+    var c = el.querySelector('input');
+    c.checked = false;
+    c.disabled = false;
+    el.classList.remove('checked-correct', 'checked-wrong', 'disabled');
+  });
+  fetch(API + '/free/api/progress', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Fix-Bug': key() || '' },
+    body: JSON.stringify({ selected: [], reset_method: m })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.error) return;
+      document.getElementById('found-count').textContent = d.found.length;
+      renderCheats(d.found);
+      if (d.found.length < 7) {
+        document.getElementById('bridge').classList.add('hidden');
+        document.getElementById('verdict-msg').classList.add('hidden');
+      }
+    })
+    .catch(function () {});
 }
 
 function check(m) {
