@@ -59,9 +59,9 @@ a { color: #1f5bff; }
      Документация: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a>.
      Запросы — в Postman или прямо в Swagger. Заголовок: <b>X-Fix-Bug: твой ключ</b>.</p>
 
-  <h2>3. Отметь, что нашёл — и проверь себя</h2>
+  <h2 class="hidden" id="test-h">3. Отметь, что нашёл — и проверь себя</h2>
   <p style="font-size:13px;color:#888;">Проверяй по одному методу: отметил в группе → «Проверить» в этой группе → она закроется с вердиктом, остальные останутся.</p>
-  <div id="test-list"></div>
+  <div id="test-list" class="hidden"></div>
   <div class="counter hidden" id="counter">Найдено: <span class="found" id="found-count">0</span>/7</div>
   <div id="verdict-msg" class="hidden" style="margin-top:10px;font-size:14px;"></div>
 
@@ -152,6 +152,8 @@ function getKey() {
       document.getElementById('no-key').classList.add('hidden');
       document.getElementById('has-key').classList.remove('hidden');
       document.getElementById('key-box').textContent = d.key;
+      document.getElementById('test-h').classList.remove('hidden');
+      document.getElementById('test-list').classList.remove('hidden');
     })
     .catch(function () { alert('Сервис недоступен. Попробуй позже.'); });
 }
@@ -274,6 +276,8 @@ if (k) {
   document.getElementById('no-key').classList.add('hidden');
   document.getElementById('has-key').classList.remove('hidden');
   document.getElementById('key-box').textContent = k;
+  document.getElementById('test-h').classList.remove('hidden');
+  document.getElementById('test-list').classList.remove('hidden');
 }
 if (ls('free_trial_used') === '1' && !k) {
   document.getElementById('bridge').classList.remove('hidden');
