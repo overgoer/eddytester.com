@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Практикум — бесплатный триал</title>
+<style>
+body { font-family: 'Montserrat', Arial, sans-serif; background: #f7f9fc; color: #1a1a1a;
+       display: flex; justify-content: center; padding: 40px 16px; margin: 0; }
+.card { background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        max-width: 560px; width: 100%; padding: 40px 36px; box-sizing: border-box; }
+h1 { font-size: 26px; margin: 0 0 8px; }
+p { font-size: 15px; line-height: 1.55; color: #444; }
+.btn { display: inline-block; background: #1f5bff; color: #fff; font-size: 17px; font-weight: 700;
+       border: none; border-radius: 10px; padding: 16px 40px; cursor: pointer; text-decoration: none; }
+.btn.outline { background: transparent; color: #1f5bff; border: 2px solid #1f5bff; }
+.key-box { background: #f0f4ff; border: 1px dashed #1f5bff; border-radius: 10px;
+           padding: 14px; font-family: monospace; font-size: 18px; word-break: break-all; margin: 16px 0; }
+.hidden { display: none; }
+input[type="email"] { width: 100%; padding: 12px; font-size: 15px; border: 1px solid #ccc;
+                      border-radius: 8px; box-sizing: border-box; margin: 10px 0; }
+.note { font-size: 13px; color: #888; margin-top: 14px; }
+a { color: #1f5bff; }
+.steps { font-size: 14px; line-height: 1.7; color: #333; margin: 12px 0 0; padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div id="fresh">
+    <h1>Бесплатный триал: 24 часа</h1>
+    <p>Живой API с настоящими багами. Получи ключ — и ищи баги руками: отправляй запросы, сверяйся с документацией, находи несоответствия.</p>
+    <button class="btn" onclick="getKey()">Получить ключ</button>
+    <div id="fresh-result" class="hidden">
+      <p>Твой ключ (работает 24 часа):</p>
+      <div class="key-box" id="fresh-key"></div>
+      <p class="steps"><b>Старт за 2 минуты:</b></p>
+      <ol class="steps">
+        <li>Открой документацию: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a></li>
+        <li>Отправляй запросы с заголовком <b>X-Fix-Bug: ключ</b></li>
+        <li>Сверяй поведение API с документацией — несовпадение = баг</li>
+      </ol>
+      <p class="note">Ключ один на браузер. Закончится — сможешь продлить ещё на 48 часов за email.</p>
+    </div>
+  </div>
+
+  <div id="expired" class="hidden">
+    <h1>Триал уже был</h1>
+    <p>Полная версия: <b>48 багов</b>, <b>19 уроков</b>, проверка баг-репортов лично мной. От 2770 ₽.</p>
+    <a class="btn" href="https://eddytester.com">К полной версии</a>
+    <p style="margin-top:24px;">Не готов? Оставь email — дам ещё <b>48 часов</b> бесплатно:</p>
+    <input type="email" id="extend-email" placeholder="email">
+    <button class="btn" onclick="extend()">Продлить на 48 часов</button>
+    <div id="extend-result" class="hidden">
+      <p>Новый ключ (48 часов, также отправил на почту):</p>
+      <div class="key-box" id="extend-key"></div>
+    </div>
+    <div id="extend-error" class="hidden" style="color:#c0392b;font-size:14px;margin-top:8px;"></div>
+  </div>
+</div>
+
+<script>
+function markUsed() {
+  try { localStorage.setItem('free_trial_used', '1'); } catch (e) {}
+}
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+
+if (typeof localStorage !== 'undefined') {
+  try {
+    if (localStorage.getItem('free_trial_used') === '1') {
+      document.getElementById('fresh').classList.add('hidden');
+      document.getElementById('expired').classList.remove('hidden');
+    }
+  } catch (e) {}
+}
+
+function getKey() {
+  fetch('https://api.eddytester.com/free/api/keys', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.key) {
+        document.getElementById('fresh-key').textContent = d.key;
+        show('fresh-result');
+        markUsed();
+      } else {
+        alert('Не получилось выдать ключ. Попробуй позже.');
+      }
+    })
+    .catch(function () { alert('Сервис недоступен. Попробуй позже.'); });
+}
+
+function extend() {
+  var email = document.getElementById('extend-email').value.trim();
+  var err = document.getElementById('extend-error');
+  err.classList.add('hidden');
+  fetch('https://api.eddytester.com/free/api/extend', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email })
+  })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.key) {
+        document.getElementById('extend-key').textContent = d.key;
+        show('extend-result');
+      } else {
+        err.textContent = d.error ? d.error + '. Полная версия — eddytester.com' : 'Не получилось. Полная версия — eddytester.com';
+        err.classList.remove('hidden');
+      }
+    })
+    .catch(function () { err.textContent = 'Сервис недоступен. Попробуй позже.'; err.classList.remove('hidden'); });
+}
+</script>
+</body>
+</html>
