@@ -1165,6 +1165,8 @@ try {
 var r = JSON.parse(x.responseText);
 if (r.success) {
 var lessonConfig = allLessons && allLessons[lessonId] ? allLessons[lessonId] : {};
+if (!allProgress) allProgress = {};
+allProgress[lessonId] = { completed: !!r.completed, selected_bugs: selected, correct_bugs: r.correct_bugs || [], wrong_bugs: r.wrong_bugs || [], attempts: r.attempts || 0 };
 if (r.completed) {
 applyResults(lessonId, r.correct_bugs, r.wrong_bugs, true);
 msgDiv.className = 'test-result-msg success';
