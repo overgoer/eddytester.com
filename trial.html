@@ -94,18 +94,19 @@ var CHEATS = {
   crash500: { m: 'GET /users/:id', bad: 'id=0 или «abc» → 500 с текстом ошибки БД', good: 'Должен быть 400: некорректный id' },
 };
 var BUGS = [
-  { id: 'age17',     text: 'Возраст 17 принимается' },
-  { id: 'notrim',    text: 'Имя сохраняется с пробелами («  Alice  » → «  Alice  »)' },
-  { id: 'nolimit',   text: 'Нет ограничения длины имени (500 символов проходят)' },
-  { id: 'limit1',    text: 'Лимит в списке всегда отдаёт одну запись' },
-  { id: 'content',   text: 'Content-Type в ответе — text/plain вместо JSON' },
-  { id: 'idminus',   text: 'GET /users/2 возвращает пользователя с id=1' },
-  { id: 'crash500',  text: 'Некорректный id (0 или буквы) роняет сервер с 500' },
-  { id: 'trap1',     text: 'Пустое имя отклоняется (400)' },
-  { id: 'trap2',     text: 'Возраст 16 отклоняется' },
-  { id: 'trap3',     text: 'GET /users/2 возвращает пользователя с id=2' },
-  { id: 'trap4',     text: 'Content-Type в ответе — application/json' },
+  { id: 'age17',    m: 'POST /users',   text: 'Возраст 17 принимается' },
+  { id: 'notrim',   m: 'POST /users',   text: 'Имя сохраняется с пробелами («  Alice  » → «  Alice  »)' },
+  { id: 'nolimit',  m: 'POST /users',   text: 'Нет ограничения длины имени (500 символов проходят)' },
+  { id: 'trap1',    m: 'POST /users',   text: 'Пустое имя отклоняется (400)' },
+  { id: 'trap2',    m: 'POST /users',   text: 'Возраст 16 отклоняется' },
+  { id: 'limit1',   m: 'GET /users',    text: 'Лимит в списке всегда отдаёт одну запись' },
+  { id: 'content',  m: 'GET /users',    text: 'Content-Type в ответе — text/plain вместо JSON' },
+  { id: 'trap4',    m: 'GET /users',    text: 'Content-Type в ответе — application/json' },
+  { id: 'idminus',  m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=1' },
+  { id: 'crash500', m: 'GET /users/:id', text: 'Некорректный id (0 или буквы) роняет сервер с 500' },
+  { id: 'trap3',    m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=2' },
 ];
+var METHODS = ['POST /users', 'GET /users', 'GET /users/:id'];
 
 function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 function ss(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -114,12 +115,18 @@ function key() { return ls('free_trial_key'); }
 
 function renderTest() {
   var list = document.getElementById('test-list');
-  BUGS.forEach(function (b) {
-    var div = document.createElement('div');
-    div.className = 'bug-item';
-    div.id = 'bug-' + b.id;
-    div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
-    list.appendChild(div);
+  METHODS.forEach(function (m) {
+    var h = document.createElement('h3');
+    h.style.cssText = 'font-size:14px;margin:16px 0 4px;color:#1f5bff;';
+    h.textContent = m;
+    list.appendChild(h);
+    BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
+      var div = document.createElement('div');
+      div.className = 'bug-item';
+      div.id = 'bug-' + b.id;
+      div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
+      list.appendChild(div);
+    });
   });
 }
 
