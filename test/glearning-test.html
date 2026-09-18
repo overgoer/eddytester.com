@@ -511,6 +511,14 @@ line-height: 1.4;
 <div class="streams-label">Выбери видео для просмотра:</div>
 <div id="streams-grid" class="streams-grid"></div>
 </div> </div> </div><script>function openLesson(lessonId) {
+var blocks = document.getElementsByClassName('lesson-block');
+for (var b = 0; b < blocks.length; b++) {
+var v = blocks[b].querySelector('video');
+if (v && !v.paused) v.pause();
+var f = blocks[b].querySelector('iframe');
+if (f && f.src) f.removeAttribute('src');
+}
+
 var activeLesson = document.querySelector('.lesson-block.active');
 if (activeLesson) {
 var checkboxes = activeLesson.querySelectorAll('.test-section input[type="checkbox"]');
