@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Документация API — бесплатный тренажёр</title>
+<style>
+body { font-family: 'Montserrat', Arial, sans-serif; background: #f7f9fc; color: #1a1a1a;
+       display: flex; justify-content: center; padding: 40px 16px; margin: 0; }
+.card { background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        max-width: 720px; width: 100%; padding: 40px 40px; box-sizing: border-box; }
+h1 { font-size: 26px; margin: 0 0 6px; }
+p, li { font-size: 15px; line-height: 1.6; color: #333; }
+h2 { font-size: 19px; margin: 30px 0 10px; color: #1f5bff; }
+h3 { font-size: 16px; margin: 20px 0 6px; }
+code, pre { background: #f0f4ff; border: 1px solid #dbe4ff; border-radius: 8px;
+            font-family: 'SF Mono', Menlo, monospace; font-size: 13px; }
+code { padding: 2px 6px; }
+pre { padding: 14px 16px; overflow-x: auto; line-height: 1.5; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; }
+th, td { border: 1px solid #e3e8f0; padding: 8px 12px; text-align: left; }
+th { background: #f0f4ff; }
+.note { background: #fff8e6; border: 1px solid #ffe1a8; border-radius: 8px;
+        padding: 12px 16px; font-size: 14px; color: #6b4d00; margin: 14px 0; }
+a { color: #1f5bff; }
+.back { display: inline-block; margin-bottom: 18px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="card">
+
+<a class="back" href="/trial">← Назад к тренажёру</a>
+
+<h1>Документация API — бесплатный тренажёр</h1>
+<p>Живой REST API для практики тестирования. Работает на <b>api.eddytester.com</b>.</p>
+
+<h2>Как пользоваться</h2>
+<ol>
+<li>Получи ключ на странице тренажёра — он действует 24 часа</li>
+<li>В каждом запросе передавай заголовок <code>X-Fix-Bug: твой_ключ</code></li>
+<li>Без ключа или с неверным ключом сервер отвечает <code>401</code></li>
+</ol>
+
+<h2>Методы</h2>
+
+<h3>POST /free/api/users — создать пользователя</h3>
+<p>Создаёт нового пользователя. Тело запроса — JSON:</p>
+<table>
+<tr><th>Поле</th><th>Тип</th><th>Описание</th></tr>
+<tr><td>name</td><td>string</td><td>Имя пользователя</td></tr>
+<tr><td>age</td><td>number</td><td>Возраст</td></tr>
+</table>
+<p>Пример запроса:</p>
+<pre>curl -X POST https://api.eddytester.com/free/api/users \
+  -H "X-Fix-Bug: твой_ключ" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Alice","age":25}'</pre>
+<p>Успешный ответ — <code>201</code> с созданным пользователем в JSON.</p>
+
+<h3>GET /free/api/users — список пользователей</h3>
+<p>Возвращает список созданных пользователей. Поддерживает параметр <code>limit</code> — сколько записей вернуть:</p>
+<pre>curl "https://api.eddytester.com/free/api/users?limit=5" \
+  -H "X-Fix-Bug: твой_ключ"</pre>
+<p>Успешный ответ — <code>200</code> с массивом пользователей в JSON.</p>
+
+<h3>GET /free/api/users/:id — пользователь по id</h3>
+<p>Возвращает одного пользователя по его идентификатору:</p>
+<pre>curl https://api.eddytester.com/free/api/users/2 \
+  -H "X-Fix-Bug: твой_ключ"</pre>
+<p>Успешный ответ — <code>200</code> с пользователем в JSON.</p>
+
+<h2>Коды ответов</h2>
+<table>
+<tr><th>Код</th><th>Когда</th></tr>
+<tr><td>200 / 201</td><td>Запрос выполнен успешно</td></tr>
+<tr><td>400</td><td>Запрос некорректный (неверные данные)</td></tr>
+<tr><td>401</td><td>Ключ отсутствует или неверный</td></tr>
+<tr><td>500</td><td>Ошибка сервера</td></tr>
+</table>
+
+<div class="note"><b>Важно:</b> сервис учебный — в его поведении есть несоответствия этой документации. Твоя задача — найти их. Сверяй ответы сервера с тем, что написано здесь.</div>
+
+<h2>Машиночитаемая версия</h2>
+<p>Swagger-описание: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a></p>
+
+</div>
+</body>
+</html>
