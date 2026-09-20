@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "Free Trial API — тренажёр",
+    "description": "Коллекция для бесплатного тренажёра eddytester.com/trial. В заголовке X-Fix-Bug вставь свой ключ.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Создать пользователя (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-Fix-Bug", "value": "YOUR_KEY_HERE", "type": "text" },
+          { "key": "Content-Type", "value": "application/json", "type": "text" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Alice\",\n  \"age\": 25\n}"
+        },
+        "url": { "raw": "https://api.eddytester.com/free/api/users", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users"] }
+      }
+    },
+    {
+      "name": "2. Список пользователей (GET, limit)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "X-Fix-Bug", "value": "YOUR_KEY_HERE", "type": "text" } ],
+        "url": { "raw": "https://api.eddytester.com/free/api/users?limit=5", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users"], "query": [ { "key": "limit", "value": "5" } ] }
+      }
+    },
+    {
+      "name": "3. Пользователь по id (GET :id)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "X-Fix-Bug", "value": "YOUR_KEY_HERE", "type": "text" } ],
+        "url": { "raw": "https://api.eddytester.com/free/api/users/1", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users", "1"] }
+      }
+    }
+  ]
+}
