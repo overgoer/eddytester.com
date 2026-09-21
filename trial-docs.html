@@ -56,19 +56,41 @@ a { color: #1f5bff; }
   -H "X-Fix-Bug: твой_ключ" \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice","age":25}'</pre>
-<p>Успешный ответ — <code>201</code> с созданным пользователем в JSON.</p>
+<p>Успешный ответ — <code>201</code> с созданным пользователем в JSON:</p>
+<pre>{
+  "user": {
+    "id": 42,
+    "name": "Alice",
+    "age": 25
+  }
+}</pre>
+<p>Без <code>name</code> или <code>age</code> сервер отвечает <code>400</code> с описанием ошибки.</p>
 
 <h3>GET /free/api/users — список пользователей</h3>
 <p>Возвращает список созданных пользователей. Поддерживает параметр <code>limit</code> — сколько записей вернуть:</p>
 <pre>curl "https://api.eddytester.com/free/api/users?limit=5" \
   -H "X-Fix-Bug: твой_ключ"</pre>
-<p>Успешный ответ — <code>200</code> с массивом пользователей в JSON.</p>
+<p>Успешный ответ — <code>200</code> с массивом пользователей в JSON:</p>
+<pre>{
+  "users": [
+    { "id": 1, "name": "Bob", "age": 30 },
+    { "id": 2, "name": "Alice", "age": 25 }
+  ]
+}</pre>
 
 <h3>GET /free/api/users/:id — пользователь по id</h3>
 <p>Возвращает одного пользователя по его идентификатору:</p>
 <pre>curl https://api.eddytester.com/free/api/users/2 \
   -H "X-Fix-Bug: твой_ключ"</pre>
-<p>Успешный ответ — <code>200</code> с пользователем в JSON.</p>
+<p>Успешный ответ — <code>200</code> с пользователем в JSON:</p>
+<pre>{
+  "user": {
+    "id": 2,
+    "name": "Alice",
+    "age": 25
+  }
+}</pre>
+<p>Если пользователя с таким id нет — <code>404</code>.</p>
 
 <h2>Коды ответов</h2>
 <table>
