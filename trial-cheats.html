@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Шпора — баги бесплатного тренажёра</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #e0e0e0;
+    background: #1a1b26;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+h1 {
+    color: #c0caf5;
+    font-size: 1.5em;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #334;
+}
+.hint {
+    color: #565f89;
+    font-size: 0.9em;
+    margin-bottom: 24px;
+}
+.stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 28px; }
+.stat {
+    background: #24283b; border: 1px solid #334; border-radius: 8px;
+    padding: 10px 16px; font-size: 0.95em; color: #a9b1d6;
+}
+.stat b { color: #7aa2f7; font-size: 1.3em; }
+.group { margin-bottom: 28px; }
+.group-header {
+    background: #24283b; border: 1px solid #334; border-radius: 10px;
+    padding: 12px 16px; font-weight: 700; color: #c0caf5;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+}
+.group-path { font-family: monospace; color: #7aa2f7; }
+.group-count { margin-left: auto; color: #565f89; font-weight: 400; }
+.group-arrow { transition: transform 0.2s; }
+.group.open .group-arrow { transform: rotate(90deg); }
+.group-body { display: none; margin-top: 8px; }
+.group.open .group-body { display: block; }
+.bug {
+    background: #1f2335; border: 1px solid #334; border-radius: 10px;
+    margin-bottom: 8px; overflow: hidden;
+}
+.bug-header {
+    padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+}
+.bug-title { color: #e0e0e0; font-weight: 600; }
+.bug-arrow { color: #565f89; transition: transform 0.2s; }
+.bug.open .bug-arrow { transform: rotate(90deg); }
+.bug-content { display: none; padding: 0 16px 14px; color: #a9b1d6; font-size: 0.95em; }
+.bug.open .bug-content { display: block; }
+.bug-content b { color: #7aa2f7; }
+.bug-content .bad { color: #f7768e; }
+.bug-content .good { color: #9ece6a; }
+.traps { margin-top: 10px; }
+.traps .bug-header { cursor: default; }
+.back { display: inline-block; margin-top: 24px; color: #7aa2f7; }
+</style>
+</head>
+<body>
+
+<h1>Шпора по багам бесплатного тренажёра</h1>
+<p class="hint">Ты нашёл пасхалку. Ниже — все 7 багов триала. Если открыл случайно — беги, пока не поздно, спойлеры портят удовольствие.</p>
+
+<div class="stats">
+    <div class="stat"><b>7</b> багов</div>
+    <div class="stat"><b>3</b> метода</div>
+    <div class="stat"><b>4</b> ловушки</div>
+</div>
+
+<div class="group open">
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">POST /free/api/users</span><span class="group-count">3 бага</span></div>
+    <div class="group-body">
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Возраст 17 принимается</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> возраст 17 проходит валидацию.<br><span class="good">Как должно быть:</span> 400 — возраст только 18–65.</div>
+        </div>
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Имя не обрезается от пробелов</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> «&nbsp;&nbsp;Alice&nbsp;&nbsp;» сохраняется с пробелами по краям.<br><span class="good">Как должно быть:</span> имя обрезается (trim).</div>
+        </div>
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Нет ограничения длины имени</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> имя в 500 символов проходит.<br><span class="good">Как должно быть:</span> 400 — максимум 100 символов.</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="group open">
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/api/users</span><span class="group-count">2 бага</span></div>
+    <div class="group-body">
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Лимит всегда отдаёт одну запись</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> limit=5 возвращает одну запись.<br><span class="good">Как должно быть:</span> 5 записей.</div>
+        </div>
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Content-Type: text/plain вместо JSON</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> ответ приходит как text/plain.<br><span class="good">Как должно быть:</span> application/json.</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="group open">
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/api/users/:id</span><span class="group-count">2 бага</span></div>
+    <div class="group-body">
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">GET /users/2 возвращает пользователя с id=1</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> сервер ищет по id−1.<br><span class="good">Как должно быть:</span> возвращать ровно того, кого просишь.</div>
+        </div>
+
+        <div class="bug">
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Некорректный id роняет сервер</span></div>
+            <div class="bug-content"><span class="bad">Баг:</span> id=0 или «abc» → 500 с текстом ошибки.<br><span class="good">Как должно быть:</span> 400 — некорректный id.</div>
+        </div>
+
+    </div>
+</div>
+
+<div class="group traps">
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">Ловушки (это НЕ баги)</span><span class="group-count">4 штуки</span></div>
+    <div class="group-body">
+        <div class="bug"><div class="bug-header"><span class="bug-title">Пустое имя отклоняется (400)</span></div></div>
+        <div class="bug"><div class="bug-header"><span class="bug-title">Возраст 16 отклоняется (400)</span></div></div>
+        <div class="bug"><div class="bug-header"><span class="bug-title">Content-Type: application/json — так и надо</span></div></div>
+        <div class="bug"><div class="bug-header"><span class="bug-title">GET /users/2 возвращает id=2 — так и надо</span></div></div>
+    </div>
+</div>
+
+<a class="back" href="/trial">← Назад к тренажёру</a>
+
+<script>
+function toggleBug(h) { h.parentElement.classList.toggle('open'); }
+function toggleGroup(h) { h.parentElement.classList.toggle('open'); }
+</script>
+</body>
+</html>
