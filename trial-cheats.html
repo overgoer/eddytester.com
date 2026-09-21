@@ -81,17 +81,17 @@ h1 {
     <div class="group-body">
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Возраст 17 принимается</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Валидация возраста</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> возраст 17 проходит валидацию.<br><span class="good">Как должно быть:</span> 400 — возраст только 18–65.</div>
         </div>
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Имя не обрезается от пробелов</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Обработка имени</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> «&nbsp;&nbsp;Alice&nbsp;&nbsp;» сохраняется с пробелами по краям.<br><span class="good">Как должно быть:</span> имя обрезается (trim).</div>
         </div>
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Нет ограничения длины имени</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Ограничения на ввод</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> имя в 500 символов проходит.<br><span class="good">Как должно быть:</span> 400 — максимум 100 символов.</div>
         </div>
 
@@ -103,12 +103,12 @@ h1 {
     <div class="group-body">
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Лимит всегда отдаёт одну запись</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Параметр limit</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> limit=5 возвращает одну запись.<br><span class="good">Как должно быть:</span> 5 записей.</div>
         </div>
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Content-Type: text/plain вместо JSON</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Заголовки ответа</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> ответ приходит как text/plain.<br><span class="good">Как должно быть:</span> application/json.</div>
         </div>
 
@@ -120,12 +120,12 @@ h1 {
     <div class="group-body">
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">GET /users/2 возвращает пользователя с id=1</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Выборка по id</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> сервер ищет по id−1.<br><span class="good">Как должно быть:</span> возвращать ровно того, кого просишь.</div>
         </div>
 
         <div class="bug">
-            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Некорректный id роняет сервер</span></div>
+            <div class="bug-header" onclick="toggleBug(this)"><span class="bug-arrow">▶</span><span class="bug-title">Обработка ошибок</span></div>
             <div class="bug-content"><span class="bad">Баг:</span> id=0 или «abc» → 500 с текстом ошибки.<br><span class="good">Как должно быть:</span> 400 — некорректный id.</div>
         </div>
 
