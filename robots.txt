@@ -10,4 +10,5 @@ Disallow: /tilda/event*
 Disallow:
 
 
+Disallow: /bugs
 Sitemap: http://eddytester.com/sitemap.xml
