@@ -120,13 +120,16 @@ function key() { return ls('free_trial_key'); }
 
 var METHOD_ELS = {};
 
+function methodDone(m, found) {
+  var real = BUGS.filter(function (b) { return b.m === m && b.id.indexOf('trap') !== 0; }).map(function (b) { return b.id; });
+  return real.length > 0 && real.every(function (id) { return found.indexOf(id) >= 0; });
+}
+
 function updateMethodDone(found) {
   METHODS.forEach(function (m) {
-    var real = BUGS.filter(function (b) { return b.m === m && b.id.indexOf('trap') !== 0; }).map(function (b) { return b.id; });
-    var all = real.length > 0 && real.every(function (id) { return found.indexOf(id) >= 0; });
     var h = METHOD_ELS[m];
     if (!h) return;
-    if (all) { h.style.color = '#2e7d32'; h.textContent = m + ' ✓'; }
+    if (methodDone(m, found)) { h.style.color = '#2e7d32'; h.textContent = m + ' ✓'; }
     else { h.style.color = '#1f5bff'; h.textContent = m; }
   });
 }
@@ -174,6 +177,20 @@ function loadProgress() {
         renderCheats(d.found);
         if (found === 7) document.getElementById('bridge').classList.remove('hidden');
       }
+      d.found.forEach(function (bid) {
+        var el = document.getElementById('bug-' + bid);
+        if (!el) return;
+        el.classList.add('checked-correct', 'disabled');
+        var c = el.querySelector('input');
+        if (c) c.checked = true;
+      });
+      METHODS.forEach(function (m) {
+        if (!methodDone(m, d.found)) return;
+        BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
+          var el = document.getElementById('bug-' + b.id);
+          if (el) el.classList.add('disabled');
+        });
+      });
       updateMethodDone(d.found);
     })
     .catch(function () {});
