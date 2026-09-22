@@ -99,17 +99,17 @@ var CHEATS = {
   crash500: { m: 'GET /users/:id', bad: 'id=0 или «abc» → 500 с текстом ошибки БД', good: 'Должен быть 400: некорректный id' },
 };
 var BUGS = [
+  { id: 'trap1',    m: 'POST /users',   text: 'Пустое имя отклоняется (400)' },
   { id: 'age17',    m: 'POST /users',   text: 'Возраст 17 принимается' },
+  { id: 'trap2',    m: 'POST /users',   text: 'Возраст 16 отклоняется' },
   { id: 'notrim',   m: 'POST /users',   text: 'Имя сохраняется с пробелами («  Alice  » → «  Alice  »)' },
   { id: 'nolimit',  m: 'POST /users',   text: 'Нет ограничения длины имени (500 символов проходят)' },
-  { id: 'trap1',    m: 'POST /users',   text: 'Пустое имя отклоняется (400)' },
-  { id: 'trap2',    m: 'POST /users',   text: 'Возраст 16 отклоняется' },
+  { id: 'trap4',    m: 'GET /users',    text: 'Content-Type в ответе — application/json' },
   { id: 'limit1',   m: 'GET /users',    text: 'Лимит в списке всегда отдаёт одну запись' },
   { id: 'content',  m: 'GET /users',    text: 'Content-Type в ответе — text/plain вместо JSON' },
-  { id: 'trap4',    m: 'GET /users',    text: 'Content-Type в ответе — application/json' },
-  { id: 'idminus',  m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=1' },
   { id: 'crash500', m: 'GET /users/:id', text: 'Некорректный id (0 или буквы) роняет сервер с 500' },
   { id: 'trap3',    m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=2' },
+  { id: 'idminus',  m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=1' },
 ];
 var METHODS = ['POST /users', 'GET /users', 'GET /users/:id'];
 
