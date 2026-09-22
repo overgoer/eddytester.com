@@ -118,6 +118,19 @@ function ss(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
 function key() { return ls('free_trial_key'); }
 
+var METHOD_ELS = {};
+
+function updateMethodDone(found) {
+  METHODS.forEach(function (m) {
+    var real = BUGS.filter(function (b) { return b.m === m && b.id.indexOf('trap') !== 0; }).map(function (b) { return b.id; });
+    var all = real.length > 0 && real.every(function (id) { return found.indexOf(id) >= 0; });
+    var h = METHOD_ELS[m];
+    if (!h) return;
+    if (all) { h.style.color = '#2e7d32'; h.textContent = m + ' ✓'; }
+    else { h.style.color = '#1f5bff'; h.textContent = m; }
+  });
+}
+
 function renderTest() {
   var list = document.getElementById('test-list');
   list.innerHTML = '';
@@ -125,6 +138,7 @@ function renderTest() {
     var h = document.createElement('h3');
     h.style.cssText = 'font-size:14px;margin:18px 0 6px;color:#1f5bff;';
     h.textContent = m;
+    METHOD_ELS[m] = h;
     list.appendChild(h);
     BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
       var div = document.createElement('div');
@@ -160,6 +174,7 @@ function loadProgress() {
         renderCheats(d.found);
         if (found === 7) document.getElementById('bridge').classList.remove('hidden');
       }
+      updateMethodDone(d.found);
     })
     .catch(function () {});
 }
@@ -212,6 +227,7 @@ function resetGroup(m) {
         document.getElementById('cheats').classList.add('hidden');
         document.getElementById('cheats-h').classList.add('hidden');
       }
+      updateMethodDone(d.found);
       if (found < 7) {
         document.getElementById('bridge').classList.add('hidden');
         document.getElementById('verdict-msg').classList.add('hidden');
@@ -255,6 +271,7 @@ function check(m, btn) {
       document.getElementById('found-count').textContent = found;
       document.getElementById('badge').classList.remove('hidden');
       renderCheats(d.found);
+      updateMethodDone(d.found);
       var msg = document.getElementById('verdict-msg');
       msg.classList.remove('hidden');
       if (found === 7) {
