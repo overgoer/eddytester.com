@@ -118,6 +118,31 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
     var payload = { amount: amount };
     if (_email) { payload.email = _email; }
 
+    function ensureYkWidget() {
+      return new Promise(function(resolve, reject) {
+        if (typeof YooMoneyCheckoutWidget !== 'undefined') { resolve(); return; }
+        var srcs = [
+          'https://yookassa.ru/checkout-widget/v1/checkout-widget.js',
+          'https://static.yoomoney.ru/checkout-client/checkout-widget.js'
+        ];
+        var i = 0;
+        function tryLoad() {
+          if (i >= srcs.length) {
+            reject(new Error('Виджет оплаты не загрузился. Отключи блокировщик рекламы или антивирус, обнови страницу и попробуй снова.'));
+            return;
+          }
+          var s = document.createElement('script');
+          s.src = srcs[i++];
+          s.onload = function() {
+            if (typeof YooMoneyCheckoutWidget !== 'undefined') { resolve(); } else { tryLoad(); }
+          };
+          s.onerror = tryLoad;
+          document.head.appendChild(s);
+        }
+        tryLoad();
+      });
+    }
+
     fetch('/create-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -131,7 +156,8 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
       statusEl.textContent = '';
       containerEl.innerHTML = '';
 
-      var checkout = new YooMoneyCheckoutWidget({
+      ensureYkWidget().then(function() {
+        var checkout = new YooMoneyCheckoutWidget({
         confirmation_token: data.confirmation_token,
         return_url: 'https://eddytester.com/glearning?paid=1',
         error_callback: function(error) {
@@ -149,6 +175,11 @@ function t_onFuncLoad(funcName,okFunc,time) {if(typeof window[funcName]==='funct
       });
 
       checkout.render('yk-container');
+      }).catch(function(err) {
+        statusEl.style.background = '#fde8e8';
+        statusEl.style.color = '#d32f2f';
+        statusEl.textContent = '\u274C ' + err.message;
+      });
     })
     .catch(function(err) {
       statusEl.style.background = '#fde8e8';
