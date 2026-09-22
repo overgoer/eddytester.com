@@ -76,11 +76,13 @@ a { color: #1f5bff; }
 <div class="bridge hidden" id="bridge">
     <b>Ты прошёл мини-практикум.</b> В полной версии — 48 багов, 19 уроков, проверка баг-репортов лично мной.
     <p style="margin:12px 0;"><a class="btn" href="https://eddytester.com">К полной версии</a></p>
-    <p>Не готов? Оставь email — дам ещё <b>48 часов</b>:</p>
-    <input type="email" id="extend-email" placeholder="email">
-    <button class="btn" onclick="extend()">Продлить на 48 часов</button>
-    <div id="extend-result" class="hidden" style="margin-top:8px;"></div>
-    <div id="extend-error" class="hidden" style="color:#c0392b;font-size:14px;margin-top:8px;"></div>
+    <div id="extend-block" class="hidden">
+      <p>Не готов? Оставь email — дам ещё <b>48 часов</b>:</p>
+      <input type="email" id="extend-email" placeholder="email">
+      <button class="btn" onclick="extend()">Продлить на 48 часов</button>
+      <div id="extend-result" class="hidden" style="margin-top:8px;"></div>
+      <div id="extend-error" class="hidden" style="color:#c0392b;font-size:14px;margin-top:8px;"></div>
+    </div>
   </div>
 
   <p class="note">Ключ один на браузер. Истёк — придёшь сюда же, предложим продление.</p>
