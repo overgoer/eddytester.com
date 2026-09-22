@@ -125,12 +125,18 @@ function key() { return ls('free_trial_key'); }
 function renderTest() {
   var list = document.getElementById('test-list');
   list.innerHTML = '';
-  BUGS.forEach(function (b) {
-    var div = document.createElement('div');
-    div.className = 'bug-item';
-    div.id = 'bug-' + b.id;
-    div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
-    list.appendChild(div);
+  METHODS.forEach(function (m) {
+    var h = document.createElement('h3');
+    h.style.cssText = 'font-size:14px;margin:18px 0 6px;color:#1f5bff;';
+    h.textContent = m;
+    list.appendChild(h);
+    BUGS.filter(function (b) { return b.m === m; }).forEach(function (b) {
+      var div = document.createElement('div');
+      div.className = 'bug-item';
+      div.id = 'bug-' + b.id;
+      div.innerHTML = '<input type="checkbox" data-bug="' + b.id + '"><span>' + b.text + '</span>';
+      list.appendChild(div);
+    });
   });
 }
 
