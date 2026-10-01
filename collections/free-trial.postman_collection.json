@@ -17,7 +17,7 @@
           "mode": "raw",
           "raw": "{\n  \"name\": \"Alice\",\n  \"age\": 25\n}"
         },
-        "url": { "raw": "https://api.eddytester.com/free/api/users", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users"] }
+        "url": { "raw": "https://api.eddytester.com/free/v1/api/users", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "v1", "api", "users"] }
       }
     },
     {
@@ -25,7 +25,7 @@
       "request": {
         "method": "GET",
         "header": [ { "key": "X-Fix-Bug", "value": "YOUR_KEY_HERE", "type": "text" } ],
-        "url": { "raw": "https://api.eddytester.com/free/api/users?limit=5", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users"], "query": [ { "key": "limit", "value": "5" } ] }
+        "url": { "raw": "https://api.eddytester.com/free/v1/api/users?limit=5", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "v1", "api", "users"], "query": [ { "key": "limit", "value": "5" } ] }
       }
     },
     {
@@ -33,7 +33,7 @@
       "request": {
         "method": "GET",
         "header": [ { "key": "X-Fix-Bug", "value": "YOUR_KEY_HERE", "type": "text" } ],
-        "url": { "raw": "https://api.eddytester.com/free/api/users/1", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "api", "users", "1"] }
+        "url": { "raw": "https://api.eddytester.com/free/v1/api/users/1", "protocol": "https", "host": ["api", "eddytester", "com"], "path": ["free", "v1", "api", "users", "1"] }
       }
     }
   ]

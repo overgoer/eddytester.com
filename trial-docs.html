@@ -44,8 +44,9 @@ a { color: #1f5bff; }
 </ol>
 
 <h2>Методы</h2>
+<p>У API две версии: <b>/free/v1/…</b> — рабочая, в ней ищи баги; <b>/free/v2/…</b> — эталон, там всё по спецификации. Ниже описана v1. Сомневаешься, как должно быть, — сделай тот же запрос на <b>/free/v2/…</b> и сравни.</p>
 
-<h3>POST /free/api/users — создать пользователя</h3>
+<h3>POST /free/v1/api/users — создать пользователя</h3>
 <p>Создаёт нового пользователя. Тело запроса — JSON:</p>
 <table>
 <tr><th>Поле</th><th>Тип</th><th>Описание</th></tr>
@@ -53,7 +54,7 @@ a { color: #1f5bff; }
 <tr><td>age</td><td>number</td><td>Возраст</td></tr>
 </table>
 <p>Пример запроса:</p>
-<pre>curl -X POST https://api.eddytester.com/free/api/users \
+<pre>curl -X POST https://api.eddytester.com/free/v1/api/users \
   -H "X-Fix-Bug: твой_ключ" \
   -H "Content-Type: application/json" \
   -d '{"name":"Alice","age":25}'</pre>
@@ -67,9 +68,9 @@ a { color: #1f5bff; }
 }</pre>
 <p>Без <code>name</code> или <code>age</code> сервер отвечает <code>400</code> с описанием ошибки.</p>
 
-<h3>GET /free/api/users — список пользователей</h3>
+<h3>GET /free/v1/api/users — список пользователей</h3>
 <p>Возвращает список созданных пользователей. Поддерживает параметр <code>limit</code> — сколько записей вернуть:</p>
-<pre>curl "https://api.eddytester.com/free/api/users?limit=5" \
+<pre>curl "https://api.eddytester.com/free/v1/api/users?limit=5" \
   -H "X-Fix-Bug: твой_ключ"</pre>
 <p>Успешный ответ — <code>200</code> с массивом пользователей в JSON:</p>
 <pre>{
@@ -79,9 +80,9 @@ a { color: #1f5bff; }
   ]
 }</pre>
 
-<h3>GET /free/api/users/:id — пользователь по id</h3>
+<h3>GET /free/v1/api/users/:id — пользователь по id</h3>
 <p>Возвращает одного пользователя по его идентификатору:</p>
-<pre>curl https://api.eddytester.com/free/api/users/2 \
+<pre>curl https://api.eddytester.com/free/v1/api/users/2 \
   -H "X-Fix-Bug: твой_ключ"</pre>
 <p>Успешный ответ — <code>200</code> с пользователем в JSON:</p>
 <pre>{

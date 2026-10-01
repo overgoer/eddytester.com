@@ -78,7 +78,7 @@ h1 {
 </div>
 
 <div class="group open">
-    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">POST /free/api/users</span><span class="group-count">3 бага</span></div>
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">POST /free/v1/api/users</span><span class="group-count">3 бага</span></div>
     <div class="group-body">
 
         <div class="bug">
@@ -100,7 +100,7 @@ h1 {
 </div>
 
 <div class="group open">
-    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/api/users</span><span class="group-count">2 бага</span></div>
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/v1/api/users</span><span class="group-count">2 бага</span></div>
     <div class="group-body">
 
         <div class="bug">
@@ -117,7 +117,7 @@ h1 {
 </div>
 
 <div class="group open">
-    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/api/users/:id</span><span class="group-count">2 бага</span></div>
+    <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">GET /free/v1/api/users/:id</span><span class="group-count">2 бага</span></div>
     <div class="group-body">
 
         <div class="bug">
@@ -137,7 +137,7 @@ h1 {
     <div class="group-header" onclick="toggleGroup(this)"><span class="group-arrow">▶</span><span class="group-path">Ловушки (это НЕ баги)</span><span class="group-count">4 штуки</span></div>
     <div class="group-body">
         <div class="bug"><div class="bug-header"><span class="bug-title">Пустое имя отклоняется (400)</span></div></div>
-        <div class="bug"><div class="bug-header"><span class="bug-title">Возраст 16 отклоняется (400)</span></div></div>
+        <div class="bug"><div class="bug-header"><span class="bug-title">Возраст 18 принимается (201) — так и надо</span></div></div>
         <div class="bug"><div class="bug-header"><span class="bug-title">Content-Type: application/json — так и надо</span></div></div>
         <div class="bug"><div class="bug-header"><span class="bug-title">GET /users/2 возвращает id=2 — так и надо</span></div></div>
     </div>
