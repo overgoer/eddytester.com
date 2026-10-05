@@ -74,7 +74,7 @@ a { color: #1f5bff; }
   <div id="cheats" class="hidden"></div>
 
 <div class="bridge hidden" id="bridge">
-    <b>Ты прошёл мини-практикум.</b> В полной версии — 48 багов, 19 уроков, проверка баг-репортов лично мной.
+    <b id="bridge-title">Ты прошёл мини-практикум.</b> В полной версии — 48 багов, 19 уроков, проверка баг-репортов лично мной.
     <p style="margin:12px 0;"><a class="btn" href="https://eddytester.com">К полной версии</a></p>
     <div id="extend-block" class="hidden">
       <p>Не готов? Оставь email — дам ещё <b>48 часов</b>:</p>
@@ -119,6 +119,12 @@ function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null
 function ss(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
 function key() { return ls('free_trial_key'); }
+
+function showBridgeExpired() {
+  var t = document.getElementById('bridge-title');
+  if (t) t.textContent = 'Ключ истёк.';
+  document.getElementById('bridge').classList.remove('hidden');
+}
 
 var METHOD_ELS = {};
 
@@ -169,9 +175,12 @@ function renderTest() {
 
 function loadProgress() {
   fetch(API + '/free/api/progress', { headers: { 'X-Fix-Bug': key() || '' } })
-    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (r.status === 401 || r.status === 403) { showBridgeExpired(); return null; }
+      return r.json();
+    })
     .then(function (d) {
-      if (d.error) return;
+      if (!d || d.error) return;
       var found = d.found.length;
       document.getElementById('found-count').textContent = found;
       if (found > 0) {
@@ -269,7 +278,7 @@ function check(m, btn) {
   })
     .then(function (r) {
       if (r.status === 401 || r.status === 403) {
-        document.getElementById('bridge').classList.remove('hidden');
+        showBridgeExpired();
         throw new Error('key-expired');
       }
       return r.json();
