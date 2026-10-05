@@ -60,7 +60,7 @@ a { color: #1f5bff; }
 
   <!-- сценарий -->
   <h2>2. Найди баги (7 штук)</h2>
-  <p>Сценарий: <b>создай пользователя → найди его по id → посмотри список</b>.
+  <p>Сценарий: <b>создай пару пользователей → возьми их id из списка → проверь каждого по id</b>.
      Документация: <a href="/trial-docs.html" target="_blank">открыть документацию</a>. Сваггер: <a href="https://api.eddytester.com/docs/v1" target="_blank">api.eddytester.com/docs/v1</a>.
      Запросы — в Postman или прямо в Swagger. Заголовок: <b>X-Fix-Bug: твой ключ</b>. <a href="/trial-cheats.html" class="easter-link" title="">шпора</a></p>
 
@@ -97,7 +97,7 @@ var CHEATS = {
   nolimit:  { m: 'POST /users', bad: 'Имя в 500 символов проходит', good: 'Должен быть 400: максимум 100 символов' },
   limit1:   { m: 'GET /users', bad: 'limit=5 отдаёт одну запись', good: 'Должно вернуться 5 записей' },
   content:  { m: 'GET /users', bad: 'Content-Type: text/plain', good: 'Должен быть application/json' },
-  idminus:  { m: 'GET /users/:id', bad: '/users/2 возвращает пользователя с id=1', good: 'Должен возвращать id=2' },
+  idminus:  { m: 'GET /users/:id', bad: 'GET /users/{id из списка + 1} возвращает пользователя с id на 1 меньше', good: 'Должен возвращать запрошенный id' },
   crash500: { m: 'GET /users/:id', bad: 'id=0 или «abc» → 500 с текстом ошибки БД', good: 'Должен быть 400: некорректный id' },
 };
 var BUGS = [
@@ -110,8 +110,8 @@ var BUGS = [
   { id: 'limit1',   m: 'GET /users',    text: 'Лимит в списке всегда отдаёт одну запись' },
   { id: 'content',  m: 'GET /users',    text: 'Content-Type в ответе — text/plain вместо JSON' },
   { id: 'crash500', m: 'GET /users/:id', text: 'Некорректный id (0 или буквы) роняет сервер с 500' },
-  { id: 'trap3',    m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=2' },
-  { id: 'idminus',  m: 'GET /users/:id', text: 'GET /users/2 возвращает пользователя с id=1' },
+  { id: 'trap3',    m: 'GET /users/:id', text: 'GET /users/{id из списка} возвращает пользователя с тем же id' },
+  { id: 'idminus',  m: 'GET /users/:id', text: 'GET /users/{id из списка + 1} возвращает пользователя с id на 1 меньше' },
 ];
 var METHODS = ['POST /users', 'GET /users', 'GET /users/:id'];
 
