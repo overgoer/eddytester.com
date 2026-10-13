@@ -87,13 +87,25 @@ const S = [
   // 2. АРХИТЕКТУРА И КАРТА МЕСТНОСТИ
   `<span class="badge">Шаг 0 · Разведка</span>
    <h2>Карта базы данных QuickBite</h2>
-   <p>В DBeaver открываем базу <code>food_lab</code>. Перед нами 5 таблиц:</p>
+   <p>В DBeaver открываем базу <code>food_lab</code>. Перед нами структура:</p>
    <pre>restaurants  ──< menu_items
                  │
 orders ──────────┼──< order_items
    │             └──< promocodes
    └──< payments (платежи от эквайринга)</pre>
    <p class="small">Все запросы сегодня — боевые, как в реальном бэкенде интернет-магазина.</p>`,
+
+  // 2b. ЭКСКУРСИЯ ПО ПРИБОРНОЙ ПАНЕЛИ
+  `<span class="badge blue">Экскурсия · 5 минут</span>
+   <h2>Что видит тестировщик в DBeaver?</h2>
+   <p>Раскрываем дерево базы данных слева. Разбираем по полочкам:</p>
+   <div class="card-demo" style="font-size: 21px; line-height: 1.6;">
+     • <b>Tables (Таблицы):</b> физические данные (строки и колонки).<br>
+     • <b>Sequences (Счётчики):</b> автогенератор ID (<code>orders_id_seq</code>). Почему ID увеличивается сам и его не надо вбивать руками.<br>
+     • <b>Indexes (Индексы):</b> как алфавитный указатель в конце книги — мгновенный поиск и защита от дублей (<code>promocodes_code_key</code>).<br>
+     • <b>Views (Вьюхи):</b> сохранённый SELECT-запрос. Дважды кликни на <code>v_active_menu</code> — и увидишь готовое объединённое меню без сложного JOIN!
+   </div>
+   <p class="small">💡 <i>Кликните на v_active_menu в DBeaver прямо сейчас и посмотрите вкладку «Данные».</i></p>`,
 
   // 3. СВЯЗКА API ➔ БД
   `<span class="badge green">Шаг 1 · Свой след</span>
