@@ -98,24 +98,26 @@ orders ──────────┼──< order_items
   // 3. СВЯЗКА API ➔ БД
   `<span class="badge green">Шаг 1 · Свой след</span>
    <h2>Создаём заказ руками в Swagger</h2>
-   <p>Открываем Swagger API: метод <code>POST /api/orders</code></p>
-   <p>Передаём тело запроса:</p>
+   <p>1. В Swagger жмём зелёную кнопку <b>«Authorize 🔓»</b> и вводим свой ключ (например, <code>student_kate</code>).</p>
+   <p>2. Метод <code>POST /api/orders</code> ➔ передаём тело запроса:</p>
    <pre>{
   "client_name": "ТвоёИмя",
   "menu_item_id": 1,
   "promocode": "VIPGIFT"
 }</pre>
-   <p class="small">В ответе получаем <code>order_id: 2001</code> и статус <code>pending_payment</code>. Запомни свой ID!</p>`,
+   <p class="small">В ответе получаем <code>order_id: 2004</code> и статус <code>pending_payment</code>. Заказ изолирован под твоей ролью!</p>`,
 
   // 4. ПЕРВЫЙ ЗАПРОС В БД
   `<span class="badge">Задание 1 · SELECT</span>
    <h2>Находим свой заказ в DBeaver</h2>
-   <p>Найди свой только что созданный заказ по имени или ID:</p>
+   <p>Найди свой заказ в DBeaver под своим логином:</p>
    <button class="timer-btn" data-secs="60" onclick="startTimer(this)">⏱ 1:00</button>
    <button class="ans-btn" onclick="toggleAns(this)">▸ Показать эталонный SQL</button>
    <div class="ans">
-     <pre>SELECT * FROM orders WHERE client_name = 'ТвоёИмя';</pre>
-     <p class="small">Посмотри на колонку <b>total_amount</b>... Что там?! Там <code>NULL</code>!</p>
+     <pre>SELECT id, client_name, subtotal, total_amount, pg_role
+FROM orders
+WHERE id >= 2000;</pre>
+     <p class="small">💡 <b>Фишка RLS:</b> ты видишь ТОЛЬКО свой заказ, чужие не путаются. А на total_amount — <code>NULL</code>! Начинаем копать.</p>
    </div>`,
 
   // 5. БАГ 1: ЛОВУШКА NULL (ТЕОРИЯ)
@@ -242,6 +244,7 @@ WHERE r.id IS NULL;</pre>
      <span class="diff-add">• Локализация ошибок бизнес-логики и расхождений API vs БД через сложные JOIN</span>
      <span class="diff-add">• Анализ дубликатов и финансовых аномалий через агрегации GROUP BY / HAVING</span>
      <span class="diff-add">• Проведение Acceptance-ревью DDL и миграций БД на наличие constraints (FK, CHECK)</span>
+     <span class="diff-add">• Понимание принципов ролевой модели и изоляции данных в PostgreSQL (Row Level Security)</span>
    </div>
    <p class="small">Никаких общих фраз «знаю SELECT». Только боевые строчки реального опыта.</p>`,
 
