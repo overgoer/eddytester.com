@@ -32,21 +32,27 @@ function uuid() {
   });
 }
 
-function yookassaRequest(amount, email) {
+function yookassaRequest(amount, email, opts = {}) {
   return new Promise((resolve, reject) => {
     const idempotenceKey = uuid();
+    const confirmationType = opts.confirmation_type || 'embedded';
+    const confirmation = confirmationType === 'redirect'
+      ? { type: 'redirect', return_url: opts.return_url || 'https://eddytester.com' }
+      : { type: 'embedded' };
+
     const body = JSON.stringify({
       amount: {
         value: String(amount),
         currency: 'RUB'
       },
-      confirmation: {
-        type: 'embedded'
-      },
+      confirmation: confirmation,
       capture: true,
       customer: { email: email || "" },
-      metadata: email ? { email: email } : {},
-      description: 'Оплата доступа к API eddytester.com'
+      metadata: {
+        ...(email ? { email: email } : {}),
+        ...(opts.metadata || {})
+      },
+      description: opts.description || 'Оплата доступа к API eddytester.com'
     });
 
     const auth = Buffer.from(`${SHOP_ID}:${SECRET_KEY}`).toString('base64');
@@ -121,8 +127,9 @@ const server = http.createServer((req, res) => {
     req.on('end', async () => {
       let amount = 0;
       let email = null;
+      let parsed = {};
       try {
-        const parsed = JSON.parse(body);
+        parsed = JSON.parse(body);
         amount = parsed.amount != null ? parsed.amount : 2770;
         email = parsed.email || null;
       } catch (e) {
@@ -131,14 +138,20 @@ const server = http.createServer((req, res) => {
       }
 
       try {
-        const payment = await yookassaRequest(amount, email);
+        const payment = await yookassaRequest(amount, email, {
+          confirmation_type: parsed.confirmation_type || 'embedded',
+          return_url: parsed.return_url,
+          description: parsed.description,
+          metadata: parsed.metadata
+        });
         const result = {
           success: true,
           payment_id: payment.id,
-          confirmation_token: payment.confirmation.confirmation_token || payment.confirmation.url,
+          confirmation_token: payment.confirmation?.confirmation_token || null,
+          confirmation_url: payment.confirmation?.confirmation_url || null,
           status: payment.status
         };
-        console.log(`[payment] Created: ${payment.id} amount: ${amount}`);
+        console.log(`[payment] Created: ${payment.id} amount: ${amount} type: ${parsed.confirmation_type || 'embedded'}`);
         sendJson(res, 200, result);
       } catch (e) {
         console.log(`[payment] Error: ${e.message}`);
