@@ -47,14 +47,29 @@
 <p class="small">Держи эту страницу открытой во время эфира. Если отвлёкся или запутался в кавычках — просто нажми «Скопировать» и вставь запрос в DBeaver.</p>
 
 <div class="box tip">
-  <span class="badge blue">Подключение</span>
-  <p><b>База данных в DBeaver:</b></p>
+  <span class="badge blue">Инструкция по подключению в DBeaver</span>
+  <p>В DBeaver нажимаем <b>Новое соединение ➔ PostgreSQL</b>:</p>
+  
+  <p><b>1. Вкладка «SSH» (сначала включаем туннель к серверу):</b></p>
   <ul>
-    <li>Host: <code>localhost</code> (через SSH-туннель к серверу)</li>
-    <li>Port: <code>5432</code></li>
-    <li>Database: <code>food_lab</code></li>
-    <li>Swagger API: <a href="https://eddytester.com/lab-api" target="_blank" style="color:#58a6ff;">https://eddytester.com/lab-api</a></li>
+    <li>Ставим галочку: <b>Использовать SSH-туннель</b></li>
+    <li>Хост (Host/IP): <code>85.193.81.51</code></li>
+    <li>Порт (Port): <code>2222</code></li>
+    <li>Пользователь (User Name): <code>твой_логин</code> (например, <code>student_kate</code>)</li>
+    <li>Метод аутентификации: <b>Пароль</b></li>
+    <li>Пароль (Password): <i>твой пароль из сообщения</i></li>
   </ul>
+
+  <p><b>2. Вкладка «Главное» (параметры самой базы данных):</b></p>
+  <ul>
+    <li>Хост (Host): <code>localhost</code></li>
+    <li>Порт (Port): <code>5432</code></li>
+    <li>База данных (Database): <code>food_lab</code></li>
+    <li>Пользователь (User Name): <code>твой_логин</code> (тот же самый!)</li>
+    <li>Пароль (Password): <i>твой пароль из сообщения</i> (тот же самый!)</li>
+  </ul>
+  
+  <p class="small" style="margin-bottom:0;"><i>После заполнения нажимаем «Тест соединения» ➔ «Готово».</i></p>
 </div>
 
 <h2><span class="step-num">Шаг 1.</span> Создание заказа в API и поиск в БД</h2>
