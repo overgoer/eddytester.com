@@ -107,58 +107,60 @@ orders ──────────┼──< order_items
 }</pre>
    <p class="small">В ответе получаем <code>order_id: 2004</code> и статус <code>pending_payment</code>. Заказ изолирован под твоей ролью!</p>`,
 
-  // 4. ПЕРВЫЙ ЗАПРОС В БД
-  `<span class="badge">Задание 1 · SELECT</span>
+  // 4. ПЕРВЫЙ ЗАПРОС В БД — СИМПТОМ
+  `<span class="badge">Задание 1 · Симптом</span>
    <h2>Находим свой заказ в DBeaver</h2>
    <p>Найди свой заказ в DBeaver под своим логином:</p>
    <button class="timer-btn" data-secs="60" onclick="startTimer(this)">⏱ 1:00</button>
    <button class="ans-btn" onclick="toggleAns(this)">▸ Показать эталонный SQL</button>
    <div class="ans">
-     <pre>SELECT id, client_name, subtotal, total_amount, pg_role
+     <pre>SELECT id, client_name, subtotal, total_amount, promocode_id, pg_role
 FROM orders
 WHERE id >= 2000;</pre>
-     <p class="small">💡 <b>Фишка RLS:</b> ты видишь ТОЛЬКО свой заказ, чужие не путаются. А на total_amount — <code>NULL</code>! Начинаем копать.</p>
+     <p class="small">🔍 <b>Симптом:</b> subtotal = 690 ₽, а total_amount = <code>NULL</code>! Применился promocode_id = 4. Где искать размер скидки?</p>
    </div>`,
 
-  // 5. БАГ 1: ЛОВУШКА NULL (ТЕОРИЯ)
-  `<span class="badge red">Улика №1 · Ловушка NULL</span>
-   <h2>Почему сумма заказа = NULL?!</h2>
-   <div class="diagram-box">
-     <div class="card-demo ok">
-       <div class="card-title">Обычная математика</div>
-       1 500 ₽ - 500 ₽ = <b>1 000 ₽</b><br>
-       <span class="small">Скидка вычлась корректно</span>
-     </div>
-     <div class="card-demo fail">
-       <div class="card-title">Суровая реальность SQL</div>
-       1 500 ₽ - NULL = <b>NULL</b> 💥<br>
-       <span class="small">NULL — это не ноль! Это черная дыра неизвестности.</span>
-     </div>
-   </div>
-   <p class="small">Любая математическая операция с NULL возвращает NULL! Из-за этого сломался расчёт чека.</p>`,
-
-  // 6. БАГ 1: РАССЛЕДОВАНИЕ ПРОМОКОДОВ
+  // 5. ПОИСК ИСТОЧНИКА — ТАБЛИЦА ПРОМОКОДОВ
   `<span class="badge">Задание 2 · WHERE & LIKE</span>
-   <h2>Расследуем промокод VIPGIFT</h2>
-   <p>Посмотрим, что разработчик записал в таблицу <code>promocodes</code>:</p>
+   <h2>Ищем размер скидки по промокоду</h2>
+   <p>Открываем таблицу <code>promocodes</code> и находим промокод VIPGIFT:</p>
    <button class="timer-btn" data-secs="90" onclick="startTimer(this)">⏱ 1:30</button>
    <button class="ans-btn" onclick="toggleAns(this)">▸ Показать ответ</button>
    <div class="ans">
-     <pre>SELECT code, discount_rub, min_order_rub
+     <pre>SELECT id, code, discount_rub, min_order_rub
 FROM promocodes
 WHERE code ILIKE '%gift%';</pre>
-     <p class="small">Эврика: у VIPGIFT колонка <code>discount_rub IS NULL</code>! Разработчик забыл указать сумму скидки в БД.</p>
+     <p class="small">💥 <b>Улика найдена:</b> в колонке <code>discount_rub</code> стоит <code>NULL</code>! Разработчик не заполнил скидку.<br>
+     Но почему 690 ₽ минус пустота превратилось в NULL, а не осталось 690 ₽?!</p>
    </div>`,
 
-  // 7. КАК СПАСТИ ЗАПРОС: COALESCE
+  // 6. КУЛЬМИНАЦИЯ — ЭВРИКА: ЛОВУШКА NULL
+  `<span class="badge red">Улика №1 · Ловушка NULL</span>
+   <h2>Эврика: почему 690 ₽ - NULL = NULL?!</h2>
+   <div class="diagram-box">
+     <div class="card-demo ok">
+       <div class="card-title">Человеческая интуиция</div>
+       690 ₽ - [нет скидки] = <b>690 ₽</b><br>
+       <span class="small">Кажется, что сумма должна остаться прежней</span>
+     </div>
+     <div class="card-demo fail">
+       <div class="card-title">Суровая реальность SQL</div>
+       690 ₽ - NULL = <b>NULL</b> 💥<br>
+       <span class="small">NULL — это «неизвестность». 690 минус «неизвестно сколько» = неизвестно!</span>
+     </div>
+   </div>
+   <p class="small">Любая математическая операция с NULL возвращает NULL! Из-за одного незаполненного поля рухнул расчёт всего заказа.</p>`,
+
+  // 7. РЕШЕНИЕ — КАК СПАСТИ РАСЧЕТ
   `<span class="badge green">Навык Сеньора · COALESCE</span>
    <h2>Как тестировщик чинит расчёт</h2>
-   <p>Функция <code>COALESCE(значение, если_null)</code> заменяет NULL на дефолт:</p>
+   <p>Функция <code>COALESCE(значение, если_null)</code> заменяет NULL на дефолт (0):</p>
    <pre>SELECT id, client_name, subtotal,
        subtotal - COALESCE(discount_rub, 0) AS safe_total
 FROM orders o
-LEFT JOIN promocodes p ON o.promocode_id = p.id;</pre>
-   <p class="small">Теперь 1500 - 0 = 1500 ₽! Заказ не ломается, чек печатается.</p>`,
+LEFT JOIN promocodes p ON o.promocode_id = p.id
+WHERE o.id >= 2000;</pre>
+   <p class="small">Теперь 690 - 0 = 690 ₽! Заказ спасен, чек печатается.</p>`,
 
   // 8. БАГ 2: КУДА УДВОИЛИСЬ ДЕНЬГИ (ВИЗУАЛ)
   `<span class="badge red">Улика №2 · Двойное списание</span>
