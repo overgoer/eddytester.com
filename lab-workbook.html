@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рабочая тетрадь · Лаба по SQL (QuickBite)</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117; color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6; padding: 30px 20px 80px; max-width: 900px; margin: 0 auto;
+  }
+  h1 { font-size: 32px; font-weight: 800; color: #58a6ff; margin-bottom: 8px; }
+  h2 { font-size: 22px; font-weight: 700; color: #7ee787; margin-top: 36px; margin-bottom: 14px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+  p, li { font-size: 16px; color: #c9d1d9; margin-bottom: 10px; }
+  ul, ol { padding-left: 24px; margin-bottom: 14px; }
+  .badge { display: inline-block; background: #238636; color: #fff; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 999px; text-transform: uppercase; margin-bottom: 8px; }
+  .badge.red { background: #da3633; }
+  .badge.blue { background: #1f6feb; }
+  
+  .box { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px 20px; margin: 16px 0; }
+  .box.alert { border-color: #da3633; background: #1f1315; }
+  .box.tip { border-color: #238636; background: #0e1e17; }
+  
+  pre {
+    background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+    padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 15px; color: #7ee787; overflow-x: auto; position: relative; margin: 10px 0;
+  }
+  code { font-family: ui-monospace, monospace; background: #21262d; padding: 2px 6px; border-radius: 4px; color: #e6edf3; font-size: 14px; }
+  
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px; background: #21262d; border: 1px solid #30363d;
+    border-radius: 6px; color: #8b949e; font-size: 13px; padding: 4px 10px; cursor: pointer;
+  }
+  .copy-btn:hover { color: #58a6ff; border-color: #58a6ff; }
+  
+  .step-num { color: #58a6ff; font-weight: 700; font-size: 18px; margin-right: 6px; }
+  .small { font-size: 14px; color: #8b949e; }
+  .highlight { color: #ffa657; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>🔍 Рабочая тетрадь: Лаба по SQL</h1>
+<p class="small">Держи эту страницу открытой во время эфира. Если отвлёкся или запутался в кавычках — просто нажми «Скопировать» и вставь запрос в DBeaver.</p>
+
+<div class="box tip">
+  <span class="badge blue">Подключение</span>
+  <p><b>База данных в DBeaver:</b></p>
+  <ul>
+    <li>Host: <code>localhost</code> (через SSH-туннель к серверу)</li>
+    <li>Port: <code>5432</code></li>
+    <li>Database: <code>food_lab</code></li>
+    <li>Swagger API: <a href="https://eddytester.com/lab-api" target="_blank" style="color:#58a6ff;">https://eddytester.com/lab-api</a></li>
+  </ul>
+</div>
+
+<h2><span class="step-num">Шаг 1.</span> Создание заказа в API и поиск в БД</h2>
+<p>В Swagger делаем <code>POST /api/orders</code> с промокодом <code>VIPGIFT</code>. Затем находим свой заказ в DBeaver:</p>
+<pre>SELECT id, client_name, restaurant_id, status, subtotal, total_amount, created_at
+FROM orders
+WHERE client_name = 'ТвоёИмя';<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+<p class="small">🔍 <b>Что наблюдаем:</b> в колонке <code>total_amount</code> вернулся <code>NULL</code>, хотя subtotal = 690 ₽.</p>
+
+<h2><span class="step-num">Шаг 2.</span> Расследование промокода (Ловушка NULL)</h2>
+<p>Ищем промокод <code>VIPGIFT</code> через нечувствительный к регистру фильтр <code>ILIKE</code>:</p>
+<pre>SELECT id, code, discount_rub, min_order_rub, is_active
+FROM promocodes
+WHERE code ILIKE '%gift%';<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+
+<div class="box alert">
+  <span class="badge red">Главное правило SQL</span>
+  <p><b>NULL — это не 0!</b> Любая математическая операция с NULL возвращает NULL:<br>
+  <code>690 - NULL = NULL</code>. Из-за этого расчёт суммы заказа сломался.</p>
+</div>
+
+<p><b>Как спасти запрос с помощью COALESCE:</b></p>
+<pre>SELECT o.id, o.client_name, o.subtotal,
+       COALESCE(p.discount_rub, 0) AS safe_discount,
+       o.subtotal - COALESCE(p.discount_rub, 0) AS calculated_total
+FROM orders o
+LEFT JOIN promocodes p ON o.promocode_id = p.id
+WHERE o.client_name = 'ТвоёИмя';<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+
+<h2><span class="step-num">Шаг 3.</span> Расследование двойного списания (JOIN)</h2>
+<p>Клиент по заказу #1005 жалуется на удвоенное списание (1 290 ₽ ➔ 2 580 ₽). Соединяем заказ с платежами:</p>
+<pre>SELECT o.id AS order_id, o.client_name, o.total_amount,
+       p.id AS payment_id, p.amount AS paid_amount, p.status, p.transaction_id
+FROM orders o
+JOIN payments p ON p.order_id = o.id
+WHERE o.id = 1005;<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+<p class="small">🔍 <b>Что наблюдаем:</b> запрос вернул <b>2 строки</b>! На один заказ создалось 2 платежа со статусом <code>success</code>.</p>
+
+<h2><span class="step-num">Шаг 4.</span> Детекция всех дублей на проде (GROUP BY + HAVING)</h2>
+<p>Ищем все заказы, по которым произошло больше одного списания денег:</p>
+<pre>SELECT order_id, 
+       count(*) AS payments_count, 
+       sum(amount) AS total_paid
+FROM payments
+WHERE status = 'success'
+GROUP BY order_id
+HAVING count(*) > 1;<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+<p class="small">💡 <b>Шпора для собеса:</b> <code>WHERE</code> фильтрует строки <b>ДО</b> группировки, а <code>HAVING</code> фильтрует группы <b>ПОСЛЕ</b> агрегации.</p>
+
+<h2><span class="step-num">Шаг 5.</span> Заказ в несуществующий ресторан (LEFT JOIN & DDL)</h2>
+<p>Ищем заказы, привязанные к несуществующим ресторанам:</p>
+<pre>SELECT o.id, o.client_name, o.restaurant_id, r.name AS restaurant_name
+FROM orders o
+LEFT JOIN restaurants r ON o.restaurant_id = r.id
+WHERE r.id IS NULL;<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+<p class="small">🔍 <b>Улика:</b> у заказа #1006 <code>restaurant_id = 9999</code>, а имя ресторана <code>NULL</code>.</p>
+
+<h2><span class="step-num">Шаг 6.</span> Исправление архитектуры (Добавляем FOREIGN KEY)</h2>
+<p>Запрос, который разработчик обязан добавить в миграцию БД:</p>
+<pre>-- 1. Удаляем или исправляем битые заказы перед добавлением ключа
+DELETE FROM orders WHERE restaurant_id = 9999;
+
+-- 2. Вешаем внешний ключ (теперь база никогда не пропустит фейковый ресторан!)
+ALTER TABLE orders 
+ADD CONSTRAINT fk_orders_restaurant 
+FOREIGN KEY (restaurant_id) REFERENCES restaurants(id);<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
+
+<h2><span class="step-num">Шаг 7.</span> Готовые строчки для резюме (hh.ru)</h2>
+<div class="box tip">
+  <ul>
+    <li><b>Тестирование PostgreSQL через DBeaver:</b> валидация бизнес-логики и целостности данных при оформлении заказов и промокодов.</li>
+    <li><b>Дебаг расхождений API vs БД:</b> локализация дефектов через сложные выборки <code>JOIN</code>, обработка аномалий с <code>NULL</code> через <code>COALESCE</code>.</li>
+    <li><b>Финансовый аудит транзакций:</b> выявление дубликатов оплат через агрегации <code>GROUP BY / HAVING</code>.</li>
+    <li><b>Code Review миграций:</b> проверка DDL-схем на корректность <code>FOREIGN KEY</code> и <code>CHECK constraints</code> до релиза на прод.</li>
+  </ul>
+</div>
+
+<script>
+function copy(btn) {
+  const pre = btn.parentElement;
+  const text = pre.innerText.replace('📋 Скопировать', '').replace('Скопировано ✓', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(() => { btn.textContent = '📋 Скопировать'; }, 1000);
+  });
+}
+</script>
+</body>
+</html>

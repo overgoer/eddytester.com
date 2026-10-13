@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Лаба: SQL и DBeaver — Детективное расследование QuickBite</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0d1117; color: #e6edf3;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    height: 100vh; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  #stage { width: min(1200px, 94vw); text-align: left; padding: 0 20px; margin: 0 auto; }
+  h1 { font-size: 58px; font-weight: 800; line-height: 1.15; margin-bottom: 20px; letter-spacing: -0.5px; }
+  h2 { font-size: 40px; font-weight: 700; color: #58a6ff; margin-bottom: 22px; }
+  p  { font-size: 28px; line-height: 1.45; color: #c9d1d9; margin-bottom: 14px; }
+  .sub { color: #8b949e; }
+  .small { font-size: 22px; color: #8b949e; line-height: 1.4; }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #161b22; border: 1px solid #30363d; border-radius: 10px;
+    padding: 4px 12px; font-size: 26px; color: #7ee787; display: inline-block;
+    margin: 6px 0;
+  }
+  pre { display: block; text-align: left; padding: 22px 30px; line-height: 1.5; white-space: pre; position: relative; }
+  .copy-btn { position: absolute; top: 8px; right: 12px; background: #21262d; border: 1px solid #30363d; border-radius: 6px; cursor: pointer; font-size: 16px; color: #8b949e; padding: 4px 10px; }
+  .copy-btn:hover { color: #58a6ff; border-color: #58a6ff; }
+  .badge {
+    display: inline-block; background: #1f6feb; color: #fff; font-size: 20px;
+    font-weight: 700; letter-spacing: 1.5px; padding: 4px 18px; border-radius: 999px;
+    margin-bottom: 16px; text-transform: uppercase;
+  }
+  .badge.green { background: #238636; }
+  .badge.red   { background: #da3633; }
+  .badge.orange{ background: #d29922; color: #0d1117; }
+  .foot { position: fixed; bottom: 18px; left: 24px; font-size: 18px; color: #6e7681; }
+  #hud { position: fixed; top: 14px; right: 20px; font-size: 18px; color: #6e7681; font-family: ui-monospace, monospace; }
+  
+  /* Схемы и диаграммы */
+  .diagram-box { display: flex; gap: 24px; align-items: stretch; margin: 18px 0; }
+  .card-demo { flex: 1; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 18px; font-size: 22px; }
+  .card-demo.ok { border-color: #238636; }
+  .card-demo.fail { border-color: #da3633; background: #1f1315; }
+  .card-title { font-weight: bold; margin-bottom: 8px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
+  .card-demo.ok .card-title { color: #3fb950; }
+  .card-demo.fail .card-title { color: #f85149; }
+  
+  .grid { border-collapse: collapse; font-family: ui-monospace, monospace; font-size: 22px; text-align: left; margin-top: 8px; width: 100%; }
+  .grid td, .grid th { padding: 6px 16px 6px 0; white-space: nowrap; }
+  .grid tr.h td, .grid th { color: #8b949e; border-bottom: 1px solid #30363d; font-weight: 600; }
+  .grid tr.err td { color: #f85149; font-weight: 600; }
+
+  /* Git Diff Widget */
+  .diff-box { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; font-family: ui-monospace, monospace; font-size: 20px; padding: 16px; margin: 16px 0; }
+  .diff-del { background: rgba(218, 54, 51, 0.2); color: #f85149; display: block; padding: 2px 8px; border-left: 4px solid #da3633; }
+  .diff-add { background: rgba(35, 134, 54, 0.2); color: #3fb950; display: block; padding: 2px 8px; border-left: 4px solid #238636; }
+  .diff-info { color: #8b949e; display: block; padding: 2px 8px; }
+
+  .ans { display: none; margin-top: 10px; }
+  .ans.on { display: block; }
+  .ans-btn { background: #21262d; border: 1px solid #30363d; color: #58a6ff; font-size: 22px; padding: 8px 22px; border-radius: 999px; cursor: pointer; margin-top: 10px; font-family: inherit; }
+  .ans-btn:hover { background: #30363d; }
+  .timer-btn { background: #1f2937; border: 1px solid #4b5563; color: #f9fafb; font-size: 32px; font-weight: 700; padding: 6px 26px; border-radius: 999px; cursor: pointer; margin-top: 10px; font-family: ui-monospace, monospace; }
+  .timer-btn.warn { border-color: #d29922; color: #d29922; }
+  .timer-btn.done { border-color: #f85149; color: #f85149; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="hud"></div>
+<script>
+const S = [
+  // 0. ТИТУЛ
+  `<h1>Детектив в базе данных</h1>
+   <h2>SQL и DBeaver для тестировщика за 2 часа</h2>
+   <p class="sub">Расследуем падение заказов в боевом сервисе доставки QuickBite</p>
+   <p class="foot">Лаба eddytester · Живой стенд PostgreSQL + Swagger API</p>`,
+
+  // 1. КОНТЕКСТ И ВЫЗОВ
+  `<span class="badge red">Инцидент #4092</span>
+   <h2>Пятница. 19:30. Прод горит 🔥</h2>
+   <p>Клиенты жалуются в саппорт: <b>«Деньги с карты списали дважды, а чек пустой!»</b></p>
+   <p>Фронтендер клянётся: <i>«У меня всё ок, Swagger отвечает 200/201»</i>.</p>
+   <p>Тимлид даёт тебе доступ к PostgreSQL: <b>«Ищи причину в базе данных, через 1,5 часа релиз!»</b></p>`,
+
+  // 2. АРХИТЕКТУРА И КАРТА МЕСТНОСТИ
+  `<span class="badge">Шаг 0 · Разведка</span>
+   <h2>Карта базы данных QuickBite</h2>
+   <p>В DBeaver открываем базу <code>food_lab</code>. Перед нами 5 таблиц:</p>
+   <pre>restaurants  ──< menu_items
+                 │
+orders ──────────┼──< order_items
+   │             └──< promocodes
+   └──< payments (платежи от эквайринга)</pre>
+   <p class="small">Все запросы сегодня — боевые, как в реальном бэкенде интернет-магазина.</p>`,
+
+  // 3. СВЯЗКА API ➔ БД
+  `<span class="badge green">Шаг 1 · Свой след</span>
+   <h2>Создаём заказ руками в Swagger</h2>
+   <p>Открываем Swagger API: метод <code>POST /api/orders</code></p>
+   <p>Передаём тело запроса:</p>
+   <pre>{
+  "client_name": "ТвоёИмя",
+  "menu_item_id": 1,
+  "promocode": "VIPGIFT"
+}</pre>
+   <p class="small">В ответе получаем <code>order_id: 2001</code> и статус <code>pending_payment</code>. Запомни свой ID!</p>`,
+
+  // 4. ПЕРВЫЙ ЗАПРОС В БД
+  `<span class="badge">Задание 1 · SELECT</span>
+   <h2>Находим свой заказ в DBeaver</h2>
+   <p>Найди свой только что созданный заказ по имени или ID:</p>
+   <button class="timer-btn" data-secs="60" onclick="startTimer(this)">⏱ 1:00</button>
+   <button class="ans-btn" onclick="toggleAns(this)">▸ Показать эталонный SQL</button>
+   <div class="ans">
+     <pre>SELECT * FROM orders WHERE client_name = 'ТвоёИмя';</pre>
+     <p class="small">Посмотри на колонку <b>total_amount</b>... Что там?! Там <code>NULL</code>!</p>
+   </div>`,
+
+  // 5. БАГ 1: ЛОВУШКА NULL (ТЕОРИЯ)
+  `<span class="badge red">Улика №1 · Ловушка NULL</span>
+   <h2>Почему сумма заказа = NULL?!</h2>
+   <div class="diagram-box">
+     <div class="card-demo ok">
+       <div class="card-title">Обычная математика</div>
+       1 500 ₽ - 500 ₽ = <b>1 000 ₽</b><br>
+       <span class="small">Скидка вычлась корректно</span>
+     </div>
+     <div class="card-demo fail">
+       <div class="card-title">Суровая реальность SQL</div>
+       1 500 ₽ - NULL = <b>NULL</b> 💥<br>
+       <span class="small">NULL — это не ноль! Это черная дыра неизвестности.</span>
+     </div>
+   </div>
+   <p class="small">Любая математическая операция с NULL возвращает NULL! Из-за этого сломался расчёт чека.</p>`,
+
+  // 6. БАГ 1: РАССЛЕДОВАНИЕ ПРОМОКОДОВ
+  `<span class="badge">Задание 2 · WHERE & LIKE</span>
+   <h2>Расследуем промокод VIPGIFT</h2>
+   <p>Посмотрим, что разработчик записал в таблицу <code>promocodes</code>:</p>
+   <button class="timer-btn" data-secs="90" onclick="startTimer(this)">⏱ 1:30</button>
+   <button class="ans-btn" onclick="toggleAns(this)">▸ Показать ответ</button>
+   <div class="ans">
+     <pre>SELECT code, discount_rub, min_order_rub
+FROM promocodes
+WHERE code ILIKE '%gift%';</pre>
+     <p class="small">Эврика: у VIPGIFT колонка <code>discount_rub IS NULL</code>! Разработчик забыл указать сумму скидки в БД.</p>
+   </div>`,
+
+  // 7. КАК СПАСТИ ЗАПРОС: COALESCE
+  `<span class="badge green">Навык Сеньора · COALESCE</span>
+   <h2>Как тестировщик чинит расчёт</h2>
+   <p>Функция <code>COALESCE(значение, если_null)</code> заменяет NULL на дефолт:</p>
+   <pre>SELECT id, client_name, subtotal,
+       subtotal - COALESCE(discount_rub, 0) AS safe_total
+FROM orders o
+LEFT JOIN promocodes p ON o.promocode_id = p.id;</pre>
+   <p class="small">Теперь 1500 - 0 = 1500 ₽! Заказ не ломается, чек печатается.</p>`,
+
+  // 8. БАГ 2: КУДА УДВОИЛИСЬ ДЕНЬГИ (ВИЗУАЛ)
+  `<span class="badge red">Улика №2 · Двойное списание</span>
+   <h2>Заказ #1005: почему клиент заплатил 2 580 ₽?!</h2>
+   <div class="diagram-box">
+     <div class="card-demo">
+       <div class="card-title">Таблица orders (1 строка)</div>
+       Order #1005 · Сет Филадельфия · <b>1 290 ₽</b>
+     </div>
+     <div class="card-demo fail">
+       <div class="card-title">Таблица payments (2 строки!)</div>
+       tx_A · 1 290 ₽ (18:30:00)<br>
+       tx_B · 1 290 ₽ (18:30:01) ⚠️ дубль!
+     </div>
+   </div>
+   <p>Когда мы делаем <code>JOIN</code>, 1 строка связывается с 2 строками... и умножается!</p>`,
+
+  // 9. БАГ 2: РАССЛЕДОВАНИЕ ЧЕРЕЗ JOIN
+  `<span class="badge">Задание 3 · JOIN</span>
+   <h2>Связываем заказ с платежами</h2>
+   <p>Напиши запрос, который покажет имя клиента, сумму заказа и платежи по заказу 1005:</p>
+   <button class="timer-btn" data-secs="120" onclick="startTimer(this)">⏱ 2:00</button>
+   <button class="ans-btn" onclick="toggleAns(this)">▸ Показать ответ</button>
+   <div class="ans">
+     <pre>SELECT o.id, o.client_name, o.total_amount, p.amount, p.transaction_id
+FROM orders o
+JOIN payments p ON p.order_id = o.id
+WHERE o.id = 1005;</pre>
+     <p class="small">Запрос вернул 2 строки! Шлюз эквайринга прислал вебхук дважды, и база пропустила дубль.</p>
+   </div>`,
+
+  // 10. БАГ 2: ДЕТЕКЦИЯ МАСШТАБА (GROUP BY + HAVING)
+  `<span class="badge">Задание 4 · GROUP BY & HAVING</span>
+   <h2>Ищем все дубли в масштабе сервиса</h2>
+   <p>Вопрос тимлида: <i>«Сколько еще заказов списались повторно?!»</i></p>
+   <button class="timer-btn" data-secs="120" onclick="startTimer(this)">⏱ 2:00</button>
+   <button class="ans-btn" onclick="toggleAns(this)">▸ Показать ответ</button>
+   <div class="ans">
+     <pre>SELECT order_id, count(*) AS payments_count, sum(amount) AS total_paid
+FROM payments
+GROUP BY order_id
+HAVING count(*) > 1;</pre>
+     <p class="small">HAVING фильтрует группы после агрегации. Это любимый вопрос технических собеседований!</p>
+   </div>`,
+
+  // 11. БАГ 3: ЗАКАЗ В ПУСТОТУ (DDL)
+  `<span class="badge red">Улика №3 · Заказ-призрак</span>
+   <h2>Заказ #1006: ресторан #9999 не существует</h2>
+   <p>Проверяем заказ через LEFT JOIN:</p>
+   <pre>SELECT o.id, o.client_name, o.restaurant_id, r.name AS restaurant_name
+FROM orders o
+LEFT JOIN restaurants r ON o.restaurant_id = r.id
+WHERE r.id IS NULL;</pre>
+   <p><b>Вопрос QA:</b> Почему база данных вообще позволила сохранить заказ с несуществующим рестораном?!</p>`,
+
+  // 12. БАГ 3: ВЗЛОМ В GIT PULL REQUEST
+  `<span class="badge orange">Вскрываем код · Git Review</span>
+   <h2>Pull Request разработчика DEV-104</h2>
+   <p>Открываем миграцию <code>V3__orders.sql</code> и смотрим дифф разработчика:</p>
+   <div class="diff-box">
+     <span class="diff-info">@@ -15,4 +15,5 @@ CREATE TABLE orders (</span>
+     <span class="diff-info">   id SERIAL PRIMARY KEY,</span>
+     <span class="diff-info">   client_name VARCHAR(100),</span>
+     <span class="diff-del">-  restaurant_id INT REFERENCES restaurants(id)</span>
+     <span class="diff-add">+  restaurant_id INT -- TODO: убрали FOREIGN KEY, чтобы быстрее тестить</span>
+   </div>
+   <p class="small">Разработчик забыл <b>FOREIGN KEY</b> перед релизом! Это привело к повреждению целостности данных на проде.</p>`,
+
+  // 13. ИТОГИ РАССЛЕДОВАНИЯ
+  `<span class="badge green">Дело закрыто 🏆</span>
+   <h2>Что ты нашёл за 2 часа как инженер:</h2>
+   <div class="card-demo ok">
+     1. <b>Логический баг:</b> ловушка NULL при вычислении промокодов (COALESCE)<br>
+     2. <b>Интеграционный баг:</b> дублирование оплат при JOIN (GROUP BY + HAVING)<br>
+     3. <b>Архитектурная дыра:</b> потерянный FOREIGN KEY в структуре DDL и Git MR
+   </div>
+   <p class="small">Вот почему ручному тестировщику платят от 120 000 ₽: ты умеешь дебажить бэкенд в глубину.</p>`,
+
+  // 14. ГОТОВЫЙ БЛОК В РЕЗЮМЕ
+  `<h2>Добавляем в резюме на hh.ru 📄</h2>
+   <div class="diff-box">
+     <span class="diff-add">• Тестирование БД PostgreSQL через DBeaver: поиск дефектов целостности данных</span>
+     <span class="diff-add">• Локализация ошибок бизнес-логики и расхождений API vs БД через сложные JOIN</span>
+     <span class="diff-add">• Анализ дубликатов и финансовых аномалий через агрегации GROUP BY / HAVING</span>
+     <span class="diff-add">• Проведение Acceptance-ревью DDL и миграций БД на наличие constraints (FK, CHECK)</span>
+   </div>
+   <p class="small">Никаких общих фраз «знаю SELECT». Только боевые строчки реального опыта.</p>`,
+
+  // 15. ЧТО ДАЛЬШЕ (ОФФЕР ПРАКТИКУМА)
+  `<h2>Куда двигаться дальше?</h2>
+   <p>Понравилось щупать реальный бэкенд руками?</p>
+   <p>В полном <b>API Практикуме eddytester</b> тебя ждут <b>42+ реальных бага</b> в рабочем API, две версии v1 vs v2, и система автопроверки твоих баг-репортов.</p>
+   <p class="sub">Для участников сегодняшней Лабы — специальная цена на поток с живыми созвонами.</p>
+   <p class="foot">Вопросы и материалы: @edburenkin · Канал: @eddytester</p>`
+];
+
+let i = 0;
+const stage = document.getElementById('stage');
+const hud = document.getElementById('hud');
+let timerInt = null;
+
+function fmt(s) { const m = Math.floor(s / 60); return m + ':' + String(s % 60).padStart(2, '0'); }
+function startTimer(btn) {
+  if (timerInt) clearInterval(timerInt);
+  let left = parseInt(btn.dataset.secs, 10);
+  btn.textContent = '⏱ ' + fmt(left);
+  btn.classList.remove('warn', 'done');
+  timerInt = setInterval(() => {
+    left--;
+    if (left <= 0) { clearInterval(timerInt); timerInt = null; btn.textContent = 'Время вышло!'; btn.classList.add('done'); return; }
+    btn.textContent = '⏱ ' + fmt(left);
+    if (left <= 10) { btn.classList.remove('warn'); btn.classList.add('done'); }
+    else if (left <= 30) btn.classList.add('warn');
+  }, 1000);
+}
+
+function copyText(t, btn) {
+  navigator.clipboard.writeText(t).then(() => {
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(() => { btn.textContent = '📋 Скопировать'; }, 1000);
+  });
+}
+
+function toggleAns(btn) {
+  const ans = btn.nextElementSibling;
+  const on = ans.classList.toggle('on');
+  btn.textContent = on ? '▴ Скрыть ответ' : '▸ Показать эталонный SQL';
+}
+
+function render() {
+  if (timerInt) { clearInterval(timerInt); timerInt = null; }
+  stage.innerHTML = S[i];
+  document.querySelectorAll('pre').forEach((pre) => {
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '📋 Скопировать';
+    btn.onclick = () => copyText(pre.innerText.replace('📋 Скопировать', '').trim(), btn);
+    pre.appendChild(btn);
+  });
+  hud.textContent = (i + 1) + ' / ' + S.length;
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { i = Math.min(i + 1, S.length - 1); render(); }
+  if (e.key === 'ArrowLeft')  { i = Math.max(i - 1, 0); render(); }
+});
+
+render();
+</script>
+</body>
+</html>
