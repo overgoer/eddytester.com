@@ -58,7 +58,8 @@
 </div>
 
 <h2><span class="step-num">Шаг 1.</span> Создание заказа в API и поиск в БД</h2>
-<p>В Swagger делаем <code>POST /api/orders</code> с промокодом <code>VIPGIFT</code>. Затем находим свой заказ в DBeaver:</p>
+<p>В Swagger (<a href="https://eddytester.com/lab-api" target="_blank" style="color:#58a6ff;">https://eddytester.com/lab-api</a>) нажимаем кнопку <b>«Authorize 🔓»</b> справа вверху и вводим свой ключ (например, <code>student_kate</code>). Затем делаем <code>POST /api/orders</code> с промокодом <code>VIPGIFT</code>.</p>
+<p>Затем находим свой заказ в DBeaver под своим логином:</p>
 <pre>SELECT id, client_name, restaurant_id, status, subtotal, total_amount, created_at
 FROM orders
 WHERE client_name = 'ТвоёИмя';<button class="copy-btn" onclick="copy(this)">📋 Скопировать</button></pre>
